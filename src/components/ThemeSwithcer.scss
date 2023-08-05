@@ -1,0 +1,73 @@
+.theme-switch {
+  position: absolute;
+  top: 14px;
+  right: 1.7em;
+  width: 72px;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  background-color: rgba(220, 220, 220, 0.6);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: 0.3s;
+
+  html[theme-mode=dark] & {
+    background-color: rgba(80, 80, 80, 0.8);
+  }
+  > .cur-card {
+    z-index: 9;
+    position: absolute;
+    left: -100px;
+    width: calc((100% - 8px) / 3);
+    height: calc(100% - 8px);
+    border-radius: 4px;
+    transition: 0.3s;
+  }
+  &[data-mode=light] > .cur-card {
+    left: 4px;
+    background-color: rgba(255, 255, 255, 0.8);
+  }
+  &[data-mode=dark] > .cur-card {
+    left: calc((100% - 8px) / 3 * 1 + 4px);
+    background-color: rgba(142, 142, 142, 0.55);
+  }
+  &[data-mode=auto] > .cur-card {
+    left: calc((100% - 8px) / 3 * 2 + 4px);
+    background-color: #4766AC88;
+  }
+  > .light,
+  > .dark,
+  > .auto {
+    z-index: 10;
+    display: flex;
+    padding: 2px;
+    cursor: pointer;
+    > svg {
+      transition: 0.3s;
+    }
+  }
+  > .light {
+    color: orange;
+    &:hover > svg {
+      filter: drop-shadow(0 0 4px orange);
+    }
+  }
+  > .dark {
+    color: yellow;
+    &:hover > svg {
+      filter: drop-shadow(0 0 4px yellow);
+    }
+  }
+  > .auto {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    > svg:first-child {
+      border-right: 2px dashed white;
+      color: orange;
+    }
+    > svg:last-child {
+      color: yellow;
+    }
+  }
+}

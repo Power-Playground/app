@@ -1,0 +1,18 @@
+.switcher {
+  display: flex;
+  gap: 5px;
+  position: relative;
+  padding: 5px;
+  box-sizing: border-box;
+  &__item {
+    text-align: center;
+    cursor: pointer;
+    &--bar {
+      position: absolute;
+      height: calc(100% - 10px);
+      box-sizing: border-box;
+      border: 2px solid var(--primary);
+      transition: .3s;
+    }
+  }
+}

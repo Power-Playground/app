@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type='importmap'>
+    {
+      "imports": {
+        "//chii/": "//cdn.jsdelivr.net/npm/chii/public/front_end/"
+      }
+    }
+  </script>
+  <meta charset="UTF-8">
+  <title>Eval Logs</title>
+  <style type="text/css">
+    html, body { margin: 0; padding: 0; }
+    .__chobitsu-hide__ { height: 100% !important; }
+  </style>
+  <script src="https://unpkg.com/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+</head>
+<body>
+<script type="module" src='core/src/eval-logs/index.ts'></script>
+<script type="module" src='core/src/eval-logs/devtools.ts'></script>
+<script src="/target.js" embedded="true"></script>
+<script src="https://unpkg.com/sentinel-js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="module">
+  sentinel.on('.__chobitsu-hide__', _el => {
+    const el = /** @type {HTMLDivElement} */ (_el)
+    el.children[0]?.remove()
+  });
+</script>
+</body>
+</html>

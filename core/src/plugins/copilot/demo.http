@@ -1,0 +1,83 @@
+### Get device code
+POST {{GithubAuthDomain}}/login/device/code
+Content-Type: application/json
+Accept: application/json
+
+{
+  "client_id": "{{CopilotClientID}}",
+  "scope": "user"
+}
+
+> {%
+  const body = /** @type {{
+    "device_code": string,
+    "user_code": string,
+    "verification_uri": string,
+    "expires_in": number,
+    "interval": number
+  }} */ (response.body)
+  client.log('click ' + body.verification_uri + `, input ${body.user_code}`)
+  client.global.set('deviceCode', body.device_code)
+%}
+### Get access token
+POST {{GithubAuthDomain}}/login/oauth/access_token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "client_id": "{{CopilotClientID}}",
+  "device_code": "{{deviceCode}}",
+  "grant_type": "urn:ietf:params:oauth:grant-type:device_code"
+}
+
+> {%
+  const body = /** @type {{
+    "access_token": string
+    "token_type": string
+    "scope": string
+  }} */ (response.body)
+  client.global.set('token', `${body.token_type} ${body.access_token}`)
+%}
+### Get User
+GET {{GithubAuthDomain}}/user
+Accept: application/vnd.github.v3+json
+#Authorization: {{token}}
+Authorization: {{GithubCommonAuth}}
+
+### Get Copilot Token
+GET {{GetCopilotToken}}
+#Authorization: {{token}}
+Authorization: {{GithubCopilotAuth}}
+
+> {%
+  const body = /** @type {{
+    "chat_enabled": boolean
+    "code_quote_enabled": boolean
+    "copilotignore_enabled": boolean
+    "expires_at": number
+    "prompt_8k": boolean
+    "public_suggestions": string
+    "refresh_in": number
+    "sku": string
+    "telemetry": string
+    "token": string
+    "tracking_id": string
+  }} */ (response.body)
+  client.global.set('copilotToken', `Bearer ${body.token}`)
+%}
+### Get Completions
+POST {{CopilotProxy}}/{{CopilotProxyModel}}/completions
+Content-Type: application/json
+#Authorization: {{copilotToken}}
+Authorization: {{CopilotAuth}}
+
+{
+  "prompt":"import React from 'react'\nimport ReactDOM from 'react-dom/client'\nimport App from './App.tsx'\nimport './index.css'\n\nconst ",
+  "suffix":"ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>,\n)\n",
+  "max_tokens":500,
+  "temperature":0,
+  "top_p":1,"n":1,
+  "stop":["\n\n\n"],
+  "stream":true,
+  "extra":{"language":"tsx","next_indent":0,"trim_by_indentation":true,"prompt_tokens":37,"suffix_tokens":41}
+}
