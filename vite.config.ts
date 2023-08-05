@@ -9,7 +9,9 @@ configDotenv()
 
 // https://vitejs.dev/config/
 export default defineConfig(async env => ({
-  base: `/${process.env.BASE_URL}/`,
+  base: process.env.BASE === 'None'
+    ? ''
+    : (process.env.BASE ?? `/${process.env.BASE_URL}/`),
   plugins: [
     react(),
     env.mode === 'production' ? viteExternalsPlugin({
