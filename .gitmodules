@@ -1,0 +1,3 @@
+[submodule "external/chrome-devtools"]
+	path = external/chrome-devtools
+	url = https://chromium.googlesource.com/devtools/devtools-frontend

@@ -20,7 +20,7 @@
 
     "paths": {
       "@power-playground/core": ["./core"],
-      "//chii/*": ["./external/devtools-frontend/front_end/*"],
+      "//chii/*": ["./external/chrome-devtools/front_end/*"],
     }
   },
   "include": ["src", "core", "vite.config.ts"]
