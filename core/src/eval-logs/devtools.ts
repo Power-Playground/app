@@ -1,6 +1,6 @@
-import type * as UI from '//chii/ui/legacy/legacy.js'
+import type * as UI from '//chii/ui/legacy/legacy'
 
-import { definePlugins } from '../../plugins'
+import type { definePlugins } from '../plugins'
 import { elBridgeC } from './bridge.ts'
 
 const storageInited = localStorage.getItem('storageInited')
@@ -12,7 +12,7 @@ if (!storageInited) {
 localStorage.setItem('consoleShowSettingsToolbar', JSON.stringify(false))
 localStorage.setItem(
   'viewsLocationOverride',
-  JSON.stringify({ resources: 'none', elements: 'none', network: 'none', sources: 'none' }),
+  JSON.stringify({ resources: 'none', elements: 'none', network: 'none', sources: 'none' })
 )
 localStorage.setItem('panel-selectedTab', JSON.stringify('console'))
 
@@ -31,8 +31,8 @@ export type DevtoolsWindow = Window & {
 }
 
 const devtools = document.querySelector('iframe')!
-let devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
-let devtoolsDocument = devtools.contentDocument!
+const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
+const devtoolsDocument = devtools.contentDocument!
 
 let inited = false
 async function checkInspectorViewIsLoaded() {
@@ -47,7 +47,7 @@ async function checkInspectorViewIsLoaded() {
     await init()
   }
 }
-;(async () => {
+(async () => {
   if (devtoolsDocument.readyState === 'complete') {
     await checkInspectorViewIsLoaded()
   } else {
@@ -73,6 +73,7 @@ function registerPlugins(realUI: typeof UI, tabbedPane: UI.TabbedPane.TabbedPane
 }
 
 async function init() {
+  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')

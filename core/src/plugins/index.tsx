@@ -1,9 +1,10 @@
-import type * as UITypes from '//chii/ui/legacy/legacy.js'
 import type { ReactElement } from 'react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 
-import { DevtoolsWindow } from '../pages/eval-logs/devtools.ts'
+import type * as UITypes from '//chii/ui/legacy/legacy.js'
+
+import type { DevtoolsWindow } from '../eval-logs/devtools.ts'
 
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 

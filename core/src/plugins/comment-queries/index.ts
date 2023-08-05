@@ -1,5 +1,6 @@
+import type * as monacoEditor from 'monaco-editor'
+
 import { definePlugins } from '../index.tsx'
-import * as monacoEditor from 'monaco-editor'
 
 export default definePlugins({
   editor(monaco) {
