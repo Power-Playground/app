@@ -1,24 +1,31 @@
 import './EditorZone.scss'
 
 import {
-  useEffect,
-  useRef,
-  useState,
   forwardRef,
+  useEffect,
   useImperativeHandle,
-  useMemo
-} from 'react'
+  useMemo,
+  useRef,
+  useState } from 'react'
 import { createPortal } from 'react-dom'
-import type * as monacoEditor from 'monaco-editor'
 import loader from '@monaco-editor/loader'
 import Editor, { useMonaco } from '@monaco-editor/react'
+import type * as monacoEditor from 'monaco-editor'
 
-import examples from '../examples.ts'
-import Switcher from './Switcher.tsx'
-import { CodeHistoryItem, useCodeHistory } from './EditorZone_CodeHistory.ts'
+import { elBridgeP } from '../eval-logs/bridge.ts'
+import type { definePlugins } from '../plugins'
+
 import { typescriptVersionMeta, useDistTags } from './editor.typescript.versions.ts'
-import { elBridgeP } from '../pages/eval-logs/bridge.ts'
-import { definePlugins } from '../plugins'
+import type { CodeHistoryItem } from './EditorZone_CodeHistory.ts'
+import { useCodeHistory } from './EditorZone_CodeHistory.ts'
+import Switcher from './Switcher.tsx'
+
+const examples = {
+  base: {
+    js: 'console.log("Hello world!")',
+    ts: 'console.log("Hello world!")'
+  }
+}
 
 const BORDER_SIZE = 5
 const DOUBLE_CLICK_WIDTH = '500px'
@@ -28,29 +35,17 @@ const plugins = import.meta.glob('../plugins/*/index.ts*', {
   eager: true, import: 'default'
 }) as Record<string, ReturnType<typeof definePlugins>>
 
-const awaitablerCodes = import.meta.glob([
-  '../../../src/**',
-  '!../../../src/configure.ts',
-  '!**/*.d.ts',
-  '!**/tsconfig.json'
-], {
-  as: 'raw',
-  eager: true,
-})
 const extraModules = Object
   .entries(Object.assign(
-    {},
-    awaitablerCodes
+    {} as Record<string, string>, {}
   ))
   .reduce((acc, [filePath, content]) => acc.concat({
-    filePath: filePath
-      .replace(/^.*\/src/, '/node_modules/awaitabler')
-      .replace(/^\.\//, ''),
+    filePath,
     content
   }), [] as { content: string, filePath: string }[])
 const compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
   moduleResolution: 2,
-  declaration: true,
+  declaration: true
 }
 
 function copyToClipboard(text: string) {
@@ -65,7 +60,7 @@ function copyToClipboard(text: string) {
 function addCommands(
   editor: monacoEditor.editor.IStandaloneCodeEditor,
   monaco: typeof monacoEditor,
-  addHistory: (code: string) => void,
+  addHistory: (code: string) => void
 ) {
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
     const code = editor.getValue()
@@ -93,7 +88,7 @@ export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
   const [open, setOpen] = useState(false)
   useImperativeHandle(ref, () => ({
     open: () => setOpen(true),
-    hide: () => setOpen(false),
+    hide: () => setOpen(false)
   }), [])
 
   const isMac = navigator.platform.includes('Mac')
@@ -122,7 +117,7 @@ export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
     className='help'
     autoFocus
     open={open}
-  >
+    >
     <div className='dialog__container'>
       <div className='dialog__title'>
         <h1>帮助</h1>
@@ -149,84 +144,84 @@ export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
 export const HistoryDialog = forwardRef<DialogRef, {
   theme: string
   onChange?: (codeHistory: CodeHistoryItem) => void
-}>(function HistoryDialog({ theme, onChange }, ref) {
-  const [open, setOpen] = useState(false)
-  useImperativeHandle(ref, () => ({
-    open: () => setOpen(true),
-    hide: () => setOpen(false),
-  }), [])
+    }>(function HistoryDialog({ theme, onChange }, ref) {
+      const [open, setOpen] = useState(false)
+      useImperativeHandle(ref, () => ({
+        open: () => setOpen(true),
+        hide: () => setOpen(false)
+      }), [])
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // cmd/ctrl + h
-      if (e.key === 'h' && (e.metaKey || e.ctrlKey)) {
-        setOpen(true)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
-  useEffect(() => {
-    if (open) {
-      const handleKeyUp = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') setOpen(false)
-        // up
-        if (e.key === 'ArrowUp') {
-          setSelected(selected => (selected + historyList.length - 1) % historyList.length)
+      useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+          // cmd/ctrl + h
+          if (e.key === 'h' && (e.metaKey || e.ctrlKey)) {
+            setOpen(true)
+          }
         }
-        // down
-        if (e.key === 'ArrowDown') {
-          setSelected(selected => (selected + 1) % historyList.length)
+        document.addEventListener('keydown', handleKeyDown)
+        return () => document.removeEventListener('keydown', handleKeyDown)
+      }, [])
+      useEffect(() => {
+        if (open) {
+          const handleKeyUp = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setOpen(false)
+            // up
+            if (e.key === 'ArrowUp') {
+              setSelected(selected => (selected + historyList.length - 1) % historyList.length)
+            }
+            // down
+            if (e.key === 'ArrowDown') {
+              setSelected(selected => (selected + 1) % historyList.length)
+            }
+            // enter
+            if (e.key === 'Enter') {
+              onChange?.(history)
+              setOpen(false)
+            }
+          }
+          document.addEventListener('keyup', handleKeyUp)
+          return () => document.removeEventListener('keyup', handleKeyUp)
         }
-        // enter
-        if (e.key === 'Enter') {
-          onChange?.(history)
-          setOpen(false)
-        }
-      }
-      document.addEventListener('keyup', handleKeyUp)
-      return () => document.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [open])
+      }, [open])
 
-  const [historyList, dispatch] = useCodeHistory()
-  const [selected, setSelected] = useState(0)
-  const history = useMemo(() => historyList[selected], [historyList, selected])
-  // TODO auto scroll
-  // TODO remove history item
-  // TODO configure max history length
-  // TODO save and load lang
-  // TODO set code history item name
-  return createPortal(<dialog
+      const [historyList, dispatch] = useCodeHistory()
+      const [selected, setSelected] = useState(0)
+      const history = useMemo(() => historyList[selected], [historyList, selected])
+      // TODO auto scroll
+      // TODO remove history item
+      // TODO configure max history length
+      // TODO save and load lang
+      // TODO set code history item name
+      return createPortal(<dialog
     className='history'
     autoFocus
     open={open}
-  >
-    <div className='dialog__container'>
-      <div className='dialog__title'>
-        <h5>
-          历史记录
-        </h5>
-        <span><code>↑/↓</code>(选择)</span>
-        <span><code>Enter</code>(确认)</span>
-        <button className='dialog__close' onClick={() => setOpen(false)}>×</button>
-      </div>
-      {open && <div className='dialog__content'>
-        <div className='history__list'>
-          {historyList.map((item, index) => (
-            <div
+        >
+        <div className='dialog__container'>
+          <div className='dialog__title'>
+            <h5>
+              历史记录
+            </h5>
+            <span><code>↑/↓</code>(选择)</span>
+            <span><code>Enter</code>(确认)</span>
+            <button className='dialog__close' onClick={() => setOpen(false)}>×</button>
+          </div>
+          {open && <div className='dialog__content'>
+            <div className='history__list'>
+              {historyList.map((item, index) => (
+                <div
               key={item.time}
               className={'history__item'
                 + (index === selected ? ' history__item--selected' : '')}
               onClick={() => setSelected(index)}
             >
-              <pre className='history__item__code'>{item.code}</pre>
-              <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
-            </div>
+                  <pre className='history__item__code'>{item.code}</pre>
+                  <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
+                </div>
           ))}
-        </div>
-        <div className='preview'>
-          <Editor
+            </div>
+            <div className='preview'>
+              <Editor
             height='100%'
             width='100%'
             theme={theme === 'light' ? 'vs' : 'vs-dark'}
@@ -235,14 +230,14 @@ export const HistoryDialog = forwardRef<DialogRef, {
             options={{
               readOnly: true,
               minimap: { enabled: false },
-              scrollbar: { vertical: 'hidden' },
+              scrollbar: { vertical: 'hidden' }
             }}
           />
+            </div>
+          </div>}
         </div>
-      </div>}
-    </div>
-  </dialog>, document.body, 'history-dialog')
-})
+      </dialog>, document.body, 'history-dialog')
+    })
 
 export default function EditorZone() {
   const searchParams = new URLSearchParams(location.search)
@@ -290,7 +285,7 @@ export default function EditorZone() {
   }, [distTagsMemo])
   const isNeedCheckFetching = useMemo(() => {
     // 不在推荐的版本中，说明是 dist tags 模式
-    return typescriptVersionMeta.suggestedVersions.indexOf(typescriptVersion) === -1;
+    return typescriptVersionMeta.suggestedVersions.indexOf(typescriptVersion) === -1
   }, [typescriptVersion])
 
   const hash = location.hash.slice(1)
@@ -468,16 +463,16 @@ export default function EditorZone() {
           <option value='Make number awaitabler'>数字也可以！</option>
           <option value='Make `await <number>` abortable'>终止对数字的等待</option>
         </select>
-        <Switcher lText={<div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }} >
-                    <span style={{
+        <Switcher lText={<div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }}>
+          <span style={{
                       position: 'absolute',
                       right: 1,
                       bottom: -2,
                       transform: 'scale(0.6)',
                       fontWeight: 'blob'
                     }}>TS</span>
-                  </div>}
-                  rText={<div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#f2d949' }} >
+        </div>}
+                  rText={<div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#f2d949' }}>
                     <span style={{
                       position: 'absolute',
                       right: 1,
@@ -543,14 +538,14 @@ export default function EditorZone() {
         key={typescriptVersion}
         language={{
           js: 'javascript',
-          ts: 'typescript',
+          ts: 'typescript'
         }[language]}
         options={{
           automaticLayout: true,
           scrollbar: {
             vertical: 'hidden',
             verticalSliderSize: 0,
-            verticalScrollbarSize: 0,
+            verticalScrollbarSize: 0
           }
         }}
         theme={theme === 'light' ? 'vs' : 'vs-dark'}
@@ -558,7 +553,7 @@ export default function EditorZone() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          flexDirection: 'column',
+          flexDirection: 'column'
         }}>
           <div style={{
             position: 'relative',
@@ -566,7 +561,7 @@ export default function EditorZone() {
             height: 72,
             backgroundColor: '#4272ba',
             userSelect: 'none'
-          }} >
+          }}>
             <span style={{
               position: 'absolute',
               right: 5,

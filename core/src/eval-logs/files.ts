@@ -1,5 +1,4 @@
 import * as Babel from '@babel/standalone'
-import awaitAutoBox from 'awaitabler/await-auto-box.ts'
 
 import { elBridgeC, EvalLogsIframeParentEvent } from './bridge.ts'
 import { useSyncExternalStore } from 'react'
@@ -31,7 +30,8 @@ elBridgeC.on('compile-completed', files => {
       try {
         code = Babel.transform(text, {
           presets: ['es2015'],
-          plugins: [awaitAutoBox],
+          plugins: [
+          ],
           filename
         })?.code ?? ''
       } catch (e) {

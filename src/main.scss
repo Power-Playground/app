@@ -13,11 +13,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --primary: #ec8331;
+  --primary: #54af56;
   --fr-cr: #000;
   --bg-cr: #efefef;
   html[theme-mode=dark] & {
-    --primary: #8d5128;
+    --primary: #1e382a;
     --fr-cr: #fff;
     --bg-cr: #242424;
   }

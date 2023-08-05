@@ -1,6 +1,7 @@
 {
   "name": "@power-playground/core",
   "version": "0.1.0",
+  "module": "src/index.ts",
   "dependencies": {
     "@babel/standalone": "^7.22.9",
     "react": "^18.2.0",

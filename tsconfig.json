@@ -19,7 +19,7 @@
     "noFallthroughCasesInSwitch": true,
 
     "paths": {
-      "@power-playground/core": ["./core"],
+      "@power-playground/core": ["./core/src"],
       "//chii/*": ["./external/chrome-devtools/front_end/*"],
     }
   },
