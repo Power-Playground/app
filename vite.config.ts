@@ -22,8 +22,8 @@ export default defineConfig(async env => ({
   build: {
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'index.html'),
-        'eval-logs': path.resolve(__dirname, 'eval-logs.html')
+        main: path.resolve(__dirname, 'index.html')
+        // 'eval-logs': path.resolve(__dirname, 'eval-logs.html')
       }
     }
   },
