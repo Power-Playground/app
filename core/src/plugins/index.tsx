@@ -1,8 +1,8 @@
+import type * as UITypes from '//chii/ui/legacy/legacy.js'
+
 import type { ReactElement } from 'react'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-
-import type * as UITypes from '//chii/ui/legacy/legacy.js'
 
 import type { DevtoolsWindow } from '../eval-logs/devtools.ts'
 

@@ -14,6 +14,7 @@ module.exports = {
       plugins: ['react', '@typescript-eslint'],
       files: ['*.ts', '*.tsx'],
       rules: {
+        'react/react-in-jsx-scope': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-unused-vars': [
           'error', {
@@ -21,7 +22,6 @@ module.exports = {
             argsIgnorePattern: '^_'
           }
         ],
-        'react/react-in-jsx-scope': 'off',
         // TODO fix start
         '@typescript-eslint/ban-types': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
@@ -67,7 +67,22 @@ module.exports = {
     ],
     '@typescript-eslint/no-namespace': 'off',
     'no-unused-vars': 'off',
-    'simple-import-sort/imports': 'error',
+    'simple-import-sort/imports': ['error', {
+      groups: [
+        // Style imports.
+        ['^.+\\.s?css$'],
+        // Side effect imports.
+        ['^\\u0000'],
+        // Style imports.
+        ['^\/\/'],
+        // Packages. `react` related packages come first.
+        ['^react', '^@?\\w'],
+        // Parent imports. Put `..` last.
+        ['^\\.\\.(?!/?$)', '^\\.\\./?$'],
+        // Other relative imports. Put same-folder imports and `.` last.
+        ['^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
+      ],
+    }],
     'simple-import-sort/exports': 'error',
     'semi': ['error', 'never'],
     'keyword-spacing': ['error', { before: true, after: true }],
