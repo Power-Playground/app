@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface Versions {
   distCategory: string[]
@@ -16,7 +16,7 @@ export const useDistTags = () => {
   const [fetching, setFetching] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [data, setData] = useState<Record<string, string>>()
-  const abortController = useMemo(() => new AbortController(), [])
+  const abortControllerRef = useRef(new AbortController())
   const effectOnlyOnceRef = useRef<boolean>(false)
   useEffect(() => {
     if (!effectOnlyOnceRef.current) {
@@ -26,7 +26,7 @@ export const useDistTags = () => {
     if (!fetching) {
       setFetching(true)
       fetch('https://registry.npmmirror.com/-/package/typescript/dist-tags', {
-        signal: abortController.signal
+        signal: abortControllerRef.current.signal
       })
         .then(res => res.json())
         .then(data => {
@@ -34,10 +34,13 @@ export const useDistTags = () => {
           setError(null)
         })
         .catch(setError)
-        .finally(() => setFetching(false))
+        .finally(() => {
+          setFetching(false)
+          abortControllerRef.current = new AbortController()
+        })
     }
-    return () => abortController.abort()
-  }, [abortController, fetching, reFetch])
+    return () => abortControllerRef.current.abort()
+  }, [abortControllerRef, fetching, reFetch])
   return {
     data,
     fetching,
