@@ -21,7 +21,7 @@ export interface PopoverProps {
 const prefix = 'ppd-popover'
 
 export function Popover(props: PopoverProps) {
-  const { children, content, placement = 'top', offset = [0, 0] } = props
+  const { children, content, placement = 'top', trigger = 'hover', offset = [0, 0] } = props
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
   const popper = useRef<ReturnType<typeof createPopper>>()
@@ -49,22 +49,22 @@ export function Popover(props: PopoverProps) {
   }, [visible])
   return <div ref={setReferenceElement}
               className={
-                `${prefix}-reference ${prefix}-${props.trigger}`
+                `${prefix}-reference ${prefix}-${trigger}`
                 + (props.className ? ' ' + props.className : '')
               }
               style={props.style}
               onClick={() => {
-                if (props.trigger === 'click') {
+                if (trigger === 'click') {
                   setVisible(!visible)
                 }
               }}
               onMouseOver={() => {
-                if (props.trigger === 'hover') {
+                if (trigger === 'hover') {
                   setVisible(true)
                 }
               }}
               onMouseOut={() => {
-                if (props.trigger === 'hover') {
+                if (trigger === 'hover') {
                   setVisible(false)
                 }
               }}
@@ -79,6 +79,7 @@ export function Popover(props: PopoverProps) {
          data-show={visible}
     >
       {content}
+      <div className='ppd-popover-arrow' data-position={placement} />
     </div>
   </div>
 }

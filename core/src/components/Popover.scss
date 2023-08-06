@@ -1,6 +1,7 @@
 .ppd-popover {
   background-color: var(--vscode-dropdown-background);
   border: 1px solid var(--vscode-dropdown-border);
+  box-shadow: 0 0 4px var(--vscode-dropdown-border);
   border-radius: 4px;
   padding: 4px 8px;
 
@@ -11,6 +12,33 @@
   &[data-show=true] {
     visibility: visible;
     opacity: 1;
+  }
+  > .ppd-popover-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-bottom-color: var(--vscode-dropdown-background);
+    &[data-position=top] {
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+    }
+    &[data-position=bottom] {
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    &[data-position=left] {
+      right: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &[data-position=right] {
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
   }
 }
 .ppd-popover-reference {
