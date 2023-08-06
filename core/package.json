@@ -4,16 +4,17 @@
   "module": "src/index.ts",
   "dependencies": {
     "@babel/standalone": "^7.22.9",
+    "@popperjs/core": "^2.11.8",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@monaco-editor/react": "^4.5.1",
     "@types/babel__standalone": "^7.1.4",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "@types/semver": "^7.5.0",
-    "@monaco-editor/react": "^4.5.1",
-    "semver": "^7.5.4",
-    "monaco-editor": "^0.40.0"
+    "monaco-editor": "^0.40.0",
+    "semver": "^7.5.4"
   }
 }
