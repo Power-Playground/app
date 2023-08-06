@@ -1,0 +1,21 @@
+.ppd-popover {
+  background-color: var(--vscode-dropdown-background);
+  border: 1px solid var(--vscode-dropdown-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+
+  transition: .1s;
+
+  visibility: hidden;
+  opacity: 0;
+  &[data-show=true] {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+.ppd-popover-reference {
+  cursor: default;
+  &.ppd-popover-click {
+    cursor: pointer;
+  }
+}
