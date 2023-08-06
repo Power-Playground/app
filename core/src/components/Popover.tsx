@@ -3,6 +3,7 @@ import './Popover.scss'
 import { useEffect, useRef, useState } from 'react'
 import type { Placement } from '@popperjs/core'
 import { createPopper } from '@popperjs/core/lib/popper-lite'
+import { createPortal } from 'react-dom'
 
 export interface PopoverProps {
   children: React.ReactNode
@@ -56,40 +57,53 @@ export function Popover(props: PopoverProps) {
       popper.current?.update()
     }
   }, [visible])
-  return <div ref={setReferenceElement}
-              className={
-                `${prefix}-reference ${prefix}-${trigger}`
-                + (props.className ? ' ' + props.className : '')
-              }
-              style={props.style}
-              onClick={() => {
-                if (trigger === 'click') {
-                  setVisible(!visible)
-                }
-                onClick?.()
-              }}
-              onMouseOver={() => {
-                if (trigger === 'hover') {
-                  setVisible(true)
-                }
-              }}
-              onMouseOut={() => {
-                if (trigger === 'hover') {
-                  setVisible(false)
-                }
-              }}
-    >
-    {children}
-    <div ref={setPopperElement}
-         className={
-           `monaco-editor ${prefix}`
-           + (props.contentClassName ? ' ' + props.contentClassName : '')
-         }
-         style={props.style}
-         data-show={visible}
-    >
+  return <>
+    <div
+      ref={setReferenceElement}
+      className={
+      `${prefix}-reference ${prefix}-${trigger}`
+        + (props.className ? ' ' + props.className : '')
+      }
+      style={props.style}
+      onClick={() => {
+        if (trigger === 'click') {
+          setVisible(!visible)
+        }
+        onClick?.()
+      }}
+      onMouseOver={() => {
+        if (trigger === 'hover') {
+          setVisible(true)
+        }
+      }}
+      onMouseOut={() => {
+        if (trigger === 'hover') {
+          setVisible(false)
+        }
+      }}
+      >
+      {children}
+    </div>
+    {createPortal(<div
+      ref={setPopperElement}
+      className={
+        `monaco-editor ${prefix}`
+        + (props.contentClassName ? ' ' + props.contentClassName : '')
+      }
+      data-show={visible}
+      onMouseOver={() => {
+        if (trigger === 'hover') {
+          setVisible(true)
+        }
+      }}
+      onMouseOut={() => {
+        if (trigger === 'hover') {
+          setVisible(false)
+        }
+      }}
+      >
       {content}
       <div className='ppd-popover-arrow' data-position={placement} />
-    </div>
-  </div>
+    </div>, document.body)}
+  </>
 }
