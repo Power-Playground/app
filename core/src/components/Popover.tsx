@@ -1,9 +1,9 @@
 import './Popover.scss'
 
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import type { Placement } from '@popperjs/core'
 import { createPopper } from '@popperjs/core/lib/popper-lite'
-import { createPortal } from 'react-dom'
 
 export interface PopoverProps {
   children: React.ReactNode
@@ -30,7 +30,7 @@ export function Popover(props: PopoverProps) {
     placement = 'top',
     trigger = 'hover',
     offset = [0, 0],
-    onClick,
+    onClick
   } = props
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
