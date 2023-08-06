@@ -1,7 +1,13 @@
 import './App.scss'
 
 import { useEffect } from 'react'
-import { EditorZone, elBridgeP } from '@power-playground/core'
+import {
+  createQuickAccessInstance,
+  EditorZone,
+  elBridgeP,
+  QuickAccess,
+  QuickAccessContext
+} from '@power-playground/core'
 
 import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
 
@@ -18,7 +24,7 @@ export function App() {
              style={{
               color: '#fff',
               textDecoration: 'none'
-            }}
+            }} rel='noreferrer'
           >
             Power Playground
           </a>
@@ -26,8 +32,11 @@ export function App() {
         <ThemeSwitcher />
       </header>
       <div className='main'>
-        <EditorZone />
-        <iframe src='./eval-logs.html' frameBorder={0} className='eval-logs' />
+        <QuickAccessContext.Provider value={createQuickAccessInstance()}>
+          <QuickAccess />
+          <EditorZone />
+          <iframe src='./eval-logs.html' frameBorder={0} className='eval-logs' />
+        </QuickAccessContext.Provider>
       </div>
     </>
   )
