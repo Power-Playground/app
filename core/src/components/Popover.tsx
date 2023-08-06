@@ -16,12 +16,21 @@ export interface PopoverProps {
   contentClassName?: string
   style?: React.CSSProperties
   contentStyle?: React.CSSProperties
+
+  onClick?: () => void
 }
 
 const prefix = 'ppd-popover'
 
 export function Popover(props: PopoverProps) {
-  const { children, content, placement = 'top', trigger = 'hover', offset = [0, 0] } = props
+  const {
+    children,
+    content,
+    placement = 'top',
+    trigger = 'hover',
+    offset = [0, 0],
+    onClick,
+  } = props
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
   const popper = useRef<ReturnType<typeof createPopper>>()
@@ -57,6 +66,7 @@ export function Popover(props: PopoverProps) {
                 if (trigger === 'click') {
                   setVisible(!visible)
                 }
+                onClick?.()
               }}
               onMouseOver={() => {
                 if (trigger === 'hover') {
