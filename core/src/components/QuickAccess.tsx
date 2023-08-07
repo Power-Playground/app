@@ -259,13 +259,14 @@ export function QuickAccess(props: QuickAccessProps) {
         type='text'
         className={`${prefix} search-box`}
         autoFocus
+        onBlur={() => setVisible(false)}
+        placeholder={handlerOptions?.placeholder}
         value={keyword}
         defaultValue={handlerOptions?.defaultText}
         onChange={e => (
           setKeyword(e.currentTarget.value),
           keywordRef.current = e.currentTarget.value
         )}
-        placeholder={handlerOptions?.placeholder}
       />
       <div className={`${prefix} results`}>
         {results.map((result, i) => <div
