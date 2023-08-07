@@ -56,7 +56,9 @@ export function TypescriptVersionStatus({
   const versionsSelectCommandHandler = useMemo(() => {
     let handler: QuickAccess.CommandHandler
     if (fetching) {
-      handler = () => []
+      handler = () => [
+        { id: 'fetching', title: 'Fetching...' }
+      ]
     } else {
       handler = keywords => suggestedVersions
         .concat(taggedVersions)
