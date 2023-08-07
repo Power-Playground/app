@@ -162,6 +162,15 @@ export const HistoryDialog = forwardRef<DialogRef, {
         document.addEventListener('keydown', handleKeyDown)
         return () => document.removeEventListener('keydown', handleKeyDown)
       }, [])
+
+      const [historyList, dispatch] = useCodeHistory()
+      const [selected, setSelected] = useState(0)
+      const history = useMemo(() => historyList[selected], [historyList, selected])
+      // TODO auto scroll
+      // TODO remove history item
+      // TODO configure max history length
+      // TODO save and load lang
+      // TODO set code history item name
       useEffect(() => {
         if (open) {
           const handleKeyUp = (e: KeyboardEvent) => {
@@ -183,20 +192,11 @@ export const HistoryDialog = forwardRef<DialogRef, {
           document.addEventListener('keyup', handleKeyUp)
           return () => document.removeEventListener('keyup', handleKeyUp)
         }
-      }, [open])
-
-      const [historyList, dispatch] = useCodeHistory()
-      const [selected, setSelected] = useState(0)
-      const history = useMemo(() => historyList[selected], [historyList, selected])
-      // TODO auto scroll
-      // TODO remove history item
-      // TODO configure max history length
-      // TODO save and load lang
-      // TODO set code history item name
+      }, [history, historyList.length, onChange, open])
       return createPortal(<dialog
-    className='history'
-    autoFocus
-    open={open}
+        className='history'
+        autoFocus
+        open={open}
         >
         <div className='dialog__container'>
           <div className='dialog__title'>
