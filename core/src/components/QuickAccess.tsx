@@ -1,6 +1,6 @@
 import './QuickAccess.scss'
 
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 class Feature<T> {
@@ -76,6 +76,10 @@ export namespace QuickAccess {
   & ((text?: string) => Awaitable<CommandHandlerResult[]>)
   & {
     defaultId?: string
+    options?: {
+      placeholder?: string
+      defaultText?: string
+    }
   }
 }
 
@@ -173,13 +177,15 @@ export function QuickAccess(props: QuickAccessProps) {
     const index = results.findIndex(({ id }) => id === quickAccess.activeCommandHandler?.defaultId)
     setActiveIndex(index === -1 ? 0 : index)
   }, [results, quickAccess.activeCommandHandler])
+  const handlerOptions = useMemo(() => quickAccess.activeCommandHandler?.options, [quickAccess.activeCommandHandler])
   useDocumentEventListener('keydown', useCallback(e => {
     if (e.key === 'ArrowUp') {
       setActiveIndex(i => {
         const next = i - 1
         return next < 0 ? results.length - 1 : next
       })
-    } else if (e.key === 'ArrowDown') {
+    }
+    if (e.key === 'ArrowDown') {
       setActiveIndex(i => {
         const next = i + 1
         return next >= results.length ? 0 : next
@@ -217,10 +223,12 @@ export function QuickAccess(props: QuickAccessProps) {
         className={`${prefix} search-box`}
         autoFocus
         value={keyword}
+        defaultValue={handlerOptions?.defaultText}
         onChange={e => (
           setKeyword(e.currentTarget.value),
           keywordRef.current = e.currentTarget.value
         )}
+        placeholder={handlerOptions?.placeholder}
       />
       <div className={`${prefix} results`}>
         {results.map((result, i) => <div

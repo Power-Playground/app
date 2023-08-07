@@ -63,6 +63,9 @@ export function TypescriptVersionStatus({
         .filter(({ title }) => !keywords || title.includes(keywords))
     }
     handler.defaultId = value
+    handler.options = {
+      placeholder: 'Select TypeScript Version'
+    }
     return handler
   }, [fetching, suggestedVersions, taggedVersions, value])
   useEffect(
