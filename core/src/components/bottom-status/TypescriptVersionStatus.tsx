@@ -93,6 +93,7 @@ export function TypescriptVersionStatus({
             : version)
         }
         if ('text' in result) {
+          // TODO resolve this case
           console.log('text', result)
         }
       } catch (e) {
