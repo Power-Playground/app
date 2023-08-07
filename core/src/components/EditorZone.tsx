@@ -11,6 +11,7 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
+import { copyToClipboard } from '../utils'
 
 import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
 import { HelpDialog } from './editor-zone/HelpDialog.tsx'
@@ -46,15 +47,6 @@ const extraModules = Object
 const compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
   moduleResolution: 2,
   declaration: true
-}
-
-function copyToClipboard(text: string) {
-  const input = document.createElement('input')
-  input.value = text
-  document.body.appendChild(input)
-  input.select()
-  document.execCommand('copy')
-  document.body.removeChild(input)
 }
 
 function addCommands(
