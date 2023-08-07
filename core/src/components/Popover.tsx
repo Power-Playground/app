@@ -3,13 +3,13 @@ import './Popover.scss'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Placement } from '@popperjs/core'
-import { createPopper } from '@popperjs/core/lib/popper-lite'
+import { createPopper } from '@popperjs/core'
 
 export interface PopoverProps {
   children: React.ReactNode
   content: React.ReactNode
 
-  trigger?: 'click' | 'hover'
+  trigger?: 'click' | 'hover' | 'always'
   placement?: Placement
   offset?: [number, number]
 
@@ -38,20 +38,27 @@ export function Popover(props: PopoverProps) {
 
   useEffect(() => {
     if (referenceElement && popperElement) {
-      popper.current = createPopper(referenceElement, popperElement, {
+      popper.current = createPopper(referenceElement, popperElement, { placement })
+      return () => popper.current?.destroy()
+    }
+  }, [referenceElement, popperElement, placement, offset])
+  useEffect(() => {
+    if (popper.current) {
+      popper.current.setOptions({
         placement,
         modifiers: [
-          {
-            name: 'offset',
-            options: { offset }
-          }
+          { name: 'offset', options: { offset } }
         ]
       })
     }
-    return () => popper.current?.destroy()
-  }, [referenceElement, popperElement, placement, offset])
+  }, [offset, placement])
 
   const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    if (trigger === 'always') {
+      setVisible(true)
+    }
+  }, [trigger])
   useEffect(() => {
     if (visible) {
       popper.current?.update()
