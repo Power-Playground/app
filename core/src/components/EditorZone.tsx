@@ -15,10 +15,11 @@ import type * as monacoEditor from 'monaco-editor'
 import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
 
-import { typescriptVersionMeta, useDistTags } from './editor.typescript.versions.ts'
+import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import type { CodeHistoryItem } from './EditorZone_CodeHistory.ts'
 import { useCodeHistory } from './EditorZone_CodeHistory.ts'
-import Switcher from './Switcher.tsx'
+import { Switcher } from './Switcher.tsx'
+import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
 
 const examples = {
   base: {
@@ -252,9 +253,7 @@ export default function EditorZone() {
   }
   const curFilePath = useMemo(() => `/index.${language}`, [language])
 
-  const [typescriptVersion, setTypescriptVersion] = useState<string>(
-    searchParams.get('ts') ?? typescriptVersionMeta.versions[0]
-  )
+  const [typescriptVersion, setTypescriptVersion] = useState<string>()
   function changeTypescriptVersion(ts: string) {
     setTypescriptVersion(ts)
     searchParams.set('ts', ts)
@@ -264,29 +263,6 @@ export default function EditorZone() {
     // TODO refactor no reload
     location.reload()
   }
-
-  const {
-    data, fetching, error
-  } = useDistTags()
-  const distTagsMemo = useMemo(() => {
-    return (error !== null && !!data) ? data : null
-  }, [data, error])
-  const distTagEnumMemo = useMemo(() => {
-    return distTagsMemo
-      ? Object.fromEntries(
-        Object.entries(distTagsMemo).flatMap(([key, value]) => [[key, value], [value, key]])
-      )
-      : typescriptVersionMeta.distTagEnum
-  }, [data])
-  const distCategoryMemo = useMemo(() => {
-    return distTagsMemo
-      ? Object.keys(distTagsMemo)
-      : typescriptVersionMeta.distCategory
-  }, [distTagsMemo])
-  const isNeedCheckFetching = useMemo(() => {
-    // 不在推荐的版本中，说明是 dist tags 模式
-    return typescriptVersionMeta.suggestedVersions.indexOf(typescriptVersion) === -1
-  }, [typescriptVersion])
 
   const hash = location.hash.slice(1)
   const [code, setCode] = useState<string>(hash ? decodeURIComponent(atob(hash)) : examples.base[language])
@@ -314,10 +290,16 @@ export default function EditorZone() {
         monaco.Uri.parse(filePath)
       )
     })
+
     console.group('monaco detail data')
     console.log('typescript.version', monaco.languages.typescript.typescriptVersion)
     console.log('typescript.CompilerOptions', monaco.languages.typescript.typescriptDefaults.getCompilerOptions())
     console.groupEnd()
+
+    monaco.editor.addKeybindingRule({
+      keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
+      command: 'editor.action.quickCommand'
+    })
     const dispose = Object.values(plugins)
       .reduce(
         (acc, plugin) => plugin.editor
@@ -331,7 +313,7 @@ export default function EditorZone() {
         if (model.uri.path !== curFilePath) model.dispose()
       })
     }
-  }, [language, monaco])
+  }, [curFilePath, language, monaco])
   const compileResultRef = useRef<monacoEditor.languages.typescript.EmitOutput>()
   useEffect(() => elBridgeP.on('compile', () => {
     if (!compileResultRef.current) return
@@ -339,11 +321,8 @@ export default function EditorZone() {
     elBridgeP.send('compile-completed', compileResultRef.current.outputFiles)
   }), [])
 
-  const realVersion = isNeedCheckFetching
-    ? distTagEnumMemo?.[typescriptVersion]
-    : typescriptVersion
-  loader.config({
-    paths: { vs: `https://typescript.azureedge.net/cdn/${realVersion}/monaco/min/vs` }
+  typescriptVersion && loader.config({
+    paths: { vs: `https://typescript.azureedge.net/cdn/${typescriptVersion}/monaco/min/vs` }
   })
   const [loadError, setLoadError] = useState<string>()
   useEffect(() => {
@@ -357,7 +336,7 @@ export default function EditorZone() {
     }
     window.addEventListener('error', onResourceLoadError, true)
     return () => window.removeEventListener('error', onResourceLoadError)
-  }, [])
+  }, [typescriptVersion])
 
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
@@ -373,6 +352,7 @@ export default function EditorZone() {
 
                 do {
                   await new Promise(re => setTimeout(re, 100))
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
                   el = ele?.querySelector<HTMLDivElement>(':scope > section > div')!
                 } while (el?.innerText === 'Loading...')
                 if (!el) return
@@ -496,43 +476,9 @@ export default function EditorZone() {
                     changeLanguage(checked ? 'js' : 'ts')
                   }}
         />
-        <select
-          value={typescriptVersion}
-          onChange={e => changeTypescriptVersion(e.target.value)}
-        >
-          <optgroup label={'Suggested versions'}>
-            {typescriptVersionMeta.suggestedVersions.map(version => {
-              const displayVersion = (version === '3.3.3333'
-                ? '3.3.3'
-                : version === '3.3.4000'
-                  ? '3.3.4'
-                  : version)
-                + (distTagEnumMemo[version] ? ` (${distTagEnumMemo[version]})` : '')
-              return <option key={version} value={version} title={displayVersion}>{
-                displayVersion.length > 15
-                  ? displayVersion.slice(0, 12) + '...'
-                  : displayVersion
-              }</option>
-            })}
-          </optgroup>
-          <option value='' disabled>——————————</option>
-          <optgroup label={'Other versions'}>
-            {distCategoryMemo
-              .map(version => (
-                <option key={version}
-                        value={version}
-                        title={`${version} (${distTagEnumMemo[version]})`}
-                >{
-                  version.length > 15
-                    ? version.slice(0, 12) + '...'
-                    : version
-                }</option>
-              ))}
-          </optgroup>
-        </select>
       </div>
     </div>
-    {isNeedCheckFetching && fetching
+    {typescriptVersion
       ? <div className='fetching'>Fetching...</div>
       : <Editor
         key={typescriptVersion}
@@ -596,5 +542,11 @@ export default function EditorZone() {
           addCommands(editor, monaco, code => codeHistoryDispatch({ type: 'add', code }))
         }}
       />}
+    <div className='monaco-editor bottom-status'>
+      <TypescriptVersionStatus
+        value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
+        onChange={changeTypescriptVersion}
+      />
+    </div>
   </div>
 }

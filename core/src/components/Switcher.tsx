@@ -10,7 +10,7 @@ export interface SwitcherProps {
   rText?: ReactNode
 }
 
-export default function Switcher(props: SwitcherProps) {
+export function Switcher(props: SwitcherProps) {
   const { value, onChange } = props
   const widthCacheRef = useRef<[number?, number?]>([])
   const [cardWidth, setCardWidth] = useState(0)

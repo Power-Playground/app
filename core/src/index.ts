@@ -7,5 +7,6 @@ export declare function Playground(props: PlaygroundProps): React.ReactNode
 
 export {
   default as EditorZone
-} from './components/EditorZone.tsx'
-export * from './eval-logs/bridge.ts'
+} from './components/EditorZone'
+export * from './components/QuickAccess'
+export * from './eval-logs/bridge'

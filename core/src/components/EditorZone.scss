@@ -129,6 +129,8 @@ dialog {
 }
 
 div.editor-zone {
+  display: flex;
+  flex-direction: column;
   position: relative;
   max-width: 70vw;
   > div.menu {
@@ -185,21 +187,35 @@ div.editor-zone {
       }
     }
   }
+  > section, > div.fetching { flex-grow: 1; }
   > section > div {
     width: 720px !important;
     min-width: 720px !important;
     max-width: 100%;
-    height: calc(100% - 53px) !important;
     &::after {
       content: '';
       position: absolute;
-      top: -53px;
+      top: 0;
       right: 0;
       width: 4px;
       height: 100%;
       background-color: var(--primary);
       cursor: ew-resize;
       transition: .3s;
+    }
+  }
+  > .bottom-status {
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+    height: 20px;
+    background-color: color-mix(in srgb, var(--primary) 50%, var(--bg-cr));
+    > * {
+      padding: 0 10px;
+      transition: .1s;
+      &:hover {
+        background-color: color-mix(in srgb, var(--primary) 70%, var(--bg-cr));
+      }
     }
   }
 }
