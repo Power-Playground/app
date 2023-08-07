@@ -19,15 +19,11 @@ import { HistoryDialog } from './editor-zone/HistoryDialog.tsx'
 import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import { useCodeHistory } from './EditorZone_CodeHistory.ts'
+import { Popover } from './Popover.tsx'
 import { Resizable } from './Resizable.tsx'
 import { Switcher } from './Switcher.tsx'
 
-const examples = {
-  base: {
-    js: 'console.log("Hello world!")',
-    ts: 'console.log("Hello world!")'
-  }
-}
+const isMacOS = navigator.platform.startsWith('Mac')
 
 // TODO support filter plugins
 const plugins = import.meta.glob('../plugins/*/index.ts*', {
@@ -94,9 +90,10 @@ export default function EditorZone() {
   }
 
   const hash = location.hash.slice(1)
-  const [code, setCode] = useState<string>(hash ? decodeURIComponent(atob(hash)) : examples.base[language])
-
-  const [exampleName, setExampleName] = useState<string>(!hash ? 'base' : '')
+  const [code, setCode] = useState<string>(hash
+    ? decodeURIComponent(atob(hash))
+    : 'console.log("Hello world!")'
+  )
 
   const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor>(null)
 
@@ -230,58 +227,32 @@ export default function EditorZone() {
     <Resizable
       className='editor-zone'
       style={{
-        minWidth: 'var(--editor-min-width, 400px)'
+        minWidth: 'var(--editor-min-width, 50%)'
       }}
       resizable={{ right: true }}
       >
       <div className='menu'>
-        <div className='btns'>
-          <button className='excute' onClick={() => elBridgeP.send('run')}>
-            Execute
-          </button>
-          <button className='history' onClick={() => historyDialogRef.current?.open()}>
-            History
-          </button>
-          <button className='help' onClick={() => helpDialogRef.current?.open()}>
-            Help
-          </button>
+        <div className='btns' style={{ visibility: 'hidden' }}>
         </div>
         <div className='opts'>
-          <select
-            value={exampleName}
-            onChange={e => {
-              const value = e.target.value
-              // @ts-ignore
-              const example = examples[value]?.[language]
-              if (!example) {
-                alert('示例暂未添加')
-                e.target.value = exampleName
-                return
-              }
-              setCode(example)
-              setExampleName(value)
-            }}>
-            <option value='base'>基本示例</option>
-            <option value='await.opts'>控制流</option>
-            <option value='middleware'>中间件</option>
-            <option value='Make number awaitabler'>数字也可以！</option>
-            <option value='Make `await <number>` abortable'>终止对数字的等待</option>
-          </select>
+          <Popover
+            placement='bottom'
+            content={<>
+              Execute(<code>
+                {isMacOS ? '⌘' : 'Ctrl'}
+              </code> + <code>E</code>)
+            </>}
+            offset={[0, 6]}
+          >
+            <button className='excute'
+                    onClick={() => elBridgeP.send('run')}>
+              <div className='cldr codicon codicon-play' />
+            </button>
+          </Popover>
           <Switcher lText={tsIcon}
                     rText={jsIcon}
                     value={language === 'js'}
-                    onChange={checked => {
-                      if (!hash) {
-                        // @ts-ignore
-                        const example = examples[exampleName]?.[checked ? 'js' : 'ts']
-                        if (!example) {
-                          alert('示例暂未添加')
-                          return
-                        }
-                        setCode(example)
-                      }
-                      changeLanguage(checked ? 'js' : 'ts')
-                    }}
+                    onChange={checked => changeLanguage(checked ? 'js' : 'ts')}
           />
         </div>
       </div>
@@ -332,19 +303,45 @@ export default function EditorZone() {
           }}
         />}
       <div className='monaco-editor bottom-status'>
+        <Popover
+          style={{ cursor: 'pointer' }}
+          offset={[0, 3]}
+          content={<>
+            Find Help(<code>
+              {isMacOS ? '^' : 'Ctrl'}
+            </code> + <code>/</code>)
+          </>}
+          onClick={() => helpDialogRef.current?.open()}
+        >
+          <div className='cldr codicon codicon-info' />
+        </Popover>
+        <Popover
+          style={{ cursor: 'pointer' }}
+          offset={[0, 3]}
+          content={<>
+            Show History(<code>
+              {isMacOS ? '⌘' : 'Ctrl'}
+            </code> + <code>H</code>)
+          </>}
+          onClick={() => historyDialogRef.current?.open()}
+        >
+          <div className='cldr codicon codicon-history' />
+        </Popover>
         <TypescriptVersionStatus
           value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
           onChange={changeTypescriptVersion}
         />
-        <div className='line-and-column'
-             onClick={() => {
-               if (!editorRef.current) return
-               editorRef.current.focus()
-               editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
-             }}
+        <Popover style={{ cursor: 'pointer' }}
+                 offset={[0, 3]}
+                 content='Go to Line and Column'
+                 onClick={() => {
+                   if (!editorRef.current) return
+                   editorRef.current.focus()
+                   editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
+                 }}
         >
-          {line}:{column}
-        </div>
+          <div className='line-and-column'>{line}:{column}</div>
+        </Popover>
       </div>
     </Resizable>
   </>
