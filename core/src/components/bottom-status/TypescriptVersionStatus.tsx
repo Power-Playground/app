@@ -75,9 +75,9 @@ export function TypescriptVersionStatus({
     [quickAccess, versionsSelectCommandHandler]
   )
   return <Popover
-    content={`TypeScript@${
-      distTagEnumMemo[value] ?? value
-    }`}
+    content={<>
+      Monaco Editor is using TypeScript@{distTagEnumMemo[value] ?? value} as language service.(Click to change version)
+    </>}
     style={{
       cursor: 'pointer',
       userSelect: 'none'
