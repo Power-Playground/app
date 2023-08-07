@@ -1,0 +1,59 @@
+.ppd-resizable {
+  --inner-border-width: var(--border-width, 5px);
+
+  position: relative;
+  border: 0 solid black;
+  &.ppd-resizable__left {
+    border-left-width: var(--inner-border-width);
+  }
+  &.ppd-resizable__right {
+    border-right-width: var(--inner-border-width);
+  }
+  &.ppd-resizable__top {
+    border-top-width: var(--inner-border-width);
+  }
+  &.ppd-resizable__bottom {
+    border-bottom-width: var(--inner-border-width);
+  }
+  &-border {
+    position: absolute;
+    background-color: #999;
+    transition: .1s;
+    &__left, &__right {
+      top: 0;
+      width: var(--inner-border-width);
+      height: 100%;
+      cursor: ew-resize;
+      &:hover {
+        width: calc(var(--inner-border-width) * 1.6);
+        transform: translateX(calc(0.3 * var(--inner-border-width)));
+      }
+    }
+    &__top, &__bottom {
+      left: 0;
+      width: 100%;
+      height: var(--inner-border-width);
+      cursor: ns-resize;
+      &:hover {
+        height: calc(var(--inner-border-width) * 1.6);
+        transform: translateY(calc(0.3 * var(--inner-border-width)));
+      }
+    }
+    &__left {
+      left: calc(-1 * var(--inner-border-width));
+    }
+    &__right {
+      right: calc(-1 * var(--inner-border-width));
+    }
+    &__top {
+      top: calc(-1 * var(--inner-border-width));
+    }
+    &__bottom {
+      bottom: calc(-1 * var(--inner-border-width));
+    }
+    &:hover {
+      z-index: 10;
+      background-color: #777;
+    }
+  }
+}

@@ -19,6 +19,7 @@ import { HistoryDialog } from './editor-zone/HistoryDialog.tsx'
 import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import { useCodeHistory } from './EditorZone_CodeHistory.ts'
+import { Resizable } from './Resizable.tsx'
 import { Switcher } from './Switcher.tsx'
 
 const examples = {
@@ -27,9 +28,6 @@ const examples = {
     ts: 'console.log("Hello world!")'
   }
 }
-
-const BORDER_SIZE = 5
-const DOUBLE_CLICK_WIDTH = '500px'
 
 // TODO support filter plugins
 const plugins = import.meta.glob('../plugins/*/index.ts*', {
@@ -101,7 +99,6 @@ export default function EditorZone() {
   const [exampleName, setExampleName] = useState<string>(!hash ? 'base' : '')
 
   const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor>(null)
-  const effectFuncs = useRef<Function[]>([])
 
   const monaco = useMonaco()
   useEffect(() => {
@@ -177,224 +174,178 @@ export default function EditorZone() {
 
   const [, codeHistoryDispatch] = useCodeHistory()
 
+  const tsIcon = <div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }}>
+    <span style={{
+      position: 'absolute',
+      right: 1,
+      bottom: -2,
+      transform: 'scale(0.6)',
+      fontWeight: 'blob'
+    }}>TS</span>
+  </div>
+  const jsIcon = <div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#f2d949' }}>
+    <span style={{
+      position: 'absolute',
+      right: 1,
+      bottom: -2,
+      transform: 'scale(0.6)',
+      fontWeight: 'blob',
+      color: 'black'
+    }}>JS</span>
+  </div>
+  const loadingNode = <section style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column'
+  }}>
+    <div style={{
+      position: 'relative',
+      width: 72,
+      height: 72,
+      backgroundColor: '#4272ba',
+      userSelect: 'none'
+    }}>
+      <span style={{
+        position: 'absolute',
+        right: 5,
+        bottom: -2,
+        fontSize: 30,
+        fontWeight: 'blob'
+      }}>TS</span>
+    </div>
+    {loadError
+      ? <span>{loadError}</span>
+      : <span>Downloading TypeScript{typescriptVersion && <>@<code>{typescriptVersion}</code></>} ...</span>}
+  </section>
+
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
-  return <div className='editor-zone'
-              ref={async ele => {
-                // wait monaco editor mount
-                let el: HTMLDivElement
-
-                do {
-                  await new Promise(re => setTimeout(re, 100))
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-                  el = ele?.querySelector<HTMLDivElement>(':scope > section > div')!
-                } while (el?.innerText === 'Loading...')
-                if (!el) return
-
-                let mPos: number
-                let isClick = false
-
-                function resize(e: MouseEvent) {
-                  const dx = e.x - mPos
-                  const newWidth = (parseInt(getComputedStyle(el, '').width) + dx)
-
-                  mPos = e.x
-                  // set width with !important
-                  el.style.setProperty('width', newWidth + 'px', 'important')
-                  el.style.minWidth = '5px'
-                }
-                function elMouseDown(e: MouseEvent) {
-                  if (e.offsetX > el.offsetWidth - BORDER_SIZE) {
-                    mPos = e.x
-                    if (!isClick) {
-                      isClick = true
-                      setTimeout(() => isClick = false, 1000)
-                    } else {
-                      el.style.width = DOUBLE_CLICK_WIDTH
-                    }
-                    document.querySelectorAll('iframe').forEach(e => {
-                      e.style.pointerEvents = 'none'
-                    })
-                    document.addEventListener('mousemove', resize, false)
-                    el.style.userSelect = 'none'
-                  }
-                }
-                function onGlobalMouseUp() {
-                  el.style.userSelect = 'auto'
-                  document.removeEventListener('mousemove', resize, false)
-                  document.querySelectorAll('iframe').forEach(e => {
-                    e.style.pointerEvents = 'auto'
-                  })
-                }
-
-                effectFuncs.current.forEach(func => func())
-                effectFuncs.current = []
-                el.addEventListener('mousedown', elMouseDown, false)
-                document.addEventListener('mouseup', onGlobalMouseUp)
-                // 使用 ref + el 的方式会在热载（或其他组件重载的情况下）后产生副作用未被收集的问题
-                // 在这里我们可以注册一个副作用数组，在每次卸载的时候将副作用清理一遍
-                effectFuncs.current.push(() => {
-                  el.removeEventListener('mousedown', elMouseDown)
-                  document.removeEventListener('mouseup', onGlobalMouseUp)
-                })
-              }}>
+  return <>
     <HelpDialog ref={helpDialogRef} />
     <HistoryDialog
       theme={theme}
       ref={historyDialogRef}
       onChange={ch => setCode(ch.code)}
     />
-    <div className='menu'>
-      <div className='btns'>
-        <button className='excute' onClick={() => elBridgeP.send('run')}>
-          Execute
-        </button>
-        <button className='history' onClick={() => historyDialogRef.current?.open()}>
-          History
-        </button>
-        <button className='help' onClick={() => helpDialogRef.current?.open()}>
-          Help
-        </button>
-      </div>
-      <div className='opts'>
-        <select
-          value={exampleName}
-          onChange={e => {
-            const value = e.target.value
-            // @ts-ignore
-            const example = examples[value]?.[language]
-            if (!example) {
-              alert('示例暂未添加')
-              e.target.value = exampleName
-              return
-            }
-            setCode(example)
-            setExampleName(value)
-          }}>
-          <option value='base'>基本示例</option>
-          <option value='await.opts'>控制流</option>
-          <option value='middleware'>中间件</option>
-          <option value='Make number awaitabler'>数字也可以！</option>
-          <option value='Make `await <number>` abortable'>终止对数字的等待</option>
-        </select>
-        <Switcher lText={<div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }}>
-          <span style={{
-                      position: 'absolute',
-                      right: 1,
-                      bottom: -2,
-                      transform: 'scale(0.6)',
-                      fontWeight: 'blob'
-                    }}>TS</span>
-        </div>}
-                  rText={<div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#f2d949' }}>
-                    <span style={{
-                      position: 'absolute',
-                      right: 1,
-                      bottom: -2,
-                      transform: 'scale(0.6)',
-                      fontWeight: 'blob',
-                      color: 'black'
-                    }}>JS</span>
-                  </div>}
-                  value={language === 'js'}
-                  onChange={checked => {
-                    if (!hash) {
-                      // @ts-ignore
-                      const example = examples[exampleName]?.[checked ? 'js' : 'ts']
-                      if (!example) {
-                        alert('示例暂未添加')
-                        return
-                      }
-                      setCode(example)
-                    }
-                    changeLanguage(checked ? 'js' : 'ts')
-                  }}
-        />
-      </div>
-    </div>
-    {typescriptVersion
-      ? <div className='fetching'>Fetching...</div>
-      : <Editor
-        key={typescriptVersion}
-        language={{
-          js: 'javascript',
-          ts: 'typescript'
-        }[language]}
-        options={{
-          automaticLayout: true,
-          scrollbar: {
-            vertical: 'hidden',
-            verticalSliderSize: 0,
-            verticalScrollbarSize: 0
-          }
-        }}
-        theme={theme === 'light' ? 'vs' : 'vs-dark'}
-        loading={<div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column'
-        }}>
-          <div style={{
-            position: 'relative',
-            width: 72,
-            height: 72,
-            backgroundColor: '#4272ba',
-            userSelect: 'none'
-          }}>
-            <span style={{
-              position: 'absolute',
-              right: 5,
-              bottom: -2,
-              fontSize: 30,
-              fontWeight: 'blob'
-            }}>TS</span>
-          </div>
-          {loadError
-            ? <span>{loadError}</span>
-            : <span>Downloading TypeScript@<code>{typescriptVersion}</code> ...</span>}
-        </div>}
-        path={`file://${curFilePath}`}
-        value={code}
-        onChange={code => setCode(code ?? '')}
-        onMount={(editor, monaco) => {
-          // @ts-ignore
-          editorRef.current = editor
-          editor.onDidChangeModelContent(function compile() {
-            const model = editor.getModel()
-            if (model) {
-              monaco?.languages.typescript.getTypeScriptWorker()
-                .then(worker => worker(model.uri))
-                .then(client => client.getEmitOutput(model.uri.toString()))
-                .then(result => {
-                  compileResultRef.current = result
-                  elBridgeP.send('compile-completed', result.outputFiles)
-                })
-            }
-            return compile
-          }())
-          const updateLineAndColumn = () => {
-            const pos = editor.getPosition()
-            if (pos) setLineAndColumn([pos.lineNumber, pos.column])
-          }
-          editor.onDidChangeCursorPosition(updateLineAndColumn)
-          updateLineAndColumn()
-          addCommands(editor, monaco, code => codeHistoryDispatch({ type: 'add', code }))
-        }}
-      />}
-    <div className='monaco-editor bottom-status'>
-      <TypescriptVersionStatus
-        value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
-        onChange={changeTypescriptVersion}
-      />
-      <div className='line-and-column'
-           onClick={() => {
-             if (!editorRef.current) return
-             editorRef.current.focus()
-             editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
-           }}
+    <Resizable
+      className='editor-zone'
+      style={{
+        minWidth: 'var(--editor-min-width, 400px)'
+      }}
+      resizable={{ right: true }}
       >
-        {line}:{column}
+      <div className='menu'>
+        <div className='btns'>
+          <button className='excute' onClick={() => elBridgeP.send('run')}>
+            Execute
+          </button>
+          <button className='history' onClick={() => historyDialogRef.current?.open()}>
+            History
+          </button>
+          <button className='help' onClick={() => helpDialogRef.current?.open()}>
+            Help
+          </button>
+        </div>
+        <div className='opts'>
+          <select
+            value={exampleName}
+            onChange={e => {
+              const value = e.target.value
+              // @ts-ignore
+              const example = examples[value]?.[language]
+              if (!example) {
+                alert('示例暂未添加')
+                e.target.value = exampleName
+                return
+              }
+              setCode(example)
+              setExampleName(value)
+            }}>
+            <option value='base'>基本示例</option>
+            <option value='await.opts'>控制流</option>
+            <option value='middleware'>中间件</option>
+            <option value='Make number awaitabler'>数字也可以！</option>
+            <option value='Make `await <number>` abortable'>终止对数字的等待</option>
+          </select>
+          <Switcher lText={tsIcon}
+                    rText={jsIcon}
+                    value={language === 'js'}
+                    onChange={checked => {
+                      if (!hash) {
+                        // @ts-ignore
+                        const example = examples[exampleName]?.[checked ? 'js' : 'ts']
+                        if (!example) {
+                          alert('示例暂未添加')
+                          return
+                        }
+                        setCode(example)
+                      }
+                      changeLanguage(checked ? 'js' : 'ts')
+                    }}
+          />
+        </div>
       </div>
-    </div>
-  </div>
+      {typescriptVersion
+        ? loadingNode
+        : <Editor
+          key={typescriptVersion}
+          language={{
+            js: 'javascript',
+            ts: 'typescript'
+          }[language]}
+          options={{
+            automaticLayout: true,
+            scrollbar: {
+              vertical: 'hidden',
+              verticalSliderSize: 0,
+              verticalScrollbarSize: 0
+            }
+          }}
+          theme={theme === 'light' ? 'vs' : 'vs-dark'}
+          loading={loadingNode}
+          path={`file://${curFilePath}`}
+          value={code}
+          onChange={code => setCode(code ?? '')}
+          onMount={(editor, monaco) => {
+            // @ts-ignore
+            editorRef.current = editor
+            editor.onDidChangeModelContent(function compile() {
+              const model = editor.getModel()
+              if (model) {
+                monaco?.languages.typescript.getTypeScriptWorker()
+                  .then(worker => worker(model.uri))
+                  .then(client => client.getEmitOutput(model.uri.toString()))
+                  .then(result => {
+                    compileResultRef.current = result
+                    elBridgeP.send('compile-completed', result.outputFiles)
+                  })
+              }
+              return compile
+            }())
+            const updateLineAndColumn = () => {
+              const pos = editor.getPosition()
+              if (pos) setLineAndColumn([pos.lineNumber, pos.column])
+            }
+            editor.onDidChangeCursorPosition(updateLineAndColumn)
+            updateLineAndColumn()
+            addCommands(editor, monaco, code => codeHistoryDispatch({ type: 'add', code }))
+          }}
+        />}
+      <div className='monaco-editor bottom-status'>
+        <TypescriptVersionStatus
+          value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
+          onChange={changeTypescriptVersion}
+        />
+        <div className='line-and-column'
+             onClick={() => {
+               if (!editorRef.current) return
+               editorRef.current.focus()
+               editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
+             }}
+        >
+          {line}:{column}
+        </div>
+      </div>
+    </Resizable>
+  </>
 }
