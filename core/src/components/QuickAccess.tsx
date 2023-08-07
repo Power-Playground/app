@@ -166,6 +166,9 @@ const prefix = 'ppd-quick-access'
 
 export function QuickAccess(props: QuickAccessProps) {
   const { selector } = props
+
+  const focusItemsRef = useRef<(HTMLDivElement | null)[]>([])
+
   const [keyword, setKeyword] = useState('')
   const keywordRef = useRef(keyword)
 
@@ -173,25 +176,59 @@ export function QuickAccess(props: QuickAccessProps) {
 
   const results = useActiveHandlerResults(keyword)
   const [activeIndex, setActiveIndex] = useState(0)
+  const changeActiveIndex = useCallback<typeof setActiveIndex>((arg0) => {
+    function scrollIntoViewIfNeeded(el: HTMLElement) {
+      if (!el) return
+
+      const rect = el.getBoundingClientRect()
+      const { top, bottom } = rect
+      const parent = el.parentElement!
+      const { top: parentTop, bottom: parentBottom } = parent.getBoundingClientRect()
+      if (top < parentTop) {
+        el.scrollIntoView({
+          block: 'start',
+          inline: 'nearest',
+          behavior: 'smooth'
+        })
+      } else if (bottom > parentBottom) {
+        el.scrollIntoView({
+          block: 'end',
+          inline: 'nearest',
+          behavior: 'smooth'
+        })
+      }
+    }
+    if (typeof arg0 === 'function') {
+      setActiveIndex(i => {
+        const index = arg0(i)
+        scrollIntoViewIfNeeded(focusItemsRef.current[index]!)
+        return index
+      })
+    } else {
+      setActiveIndex(arg0)
+      scrollIntoViewIfNeeded(focusItemsRef.current[arg0]!)
+    }
+
+  }, [])
   useEffect(() => {
     const index = results.findIndex(({ id }) => id === quickAccess.activeCommandHandler?.defaultId)
-    setActiveIndex(index === -1 ? 0 : index)
-  }, [results, quickAccess.activeCommandHandler])
+    changeActiveIndex(index === -1 ? 0 : index)
+  }, [results, quickAccess.activeCommandHandler, changeActiveIndex])
   const handlerOptions = useMemo(() => quickAccess.activeCommandHandler?.options, [quickAccess.activeCommandHandler])
   useDocumentEventListener('keydown', useCallback(e => {
     if (e.key === 'ArrowUp') {
-      setActiveIndex(i => {
+      changeActiveIndex(i => {
         const next = i - 1
         return next < 0 ? results.length - 1 : next
       })
     }
     if (e.key === 'ArrowDown') {
-      setActiveIndex(i => {
+      changeActiveIndex(i => {
         const next = i + 1
         return next >= results.length ? 0 : next
       })
     }
-  }, [results]))
+  }, [changeActiveIndex, results]))
   useDocumentEventListener('keydown', useCallback(e => {
     if (e.key === 'Escape') {
       quickAccess.asyncFeature.fail(new Error('canceled'))
@@ -232,6 +269,7 @@ export function QuickAccess(props: QuickAccessProps) {
       />
       <div className={`${prefix} results`}>
         {results.map((result, i) => <div
+          ref={el => focusItemsRef.current[i] = el}
           key={result.id}
           className={
             `${prefix} result-item`
