@@ -15,11 +15,11 @@ import type * as monacoEditor from 'monaco-editor'
 import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
 
+import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import type { CodeHistoryItem } from './EditorZone_CodeHistory.ts'
 import { useCodeHistory } from './EditorZone_CodeHistory.ts'
 import { Switcher } from './Switcher.tsx'
-import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
 
 const examples = {
   base: {
