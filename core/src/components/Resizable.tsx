@@ -72,55 +72,41 @@ function mountResize(
     mPos = e[field0]
     ele.style[field1] = newVal + 'px'
   }
-  const registerResizeFuncs = [] as Function[]
+  const registerResizeFuncs = [] as ((e: MouseEvent) => void)[]
   function elMouseDown(e: MouseEvent) {
     const target = e.target as HTMLDivElement
-    if (
+    const [leftOrRight, topOrBottom] = [
       target?.classList?.contains(
         `${prefix}-border__left`
       ) ||
       target?.classList?.contains(
         `${prefix}-border__right`
-      )
-    ) {
-      mPos = e.pageX
-      if (!isClick) {
-        isClick = true
-        setTimeout(() => isClick = false, 1000)
-      } else {
-        ele.style.width = gets.MIN_WIDTH
-      }
-      document
-        .querySelectorAll('iframe')
-        .forEach(e => e.style.pointerEvents = 'none')
-      const _resize = resize.bind(null, false)
-      registerResizeFuncs.push(_resize)
-      document.addEventListener('mousemove', _resize, false)
-      ele.style.userSelect = 'none'
-    }
-    if (
+      ),
       target?.classList?.contains(
         `${prefix}-border__top`
       ) ||
       target?.classList?.contains(
         `${prefix}-border__bottom`
       )
-    ) {
-      mPos = e.pageY
-      if (!isClick) {
-        isClick = true
-        setTimeout(() => isClick = false, 1000)
-      } else {
-        ele.style.height = gets.MIN_HEIGHT
-      }
-      document
-        .querySelectorAll('iframe')
-        .forEach(e => e.style.pointerEvents = 'none')
-      const _resize = resize.bind(null, true)
-      registerResizeFuncs.push(_resize)
-      document.addEventListener('mousemove', _resize, false)
-      ele.style.userSelect = 'none'
+    ]
+    if (!leftOrRight && !topOrBottom) return
+
+    mPos = leftOrRight ? e.pageX : e.pageY
+
+    if (!isClick) {
+      isClick = true
+      setTimeout(() => isClick = false, 1000)
+    } else {
+      if (leftOrRight) ele.style.width = gets.MIN_WIDTH
+      if (topOrBottom) ele.style.height = gets.MIN_HEIGHT
     }
+    document
+      .querySelectorAll('iframe')
+      .forEach(e => e.style.pointerEvents = 'none')
+    const _resize = resize.bind(null, topOrBottom)
+    registerResizeFuncs.push(_resize)
+    document.addEventListener('mousemove', _resize, false)
+    ele.style.userSelect = 'none'
   }
   function onGlobalMouseUp() {
     registerResizeFuncs
