@@ -204,7 +204,6 @@ export function QuickAccess(props: QuickAccessProps) {
   useLayoutEffect(() => quickAccess.onActiveCommandChange(() => {
     setVisible(true)
 
-    console.log(document.activeElement)
     setTimeout(() => inputRef.current?.focus(), 100)
   }), [quickAccess])
   return createPortal(
