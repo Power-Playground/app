@@ -1,13 +1,10 @@
 import './EditorZone.scss'
 
 import {
-  forwardRef,
   useEffect,
-  useImperativeHandle,
   useMemo,
   useRef,
   useState } from 'react'
-import { createPortal } from 'react-dom'
 import loader from '@monaco-editor/loader'
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
@@ -16,8 +13,10 @@ import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
 
 import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
+import { HelpDialog } from './editor-zone/HelpDialog.tsx'
+import { HistoryDialog } from './editor-zone/HistoryDialog.tsx'
+import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
-import type { CodeHistoryItem } from './EditorZone_CodeHistory.ts'
 import { useCodeHistory } from './EditorZone_CodeHistory.ts'
 import { Switcher } from './Switcher.tsx'
 
@@ -79,166 +78,6 @@ function addCommands(
   })
   editor.focus()
 }
-
-interface DialogRef {
-  open: () => void
-  hide: () => void
-}
-
-export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
-  const [open, setOpen] = useState(false)
-  useImperativeHandle(ref, () => ({
-    open: () => setOpen(true),
-    hide: () => setOpen(false)
-  }), [])
-
-  const isMac = navigator.platform.includes('Mac')
-  const cmdOrCtrl = isMac ? '⌘' : 'Ctrl'
-  const ctrl = isMac ? '⌃' : 'Ctrl'
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/' && (e.metaKey || e.ctrlKey)) {
-        setOpen(true)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
-  useEffect(() => {
-    if (open) {
-      const handleKeyUp = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') setOpen(false)
-      }
-      document.addEventListener('keyup', handleKeyUp)
-      return () => document.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [open])
-  return createPortal(<dialog
-    className='help'
-    autoFocus
-    open={open}
-    >
-    <div className='dialog__container'>
-      <div className='dialog__title'>
-        <h1>帮助</h1>
-        <button className='dialog__close' onClick={() => setOpen(false)}>×</button>
-      </div>
-      <div className='dialog__content'>
-        <h2>快捷键</h2>
-        <ul>
-          <li><code>{cmdOrCtrl} + S</code>: 保存并复制链接</li>
-          <li><code>{cmdOrCtrl} + E</code>: 执行代码</li>
-          <li><code>{cmdOrCtrl} + H</code>: 历史代码（{cmdOrCtrl} + S 保存下来的代码）</li>
-          <li><code>{ctrl} + /</code>: 查看帮助</li>
-        </ul>
-        <h2>支持的语言</h2>
-        <ul>
-          <li><code>JavaScript</code></li>
-          <li><code>TypeScript</code></li>
-        </ul>
-      </div>
-    </div>
-  </dialog>, document.body, 'help-dialog')
-})
-
-export const HistoryDialog = forwardRef<DialogRef, {
-  theme: string
-  onChange?: (codeHistory: CodeHistoryItem) => void
-    }>(function HistoryDialog({ theme, onChange }, ref) {
-      const [open, setOpen] = useState(false)
-      useImperativeHandle(ref, () => ({
-        open: () => setOpen(true),
-        hide: () => setOpen(false)
-      }), [])
-
-      useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-          // cmd/ctrl + h
-          if (e.key === 'h' && (e.metaKey || e.ctrlKey)) {
-            setOpen(true)
-          }
-        }
-        document.addEventListener('keydown', handleKeyDown)
-        return () => document.removeEventListener('keydown', handleKeyDown)
-      }, [])
-
-      const [historyList, dispatch] = useCodeHistory()
-      const [selected, setSelected] = useState(0)
-      const history = useMemo(() => historyList[selected], [historyList, selected])
-      // TODO auto scroll
-      // TODO remove history item
-      // TODO configure max history length
-      // TODO save and load lang
-      // TODO set code history item name
-      useEffect(() => {
-        if (open) {
-          const handleKeyUp = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') setOpen(false)
-            // up
-            if (e.key === 'ArrowUp') {
-              setSelected(selected => (selected + historyList.length - 1) % historyList.length)
-            }
-            // down
-            if (e.key === 'ArrowDown') {
-              setSelected(selected => (selected + 1) % historyList.length)
-            }
-            // enter
-            if (e.key === 'Enter') {
-              onChange?.(history)
-              setOpen(false)
-            }
-          }
-          document.addEventListener('keyup', handleKeyUp)
-          return () => document.removeEventListener('keyup', handleKeyUp)
-        }
-      }, [history, historyList.length, onChange, open])
-      return createPortal(<dialog
-        className='history'
-        autoFocus
-        open={open}
-        >
-        <div className='dialog__container'>
-          <div className='dialog__title'>
-            <h5>
-              历史记录
-            </h5>
-            <span><code>↑/↓</code>(选择)</span>
-            <span><code>Enter</code>(确认)</span>
-            <button className='dialog__close' onClick={() => setOpen(false)}>×</button>
-          </div>
-          {open && <div className='dialog__content'>
-            <div className='history__list'>
-              {historyList.map((item, index) => (
-                <div
-              key={item.time}
-              className={'history__item'
-                + (index === selected ? ' history__item--selected' : '')}
-              onClick={() => setSelected(index)}
-            >
-                  <pre className='history__item__code'>{item.code}</pre>
-                  <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
-                </div>
-          ))}
-            </div>
-            <div className='preview'>
-              <Editor
-            height='100%'
-            width='100%'
-            theme={theme === 'light' ? 'vs' : 'vs-dark'}
-            language='javascript'
-            value={history?.code ?? ''}
-            options={{
-              readOnly: true,
-              minimap: { enabled: false },
-              scrollbar: { vertical: 'hidden' }
-            }}
-          />
-            </div>
-          </div>}
-        </div>
-      </dialog>, document.body, 'history-dialog')
-    })
 
 export default function EditorZone() {
   const searchParams = new URLSearchParams(location.search)
