@@ -345,6 +345,8 @@ export default function EditorZone() {
   const historyDialogRef = useRef<DialogRef>(null)
 
   const [, codeHistoryDispatch] = useCodeHistory()
+
+  const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
   return <div className='editor-zone'
               ref={async ele => {
                 // wait monaco editor mount
@@ -539,6 +541,12 @@ export default function EditorZone() {
             }
             return compile
           }())
+          const updateLineAndColumn = () => {
+            const pos = editor.getPosition()
+            if (pos) setLineAndColumn([pos.lineNumber, pos.column])
+          }
+          editor.onDidChangeCursorPosition(updateLineAndColumn)
+          updateLineAndColumn()
           addCommands(editor, monaco, code => codeHistoryDispatch({ type: 'add', code }))
         }}
       />}
@@ -547,6 +555,15 @@ export default function EditorZone() {
         value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
         onChange={changeTypescriptVersion}
       />
+      <div className='line-and-column'
+           onClick={() => {
+             if (!editorRef.current) return
+             editorRef.current.focus()
+             editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
+           }}
+      >
+        {line}:{column}
+      </div>
     </div>
   </div>
 }

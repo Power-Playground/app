@@ -217,5 +217,9 @@ div.editor-zone {
         background-color: color-mix(in srgb, var(--primary) 70%, var(--bg-cr));
       }
     }
+    > .line-and-column {
+      user-select: none;
+      cursor: pointer;
+    }
   }
 }
