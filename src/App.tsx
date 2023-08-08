@@ -41,6 +41,10 @@ export function App() {
           <QuickAccess />
           <EditorZone
             resizable={resizable}
+            style={{
+              '--editor-min-width': dockTo === 'bottom' ? '100%' : '10%',
+              '--editor-width': dockTo === 'bottom' ? '100%' : '50%'
+            }}
           />
           <iframe src='./eval-logs.html'
                   frameBorder={0}

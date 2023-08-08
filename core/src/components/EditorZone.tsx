@@ -11,7 +11,7 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
-import { copyToClipboard } from '../utils'
+import { classnames, copyToClipboard } from '../utils'
 
 import { History } from './bottom-status/History.tsx'
 import { setCodeHistory } from './bottom-status/historyStore.ts'
@@ -20,7 +20,8 @@ import { HelpDialog } from './editor-zone/HelpDialog.tsx'
 import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import { Popover } from './Popover.tsx'
-import { Resizable, ResizableProps } from './Resizable.tsx'
+import type { ResizableProps } from './Resizable.tsx'
+import { Resizable } from './Resizable.tsx'
 import { Switcher } from './Switcher.tsx'
 
 const isMacOS = navigator.platform.startsWith('Mac')
@@ -68,6 +69,11 @@ function addCommands(
 }
 
 export default function EditorZone(props: {
+  style?: React.CSSProperties & {
+    '--editor-min-width'?: unknown
+    '--editor-width'?: unknown
+  }
+  className?: string
   resizable?: ResizableProps['resizable']
 }) {
   const searchParams = new URLSearchParams(location.search)
@@ -218,12 +224,12 @@ export default function EditorZone(props: {
   </section>
 
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
-  console.log(props.resizable)
   return <>
     <HelpDialog ref={helpDialogRef} />
     <Resizable
-      className='editor-zone'
+      className={classnames('editor-zone', props.className)}
       style={{
+        ...props.style,
         minWidth: 'var(--editor-min-width, 10%)',
         width: 'var(--editor-width, 50%)'
       }}
