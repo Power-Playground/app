@@ -1,7 +1,7 @@
 import type * as UITypes from '//chii/ui/legacy/legacy.js'
 
 import type { ReactElement } from 'react'
-import React from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 
 import type { DevtoolsWindow } from '../eval-logs/devtools.ts'
@@ -30,6 +30,37 @@ function isReactRender(
   return type === 'react' && typeof render === 'function'
 }
 
+export interface ImportsContextValue {
+  get: DevtoolsWindow['simport']
+}
+
+export const ImportsContext = createContext<ImportsContextValue | null>(null)
+
+export function useImports<
+  const Paths extends string[]
+>(...paths: Paths) {
+  const [modules, setModules] = React.useState<
+    Record<Paths[number], unknown>
+  >({} as any)
+  const { get } = useContext(ImportsContext) ?? { get: () => Promise.reject() }
+  useEffect(() => {
+    let isMounted = true
+    async function load() {
+      const mods = await Promise.all(paths.map(path => get(path)))
+      if (!isMounted) return
+
+      const newModules = mods.reduce<Record<Paths[number], unknown>>((acc, mod, i) => {
+        acc[paths[i] as Paths[number]] = mod
+        return acc
+      }, {} as Record<Paths[number], unknown>)
+      setModules(newModules)
+    }
+    load()
+    return () => { isMounted = false }
+  }, [get, paths])
+  return modules
+}
+
 export function defineDevtoolsPanel(
   id: string, title: string, render: Render
 ): PanelMeta & Render
@@ -56,15 +87,25 @@ export function defineDevtoolsPanel(
             root.traverseNextNode = () => null
 
             this.element.appendChild(root)
+            const cache = new Map()
             ReactDOM.createRoot(root)
-              .render(<Render {...{
-                UI,
-                devtoolsWindow,
-                onTraverseNextNode: lis => {
-                  root.traverseNextNode = lis
-                  return () => root.traverseNextNode = () => null
+              .render(<ImportsContext.Provider value={{
+                async get(url) {
+                  if (cache.has(url)) return cache.get(url)
+                  const mod = await devtoolsWindow.simport(url)
+                  cache.set(url, mod)
+                  return mod
                 }
-              }} />)
+              }}>
+                <Render {...{
+                  UI,
+                  devtoolsWindow,
+                  onTraverseNextNode: lis => {
+                    root.traverseNextNode = lis
+                    return () => root.traverseNextNode = () => null
+                  }
+                }} />
+              </ImportsContext.Provider>)
           }
         }
       }

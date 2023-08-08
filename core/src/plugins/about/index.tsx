@@ -1,8 +1,4 @@
-import type { Marked } from '//chii/third_party/marked/marked'
-
-import { useState } from 'react'
-
-import { defineDevtoolsPanel, definePlugins } from '../index'
+import { defineDevtoolsPanel, definePlugins, useImports } from '../index'
 
 const about = `## 这是什么？
 
@@ -20,19 +16,19 @@ const about = `## 这是什么？
 通过项目中的文档很快的部署好你自己的 Playground ，并且通过自定义插件的方式来扩展与配置你的 Playground 。
 `.trim()
 
-const AboutPanel = defineDevtoolsPanel('ppd.about', 'About', 'react', ({
-  devtoolsWindow: { simport }
-}) => {
-  const [markedRef, setMarkedRef] = useState<typeof Marked | undefined>(undefined)
-  simport<typeof import('//chii/third_party/marked/marked')>('third_party/marked/marked.js')
-    .then(({ Marked }) => setMarkedRef(() => Marked))
+const AboutPanel = defineDevtoolsPanel('ppd.about', 'About', 'react', () => {
+  const {
+    'third_party/marked/marked.js': { Marked: marked } = {}
+  } = useImports(
+    'third_party/marked/marked.js'
+  ) as {
+    'third_party/marked/marked.js'?: typeof import('//chii/third_party/marked/marked')
+  }
 
   return <div
-    style={{
-      padding: '4px'
-    }}
+    style={{ padding: '4px' }}
     dangerouslySetInnerHTML={{
-      __html: markedRef?.(about) ?? ''
+      __html: marked?.(about) ?? ''
     }}
   />
 })
