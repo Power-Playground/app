@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 
 import { useFiles } from '../../eval-logs/files.ts'
 import { defineDevtoolsPanel, definePlugins } from '../index.tsx'
+
 import CodeHighlighter from './code-highlighter.tsx'
 
 const JSPanel = defineDevtoolsPanel('outputs.js', '.JS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
