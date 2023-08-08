@@ -1,7 +1,6 @@
-import path from 'node:path'
-
 import react from '@vitejs/plugin-react'
 import { configDotenv } from 'dotenv'
+import path from 'node:path'
 import { defineConfig } from 'vite'
 import { viteExternalsPlugin } from 'vite-plugin-externals'
 
@@ -30,6 +29,6 @@ export default defineConfig(async env => ({
     }
   },
   define: {
-    TYPESCRIPT_VERSIONS_META: await import('./core/src/utils').then(({ getTypescriptVersionMeta }) => getTypescriptVersionMeta())
+    TYPESCRIPT_VERSIONS_META: await import('./core/src/utils/typescriptVersionMeta').then(({ getTypescriptVersionMeta }) => getTypescriptVersionMeta())
   }
 }))
