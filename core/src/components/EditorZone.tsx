@@ -227,7 +227,8 @@ export default function EditorZone() {
     <Resizable
       className='editor-zone'
       style={{
-        minWidth: 'var(--editor-min-width, 50%)'
+        minWidth: 'var(--editor-min-width, 10%)',
+        width: 'var(--editor-width, 50%)'
       }}
       resizable={{ right: true }}
       >
