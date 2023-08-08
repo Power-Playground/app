@@ -92,19 +92,6 @@ function registerPlugins(realUI: typeof UI, {
 }
 
 async function init() {
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    try {
-      const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
-      const inspectorView = realUI.InspectorView.InspectorView.instance()
-      registerPlugins(realUI, inspectorView)
-      break
-    } catch (e) {
-      console.error(e)
-    }
-    await new Promise(resolve => setTimeout(resolve, 100))
-  }
-
   let uiTheme = JSON.parse(localStorage.getItem('uiTheme') ?? '""')
   elBridgeC.on('update:localStorage', ([key, value]) => {
     if (key === 'uiTheme' && uiTheme !== value) {
@@ -119,4 +106,15 @@ async function init() {
       uiTheme = value
     }
   })
+
+  const realCommon = await devtoolsWindow.simport('core/common/common.js')
+  realCommon.Runnable.registerEarlyInitializationRunnable(() => ({
+    run: async () => {
+      const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
+      const inspectorView = realUI.InspectorView.InspectorView.instance()
+
+      inspectorView.tabbedPane.leftToolbar().removeToolbarItems()
+      registerPlugins(realUI, inspectorView)
+    }
+  }))
 }

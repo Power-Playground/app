@@ -23,6 +23,8 @@ export function useFiles() {
   return useSyncExternalStore<typeof Files>(getFilesSubscribe, () => Files)
 }
 
+// TODO resolve babel plugins management
+
 elBridgeC.on('compile-completed', files => {
   Files = files.map(({ name, text }) => {
     let code = text
