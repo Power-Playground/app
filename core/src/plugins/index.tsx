@@ -82,5 +82,6 @@ export function definePlugins(props: {
   editor?: (monaco: typeof import('monaco-editor')) => () => void
   devtools?: {
     panels?: Panel[]
+    drawerPanels?: Panel[]
   }
 }) { return props }

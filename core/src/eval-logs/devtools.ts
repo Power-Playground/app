@@ -59,16 +59,34 @@ async function checkInspectorViewIsLoaded() {
 const plugins = import.meta.glob('../plugins/*/index.ts*', {
   import: 'default'
 }) as Record<string, () => Promise<ReturnType<typeof definePlugins>>>
-function registerPlugins(realUI: typeof UI, tabbedPane: UI.TabbedPane.TabbedPane) {
+
+function registerPlugins(realUI: typeof UI, {
+  tabbedPane,
+  ...inspector
+}: {
+  tabbedPane: UI.TabbedPane.TabbedPane
+}) {
+  const drawerTabbedPane: UI.TabbedPane.TabbedPane =
+    // @ts-ignore
+    inspector.drawerTabbedPane
+  // const drawerLeftToolbar = drawerTabbedPane.leftToolbar()
   Object.entries(plugins)
     .forEach(async ([path, plugin]) => {
       const { devtools } = await plugin()
       devtools?.panels?.forEach(panel => {
         const Widget = panel(devtoolsWindow, realUI)
-        if (tabbedPane.hasTab(panel.id)) {
-          return
+        const widget = new Widget()
+        if (!tabbedPane.hasTab(panel.id)) {
+          tabbedPane?.appendTab(panel.id, panel.title, widget)
         }
-        tabbedPane?.appendTab(panel.id, panel.title, new Widget())
+      })
+      devtools?.drawerPanels?.forEach(panel => {
+        const Widget = panel(devtoolsWindow, realUI)
+        const widget = new Widget()
+
+        if (!drawerTabbedPane.hasTab(panel.id)) {
+          drawerTabbedPane?.appendTab(panel.id, panel.title, widget)
+        }
       })
     })
 }
@@ -79,8 +97,7 @@ async function init() {
     try {
       const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
       const inspectorView = realUI.InspectorView.InspectorView.instance()
-      const tabbedPane = inspectorView?.tabbedPane
-      registerPlugins(realUI, tabbedPane)
+      registerPlugins(realUI, inspectorView)
       break
     } catch (e) {
       console.error(e)
