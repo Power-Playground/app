@@ -18,8 +18,8 @@
   * [ ] History
   * [ ] Snippets
   * [ ] Examples
-* [ ] 更好的编辑体验
-  * [ ] 窗口控制
-  * [ ] Top operation bar
-  * [ ] Bottom tips
+* [x] 更好的编辑体验
+  * [x] 窗口控制
+  * [x] Top operation bar
+  * [x] Bottom tips
 * [ ] i18n
