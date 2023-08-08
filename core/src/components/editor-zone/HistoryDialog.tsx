@@ -87,17 +87,17 @@ export const HistoryDialog = forwardRef<DialogRef, {
             </div>
             <div className='preview'>
               <Editor
-            height='100%'
-            width='100%'
-            theme={theme === 'light' ? 'vs' : 'vs-dark'}
-            language='javascript'
-            value={history?.code ?? ''}
-            options={{
-              readOnly: true,
-              minimap: { enabled: false },
-              scrollbar: { vertical: 'hidden' }
-            }}
-          />
+                height='100%'
+                width='100%'
+                theme={theme === 'light' ? 'vs' : 'vs-dark'}
+                language='javascript'
+                value={history?.code ?? ''}
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  scrollbar: { vertical: 'hidden' }
+                }}
+              />
             </div>
           </div>}
         </div>
