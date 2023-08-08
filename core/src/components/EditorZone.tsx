@@ -89,16 +89,19 @@ export default function EditorZone(props: {
   const curFilePath = useMemo(() => `/index.${language}`, [language])
 
   const [typescriptVersion, setTypescriptVersion] = useState<string>()
+  const isFirstSetTypescriptVersion = useRef(true)
   function changeTypescriptVersion(ts: string) {
     setTypescriptVersion(ts)
     searchParams.set('ts', ts)
     const code = editorRef.current?.getValue()
     const hash = code ? '#' + btoa(encodeURIComponent(code)) : ''
     history.replaceState(null, '', '?' + searchParams.toString() + hash)
-    // TODO refactor no reload
-    // console.log(typescriptVersion, ts)
-    // if (!typescriptVersion)
-    //   location.reload()
+
+    if (isFirstSetTypescriptVersion.current) {
+      isFirstSetTypescriptVersion.current = false
+    } else {
+      location.reload()
+    }
   }
 
   const hash = location.hash.slice(1)

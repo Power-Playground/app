@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from 'react'
+import { useContext, useEffect, useMemo, useRef } from 'react'
 import type { QuickAccess } from '@power-playground/core'
 import { QuickAccessContext } from '@power-playground/core'
 
@@ -39,8 +39,13 @@ export function TypescriptVersionStatus({
       ? distTagEnumMemo?.[value]
       : value
   }, [distTagEnumMemo, isNeedCheckFetching, value])
+  const onlyOnce = useRef(false)
   useEffect(() => {
     if (realVersion !== undefined) {
+      if (onlyOnce.current) {
+        return
+      }
+      onlyOnce.current = true
       onChange(realVersion)
     }
   }, [onChange, realVersion])
