@@ -58,7 +58,7 @@ function mountResize(
   let mPos: number
   let isClick = false
 
-  function resize(isVertical: boolean, e: MouseEvent) {
+  function resize(isVertical: boolean, sym: 1 | -1, e: MouseEvent) {
     const [
       field0,
       field1
@@ -67,7 +67,7 @@ function mountResize(
       isVertical ? 'height' : 'width'
     ] as const
     const d = e[field0] - mPos
-    const newVal = (parseInt(getComputedStyle(ele, '')[field1]) + d)
+    const newVal = (parseInt(getComputedStyle(ele, '')[field1]) + d * sym)
 
     mPos = e[field0]
     ele.style[field1] = newVal + 'px'
@@ -75,19 +75,23 @@ function mountResize(
   const registerResizeFuncs = [] as ((e: MouseEvent) => void)[]
   function elMouseDown(e: MouseEvent) {
     const target = e.target as HTMLDivElement
-    const [leftOrRight, topOrBottom] = [
+    const [left, right, top, bottom] = [
       target?.classList?.contains(
         `${prefix}-border__left`
-      ) ||
+      ),
       target?.classList?.contains(
         `${prefix}-border__right`
       ),
       target?.classList?.contains(
         `${prefix}-border__top`
-      ) ||
+      ),
       target?.classList?.contains(
         `${prefix}-border__bottom`
       )
+    ]
+    const [leftOrRight, topOrBottom] = [
+      left || right,
+      top || bottom
     ]
     if (!leftOrRight && !topOrBottom) return
 
@@ -103,7 +107,7 @@ function mountResize(
     document
       .querySelectorAll('iframe')
       .forEach(e => e.style.pointerEvents = 'none')
-    const _resize = resize.bind(null, topOrBottom)
+    const _resize = resize.bind(null, topOrBottom, right || bottom ? 1 : -1)
     registerResizeFuncs.push(_resize)
     document.addEventListener('mousemove', _resize, false)
     ele.style.userSelect = 'none'
