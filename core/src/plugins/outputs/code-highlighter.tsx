@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { DevtoolsWindow } from '../../pages/eval-logs/devtools.ts'
+import type { DevtoolsWindow } from '../../eval-logs/devtools.ts'
 
 type CodeHighlighter = typeof import('//chii/ui/components/code_highlighter/CodeHighlighter.ts')
 
