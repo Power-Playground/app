@@ -18,7 +18,7 @@ import { HelpDialog } from './editor-zone/HelpDialog.tsx'
 import { HistoryDialog } from './editor-zone/HistoryDialog.tsx'
 import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
-import { useCodeHistory } from './EditorZone_CodeHistory.ts'
+import { setCodeHistory } from './EditorZone_CodeHistory.ts'
 import { Popover } from './Popover.tsx'
 import { Resizable } from './Resizable.tsx'
 import { Switcher } from './Switcher.tsx'
@@ -45,15 +45,17 @@ const compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
 
 function addCommands(
   editor: monacoEditor.editor.IStandaloneCodeEditor,
-  monaco: typeof monacoEditor,
-  addHistory: (code: string) => void
+  monaco: typeof monacoEditor
 ) {
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
     const code = editor.getValue()
     history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
     copyToClipboard(location.href)
     editor.focus()
-    addHistory(code)
+    setCodeHistory(old => old.concat({
+      code,
+      time: Date.now()
+    }))
   })
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, () => elBridgeP.send('run'))
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.UpArrow, function () {
@@ -168,8 +170,6 @@ export default function EditorZone() {
 
   const helpDialogRef = useRef<DialogRef>(null)
   const historyDialogRef = useRef<DialogRef>(null)
-
-  const [, codeHistoryDispatch] = useCodeHistory()
 
   const tsIcon = <div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }}>
     <span style={{
@@ -300,7 +300,7 @@ export default function EditorZone() {
             }
             editor.onDidChangeCursorPosition(updateLineAndColumn)
             updateLineAndColumn()
-            addCommands(editor, monaco, code => codeHistoryDispatch({ type: 'add', code }))
+            addCommands(editor, monaco)
           }}
         />}
       <div className='monaco-editor bottom-status'>

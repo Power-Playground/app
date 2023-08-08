@@ -23,7 +23,10 @@ function subscribeCodeHistory(callback: (codeHistory: CodeHistoryItem[]) => void
     if (index !== -1) codeStorageListener.splice(index, 1)
   }
 }
-function setCodeHistory(newCodeHistory: CodeHistoryItem[]) {
+export function setCodeHistory(newCodeHistory: CodeHistoryItem[] | ((codeHistory: CodeHistoryItem[]) => CodeHistoryItem[])) {
+  if (typeof newCodeHistory === 'function') {
+    newCodeHistory = newCodeHistory(codeHistory)
+  }
   codeHistory = newCodeHistory
   localStorage.setItem(codeHistoryStorageKey, JSON.stringify(codeHistory))
   codeStorageListener.forEach(callback => callback(codeHistory))
