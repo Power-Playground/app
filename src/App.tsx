@@ -42,8 +42,8 @@ export function App() {
           <EditorZone
             resizable={resizable}
             style={{
-              '--editor-min-width': dockTo === 'bottom' ? '100%' : '10%',
-              '--editor-width': dockTo === 'bottom' ? '100%' : '50%'
+              '--editor-width': dockTo === 'bottom' ? '100%' : '50%',
+              '--editor-height': dockTo === 'bottom' ? '50%' : '100%'
             }}
           />
           <iframe src='./eval-logs.html'

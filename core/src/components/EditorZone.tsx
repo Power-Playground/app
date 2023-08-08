@@ -70,8 +70,12 @@ function addCommands(
 
 export default function EditorZone(props: {
   style?: React.CSSProperties & {
-    '--editor-min-width'?: unknown
     '--editor-width'?: unknown
+    '--editor-min-width'?: unknown
+    '--editor-max-width'?: unknown
+    '--editor-height'?: unknown
+    '--editor-min-height'?: unknown
+    '--editor-max-height'?: unknown
   }
   className?: string
   resizable?: ResizableProps['resizable']
@@ -235,8 +239,12 @@ export default function EditorZone(props: {
       className={classnames('editor-zone', props.className)}
       style={{
         ...props.style,
-        minWidth: 'var(--editor-min-width, 10%)',
-        width: 'var(--editor-width, 50%)'
+        width: 'var(--editor-width, 50%)',
+        minWidth: 'var(--editor-min-width)',
+        maxWidth: 'var(--editor-max-width)',
+        height: 'var(--editor-height, 50%)',
+        minHeight: 'var(--editor-min-height)',
+        maxHeight: 'var(--editor-max-height)'
       }}
       resizable={props.resizable ?? { right: true }}
       >
