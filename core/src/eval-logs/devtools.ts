@@ -1,6 +1,7 @@
 import type * as UI from '//chii/ui/legacy/legacy'
 
 import type { definePlugins } from '../plugins'
+
 import { elBridgeC } from './bridge.ts'
 
 const storageInited = localStorage.getItem('storageInited')
@@ -55,7 +56,7 @@ async function checkInspectorViewIsLoaded() {
   }
 })()
 
-const plugins = import.meta.glob('../../plugins/*/index.ts*', {
+const plugins = import.meta.glob('../plugins/*/index.ts*', {
   import: 'default'
 }) as Record<string, () => Promise<ReturnType<typeof definePlugins>>>
 function registerPlugins(realUI: typeof UI, tabbedPane: UI.TabbedPane.TabbedPane) {
