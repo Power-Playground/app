@@ -34,6 +34,7 @@ export function Popover(props: PopoverProps) {
   } = props
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const [popperElement, setPopperElement] = useState<HTMLElement | null>(null)
+  const [arrowElement, setArrowElement] = useState<HTMLElement | null>(null)
   const popper = useRef<ReturnType<typeof createPopper>>()
 
   useEffect(() => {
@@ -43,15 +44,16 @@ export function Popover(props: PopoverProps) {
     }
   }, [referenceElement, popperElement, placement, offset])
   useEffect(() => {
-    if (popper.current) {
+    if (popper.current && arrowElement) {
       popper.current.setOptions({
         placement,
         modifiers: [
-          { name: 'offset', options: { offset } }
+          { name: 'offset', options: { offset } },
+          { name: 'arrow', options: { element: arrowElement } }
         ]
       })
     }
-  }, [offset, placement])
+  }, [arrowElement, offset, placement])
 
   const [visible, setVisible] = useState(false)
   useEffect(() => {
@@ -110,7 +112,11 @@ export function Popover(props: PopoverProps) {
       }}
       >
       {content}
-      <div className='ppd-popover-arrow' data-position={placement} />
+      <div
+        ref={setArrowElement}
+        className='ppd-popover-arrow'
+        data-position={placement}
+      />
     </div>, document.body)}
   </>
 }
