@@ -96,7 +96,9 @@ export default function EditorZone(props: {
     const hash = code ? '#' + btoa(encodeURIComponent(code)) : ''
     history.replaceState(null, '', '?' + searchParams.toString() + hash)
     // TODO refactor no reload
-    location.reload()
+    // console.log(typescriptVersion, ts)
+    // if (!typescriptVersion)
+    //   location.reload()
   }
 
   const hash = location.hash.slice(1)
@@ -109,7 +111,7 @@ export default function EditorZone(props: {
 
   const monaco = useMonaco()
   useEffect(() => {
-    if (!monaco) return
+    if (!monaco || !typescriptVersion) return
 
     let defaults: monacoEditor.languages.typescript.LanguageServiceDefaults
     if (language === 'js') {
@@ -148,7 +150,7 @@ export default function EditorZone(props: {
         if (model.uri.path !== curFilePath) model.dispose()
       })
     }
-  }, [curFilePath, language, monaco])
+  }, [curFilePath, language, monaco, typescriptVersion])
   const compileResultRef = useRef<monacoEditor.languages.typescript.EmitOutput>()
   useEffect(() => elBridgeP.on('compile', () => {
     if (!compileResultRef.current) return
@@ -260,7 +262,7 @@ export default function EditorZone(props: {
           />
         </div>
       </div>
-      {typescriptVersion
+      {!typescriptVersion
         ? loadingNode
         : <Editor
           key={typescriptVersion}
@@ -287,10 +289,22 @@ export default function EditorZone(props: {
             editor.onDidChangeModelContent(function compile() {
               const model = editor.getModel()
               if (model) {
-                monaco?.languages.typescript.getTypeScriptWorker()
-                  .then(worker => worker(model.uri))
-                  .then(client => client.getEmitOutput(model.uri.toString()))
+                let worker:
+                  | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
+                  | Promise<undefined>
+                  = Promise.resolve(undefined)
+                if (model.uri.path.match(/\.tsx?$/)) {
+                  worker = monaco.languages.typescript.getTypeScriptWorker()
+                }
+                if (model.uri.path.match(/\.jsx?$/)) {
+                  worker = monaco.languages.typescript.getJavaScriptWorker()
+                }
+                worker
+                  .then(worker => worker?.(model.uri))
+                  .then(client => client?.getEmitOutput(model.uri.toString()))
                   .then(result => {
+                    if (!result) return
+
                     compileResultRef.current = result
                     elBridgeP.send('compile-completed', result.outputFiles)
                   })

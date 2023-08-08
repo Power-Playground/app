@@ -34,6 +34,16 @@ export function TypescriptVersionStatus({
     // 不在推荐的版本中，说明是 dist tags 模式
     return typescriptVersionMeta.suggestedVersions.indexOf(value) === -1
   }, [value])
+  const realVersion = useMemo(() => {
+    return isNeedCheckFetching
+      ? distTagEnumMemo?.[value]
+      : value
+  }, [distTagEnumMemo, isNeedCheckFetching, value])
+  useEffect(() => {
+    if (realVersion !== undefined) {
+      onChange(realVersion)
+    }
+  }, [onChange, realVersion])
 
   const quickAccess = useContext(QuickAccessContext)
   const suggestedVersions = useMemo(() => typescriptVersionMeta.suggestedVersions.map(version => {
