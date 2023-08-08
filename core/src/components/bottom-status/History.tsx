@@ -2,8 +2,9 @@ import { useRef } from 'react'
 
 import { isMacOS } from '../../utils'
 import type { DialogRef } from '../Dialog.tsx'
-import { HistoryDialog } from '../editor-zone/HistoryDialog.tsx'
 import { Popover } from '../Popover.tsx'
+
+import { HistoryDialog } from './HistoryDialog.tsx'
 
 export interface HistoryProps {
   theme: string

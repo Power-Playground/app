@@ -13,7 +13,7 @@ import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
 import { copyToClipboard } from '../utils'
 
-import { History } from './bottom-status/history.tsx'
+import { History } from './bottom-status/History.tsx'
 import { setCodeHistory } from './bottom-status/historyStore.ts'
 import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
 import { HelpDialog } from './editor-zone/HelpDialog.tsx'
