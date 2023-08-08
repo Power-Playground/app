@@ -1,6 +1,6 @@
 import './App.scss'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   createQuickAccessInstance,
   EditorZone,
@@ -15,6 +15,11 @@ export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {
     light: 'default', dark: 'dark'
   }[theme]])), [])
+  const [dockTo, setDockTo] = useState('right')
+  useEffect(() => elBridgeP.on('dock-to', setDockTo), [])
+  const resizable = useMemo(() => ({ [dockTo]: true } as {
+    [K in 'left' | 'right' | 'bottom']?: boolean
+  }), [dockTo])
   return (
     <>
       <header>
@@ -31,11 +36,16 @@ export function App() {
         </h1>
         <ThemeSwitcher />
       </header>
-      <div className='main'>
+      <div className={`main ${dockTo}`}>
         <QuickAccessContext.Provider value={createQuickAccessInstance()}>
           <QuickAccess />
-          <EditorZone />
-          <iframe src='./eval-logs.html' frameBorder={0} className='eval-logs' />
+          <EditorZone
+            resizable={resizable}
+          />
+          <iframe src='./eval-logs.html'
+                  frameBorder={0}
+                  className='eval-logs'
+          />
         </QuickAccessContext.Provider>
       </div>
     </>

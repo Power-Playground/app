@@ -20,7 +20,7 @@ import { HelpDialog } from './editor-zone/HelpDialog.tsx'
 import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import { Popover } from './Popover.tsx'
-import { Resizable } from './Resizable.tsx'
+import { Resizable, ResizableProps } from './Resizable.tsx'
 import { Switcher } from './Switcher.tsx'
 
 const isMacOS = navigator.platform.startsWith('Mac')
@@ -67,7 +67,9 @@ function addCommands(
   editor.focus()
 }
 
-export default function EditorZone() {
+export default function EditorZone(props: {
+  resizable?: ResizableProps['resizable']
+}) {
   const searchParams = new URLSearchParams(location.search)
 
   const [language, setLanguage] = useState<'js' | 'ts'>(
@@ -216,6 +218,7 @@ export default function EditorZone() {
   </section>
 
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
+  console.log(props.resizable)
   return <>
     <HelpDialog ref={helpDialogRef} />
     <Resizable
@@ -224,7 +227,7 @@ export default function EditorZone() {
         minWidth: 'var(--editor-min-width, 10%)',
         width: 'var(--editor-width, 50%)'
       }}
-      resizable={{ right: true }}
+      resizable={props.resizable ?? { right: true }}
       >
       <div className='menu'>
         <div className='btns' style={{ visibility: 'hidden' }}>

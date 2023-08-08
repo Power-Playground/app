@@ -21,6 +21,12 @@
   flex-grow: 1;
   height: 0;
   overflow: hidden;
+  &.bottom {
+    flex-direction: column;
+  }
+  &.left {
+    flex-direction: row-reverse;
+  }
   > iframe.eval-logs {
     position: relative;
     flex-grow: 1;

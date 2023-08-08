@@ -108,13 +108,55 @@ async function init() {
   })
 
   const realCommon = await devtoolsWindow.simport('core/common/common.js')
-  realCommon.Runnable.registerEarlyInitializationRunnable(() => ({
+  const { MainImpl: { MainImpl } } = await devtoolsWindow
+    .simport<typeof import('//chii/entrypoints/main/main')>('entrypoints/main/main.js')
+  const runnable = () => ({
     run: async () => {
+      console.log('run')
       const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
       const inspectorView = realUI.InspectorView.InspectorView.instance()
 
-      inspectorView.tabbedPane.leftToolbar().removeToolbarItems()
+      const leftToolbar = inspectorView.tabbedPane.leftToolbar()
+      leftToolbar.removeToolbarItems()
       registerPlugins(realUI, inspectorView)
+      const rightToolbar = inspectorView.tabbedPane.rightToolbar()
+      rightToolbar.appendSeparator()
+      const dockToolbarIcons = [
+        ['largeicon-dock-to-bottom', 'Dock to bottom'],
+        ['largeicon-dock-to-left', 'Dock to left'],
+        ['largeicon-dock-to-right', 'Dock to right']
+      ]
+      const dockBtns = dockToolbarIcons.map(([icon, title]) => {
+        const button = new realUI.Toolbar.ToolbarToggle(title, icon)
+        button.addEventListener(realUI.Toolbar.ToolbarButton.Events.Click, () => {
+          dockBtns.forEach(btn => btn.setToggled(false))
+          button.setToggled(!button.toggled())
+          if (button.toggled()) {
+            elBridgeC.send('dock-to', icon.slice('largeicon-dock-to-'.length))
+          }
+        })
+        if (icon === 'largeicon-dock-to-right') {
+          button.setToggled(true)
+        }
+        rightToolbar.appendToolbarItem(button)
+        return button
+      })
     }
-  }))
+  })
+  // @ts-ignore
+  console.log('MainImpl.instanceForTest.lateInitDonePromise', MainImpl.instanceForTest.lateInitDonePromise)
+  const promise = (
+    // @ts-ignore
+    MainImpl.instanceForTest.lateInitDonePromise as Promise<void> | undefined
+  )
+  const state = promise === undefined
+    ? 'pending'
+    : await promise.then(() => 'fulfilled', () => 'rejected')
+  console.log(state)
+  if (state === 'pending') {
+    realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
+  }
+  if (state === 'fulfilled') {
+    runnable().run()
+  }
 }

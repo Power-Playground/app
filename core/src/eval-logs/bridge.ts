@@ -20,6 +20,10 @@ export type EvalLogsIframeChildEvent =
 | {
   type: 'compile'
 }
+| {
+  type: 'dock-to'
+  data: 'left' | 'right' | 'bottom' | (string & {})
+}
 
 export const bridge = new IframeBridge<EvalLogsIframeParentEvent | EvalLogsIframeChildEvent>(
   () => document.querySelector<HTMLIFrameElement>('iframe.eval-logs')
