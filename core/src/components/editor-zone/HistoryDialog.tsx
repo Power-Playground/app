@@ -2,9 +2,9 @@ import { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'r
 import { createPortal } from 'react-dom'
 import Editor from '@monaco-editor/react'
 
+import type { CodeHistoryItem } from '../bottom-status/historyStore.ts'
+import { useCodeHistory } from '../bottom-status/historyStore.ts'
 import type { DialogRef } from '../Dialog.tsx'
-import type { CodeHistoryItem } from '../EditorZone_CodeHistory.ts'
-import { useCodeHistory } from '../EditorZone_CodeHistory.ts'
 
 export const HistoryDialog = forwardRef<DialogRef, {
   theme: string

@@ -7,17 +7,17 @@ export interface CodeHistoryItem {
 
 const codeHistoryStorageKey = 'playground-history'
 
-let codeHistory: CodeHistoryItem[]
+let historyStore: CodeHistoryItem[]
 try {
-  codeHistory = JSON.parse(localStorage.getItem(codeHistoryStorageKey) || '[]')
+  historyStore = JSON.parse(localStorage.getItem(codeHistoryStorageKey) || '[]')
 } catch {
-  codeHistory = []
+  historyStore = []
 }
 
 const codeStorageListener: Function[] = []
 function subscribeCodeHistory(callback: (codeHistory: CodeHistoryItem[]) => void) {
   codeStorageListener.push(callback)
-  callback(codeHistory)
+  callback(historyStore)
   return () => {
     const index = codeStorageListener.indexOf(callback)
     if (index !== -1) codeStorageListener.splice(index, 1)
@@ -25,16 +25,16 @@ function subscribeCodeHistory(callback: (codeHistory: CodeHistoryItem[]) => void
 }
 export function setCodeHistory(newCodeHistory: CodeHistoryItem[] | ((codeHistory: CodeHistoryItem[]) => CodeHistoryItem[])) {
   if (typeof newCodeHistory === 'function') {
-    newCodeHistory = newCodeHistory(codeHistory)
+    newCodeHistory = newCodeHistory(historyStore)
   }
-  codeHistory = newCodeHistory
-  localStorage.setItem(codeHistoryStorageKey, JSON.stringify(codeHistory))
-  codeStorageListener.forEach(callback => callback(codeHistory))
+  historyStore = newCodeHistory
+  localStorage.setItem(codeHistoryStorageKey, JSON.stringify(historyStore))
+  codeStorageListener.forEach(callback => callback(historyStore))
 }
 const EMPTY: CodeHistoryItem[] = []
 
 export function useCodeHistory() {
-  const codes = useSyncExternalStore(subscribeCodeHistory, () => codeHistory ?? EMPTY)
+  const codes = useSyncExternalStore(subscribeCodeHistory, () => historyStore ?? EMPTY)
   useEffect(() => {
     dispatch({ type: 'set', codes })
   }, [codes])
