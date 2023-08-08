@@ -143,8 +143,6 @@ async function init() {
       })
     }
   })
-  // @ts-ignore
-  console.log('MainImpl.instanceForTest.lateInitDonePromise', MainImpl.instanceForTest.lateInitDonePromise)
   const promise = (
     // @ts-ignore
     MainImpl.instanceForTest.lateInitDonePromise as Promise<void> | undefined
@@ -152,7 +150,6 @@ async function init() {
   const state = promise === undefined
     ? 'pending'
     : await promise.then(() => 'fulfilled', () => 'rejected')
-  console.log(state)
   if (state === 'pending') {
     realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
   }
