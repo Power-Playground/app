@@ -13,10 +13,10 @@ import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
 import { copyToClipboard } from '../utils'
 
+import { History } from './bottom-status/history.tsx'
 import { setCodeHistory } from './bottom-status/historyStore.ts'
 import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
 import { HelpDialog } from './editor-zone/HelpDialog.tsx'
-import { HistoryDialog } from './editor-zone/HistoryDialog.tsx'
 import type { DialogRef } from './Dialog.tsx'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import { Popover } from './Popover.tsx'
@@ -169,7 +169,6 @@ export default function EditorZone() {
   useEffect(() => onThemeChange(setTheme), [])
 
   const helpDialogRef = useRef<DialogRef>(null)
-  const historyDialogRef = useRef<DialogRef>(null)
 
   const tsIcon = <div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }}>
     <span style={{
@@ -219,11 +218,6 @@ export default function EditorZone() {
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
   return <>
     <HelpDialog ref={helpDialogRef} />
-    <HistoryDialog
-      theme={theme}
-      ref={historyDialogRef}
-      onChange={ch => setCode(ch.code)}
-    />
     <Resizable
       className='editor-zone'
       style={{
@@ -316,18 +310,7 @@ export default function EditorZone() {
         >
           <div className='cldr codicon codicon-info' />
         </Popover>
-        <Popover
-          style={{ cursor: 'pointer' }}
-          offset={[0, 3]}
-          content={<>
-            Show History(<code>
-              {isMacOS ? '⌘' : 'Ctrl'}
-            </code> + <code>H</code>)
-          </>}
-          onClick={() => historyDialogRef.current?.open()}
-        >
-          <div className='cldr codicon codicon-history' />
-        </Popover>
+        <History theme={theme} setCode={setCode} />
         <TypescriptVersionStatus
           value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
           onChange={changeTypescriptVersion}
