@@ -6,8 +6,7 @@ div.ppd-top-bar {
   box-sizing: border-box;
 
   width: 100%;
-  min-height: 27px;
-  padding-right: 10px;
+  height: 27px;
 
   background-color: color-mix(in srgb, var(--primary), #888 50%);
 
@@ -18,18 +17,23 @@ div.ppd-top-bar {
     align-items: center;
     justify-content: center;
     margin: 0;
-    padding: 3px;
+    padding: 0 10px;
+    height: 27px;
     background-color: #0000;
     color: #fff;
 
     cursor: pointer;
     border: none;
-    border-radius: 2px;
     outline: none;
     transition: .1s;
-    &:hover { background-color: #0004; }
+    border-bottom: transparent solid 2px;
+    box-sizing: border-box;
+    &:hover {
+      background-color: #0004;
+      border-bottom: #0008 solid 2px;
+    }
     > .cldr.codicon {
-      font-size: 12px;
+      font-size: 14px;
     }
   }
   > .opts {
