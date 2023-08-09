@@ -97,7 +97,6 @@ const runnable = () => ({
 
     const leftToolbar = inspectorView.tabbedPane.leftToolbar()
     leftToolbar.removeToolbarItems()
-    registerPlugins(realUI, inspectorView)
     const rightToolbar = inspectorView.tabbedPane.rightToolbar()
     rightToolbar.appendSeparator()
     const dockToolbarIcons = [
@@ -120,6 +119,8 @@ const runnable = () => ({
       rightToolbar.appendToolbarItem(button)
       return button
     })
+
+    registerPlugins(realUI, inspectorView)
   }
 })
 
