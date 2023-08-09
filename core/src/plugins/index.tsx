@@ -129,5 +129,8 @@ export function definePlugin(props: {
       inspectorView: UITypes.InspectorView.InspectorView
       devtoolsWindow: DevtoolsWindow
     }) => void | Promise<void>
+    beforeMount?: (props: {
+      devtoolsWindow: DevtoolsWindow
+    }) => void
   }
 }) { return props }
