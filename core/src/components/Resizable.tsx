@@ -1,7 +1,7 @@
 import './Resizable.scss'
 
 import type { CSSProperties } from 'react'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { classnames } from '../utils'
 
@@ -135,7 +135,26 @@ export function Resizable({
   children,
   ...props
 }: ResizableProps) {
+  const resizableDivRef = useRef<HTMLDivElement>(null)
   const [left, right, top, bottom] = resolveResizable(props.resizable)
+  useEffect(() => {
+    if (resizableDivRef.current === null) return
+
+    if (top === false || bottom === false) {
+      resizableDivRef.current.style.height = typeof style?.height === 'number'
+        ? style.height + 'px'
+        : style?.height ?? 'auto'
+    }
+  }, [top, bottom, style?.height])
+  useEffect(() => {
+    if (resizableDivRef.current === null) return
+
+    if (left === false || right === false) {
+      resizableDivRef.current.style.width = typeof style?.width === 'number'
+        ? style.width + 'px'
+        : style?.width ?? 'auto'
+    }
+  }, [left, right, style?.width])
 
   const dispose = useRef<() => void>()
   return <div
@@ -153,6 +172,8 @@ export function Resizable({
         return
       }
 
+      // @ts-ignore
+      resizableDivRef.current = ele
       dispose.current = mountResize(ele)
     }}>
     {children}
