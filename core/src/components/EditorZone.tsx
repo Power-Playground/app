@@ -57,15 +57,10 @@ function addCommands(
     }))
   })
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, () => elBridgeP.send('run'))
-  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.UpArrow, function () {
-    // 当光标位于第一行时触发
-  })
-  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.DownArrow, function () {
-    // 当光标位于最后一行时触发
-  })
   editor.focus()
 }
 
+// monaco editor editorInstance
 export default function EditorZone(props: {
   style?: React.CSSProperties & {
     '--editor-width'?: unknown
@@ -124,7 +119,6 @@ export default function EditorZone(props: {
     } else {
       defaults = monaco.languages.typescript.typescriptDefaults
     }
-    defaults.setCompilerOptions({ ...defaults.getCompilerOptions(), ...compilerOptions })
     extraModules.forEach(({ content, filePath }) => {
       monaco.editor.createModel(
         content,
@@ -133,15 +127,21 @@ export default function EditorZone(props: {
       )
     })
 
+    defaults.setCompilerOptions({ ...defaults.getCompilerOptions(), ...compilerOptions })
+
     console.group('monaco detail data')
     console.log('typescript.version', monaco.languages.typescript.typescriptVersion)
     console.log('typescript.CompilerOptions', monaco.languages.typescript.typescriptDefaults.getCompilerOptions())
     console.groupEnd()
 
-    monaco.editor.addKeybindingRule({
-      keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
-      command: 'editor.action.quickCommand'
-    })
+    try {
+      monaco.editor.addKeybindingRule({
+        keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
+        command: 'editor.action.quickCommand'
+      })
+    } catch (e) {
+      console.error(e)
+    }
     const dispose = Object.values(plugins)
       .reduce(
         (acc, plugin) => plugin.editor
@@ -156,6 +156,7 @@ export default function EditorZone(props: {
       })
     }
   }, [curFilePath, language, monaco, typescriptVersion])
+
   const compileResultRef = useRef<monacoEditor.languages.typescript.EmitOutput>()
   useEffect(() => elBridgeP.on('compile', () => {
     if (!compileResultRef.current) return
@@ -212,110 +213,109 @@ export default function EditorZone(props: {
   </section>
 
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
-  return <>
-    <HelpDialog ref={helpDialogRef} />
-    <Resizable
-      className={classnames('editor-zone', props.className)}
-      style={{
-        ...props.style,
-        width: 'var(--editor-width, 50%)',
-        minWidth: 'var(--editor-min-width)',
-        maxWidth: 'var(--editor-max-width)',
-        height: 'var(--editor-height, 50%)',
-        minHeight: 'var(--editor-min-height)',
-        maxHeight: 'var(--editor-max-height)'
-      }}
-      resizable={props.resizable ?? { right: true }}
-      >
-      <TopBar language={language} onChangeLanguage={changeLanguage} />
-      {!typescriptVersion
-        ? loadingNode
-        : <Editor
-          key={typescriptVersion}
-          language={{
-            js: 'javascript',
-            ts: 'typescript'
-          }[language]}
-          options={{
-            automaticLayout: true,
-            scrollbar: {
-              vertical: 'hidden',
-              verticalSliderSize: 0,
-              verticalScrollbarSize: 0
-            }
-          }}
-          theme={theme === 'light' ? 'vs' : 'vs-dark'}
-          loading={loadingNode}
-          path={`file://${curFilePath}`}
-          value={code}
-          onChange={code => setCode(code ?? '')}
-          onMount={(editor, monaco) => {
-            // @ts-ignore
-            editorRef.current = editor
-            editor.onDidChangeModelContent(function compile() {
-              const model = editor.getModel()
-              if (model) {
-                let worker:
-                  | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
-                  | Promise<undefined>
-                  = Promise.resolve(undefined)
-                if (model.uri.path.match(/\.tsx?$/)) {
-                  worker = monaco.languages.typescript.getTypeScriptWorker()
-                }
-                if (model.uri.path.match(/\.jsx?$/)) {
-                  worker = monaco.languages.typescript.getJavaScriptWorker()
-                }
-                worker
-                  .then(worker => worker?.(model.uri))
-                  .then(client => client?.getEmitOutput(model.uri.toString()))
-                  .then(result => {
-                    if (!result) return
 
-                    compileResultRef.current = result
-                    elBridgeP.send('compile-completed', result.outputFiles)
-                  })
+  return <Resizable
+    className={classnames('editor-zone', props.className)}
+    style={{
+      ...props.style,
+      width: 'var(--editor-width, 50%)',
+      minWidth: 'var(--editor-min-width)',
+      maxWidth: 'var(--editor-max-width)',
+      height: 'var(--editor-height, 50%)',
+      minHeight: 'var(--editor-min-height)',
+      maxHeight: 'var(--editor-max-height)'
+    }}
+    resizable={props.resizable ?? { right: true }}
+    >
+    <TopBar language={language} onChangeLanguage={changeLanguage} />
+    {!typescriptVersion
+      ? loadingNode
+      : <Editor
+        key={typescriptVersion}
+        language={{
+          js: 'javascript',
+          ts: 'typescript'
+        }[language]}
+        options={{
+          automaticLayout: true,
+          scrollbar: {
+            vertical: 'hidden',
+            verticalSliderSize: 0,
+            verticalScrollbarSize: 0
+          }
+        }}
+        theme={theme === 'light' ? 'vs' : 'vs-dark'}
+        loading={loadingNode}
+        path={`file://${curFilePath}`}
+        value={code}
+        onChange={code => setCode(code ?? '')}
+        onMount={(editor, monaco) => {
+          // @ts-ignore
+          editorRef.current = editor
+          editor.onDidChangeModelContent(function compile() {
+            const model = editor.getModel()
+            if (model) {
+              let worker:
+                | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
+                | Promise<undefined>
+                = Promise.resolve(undefined)
+              if (model.uri.path.match(/\.tsx?$/)) {
+                worker = monaco.languages.typescript.getTypeScriptWorker()
               }
-              return compile
-            }())
-            const updateLineAndColumn = () => {
-              const pos = editor.getPosition()
-              if (pos) setLineAndColumn([pos.lineNumber, pos.column])
+              if (model.uri.path.match(/\.jsx?$/)) {
+                worker = monaco.languages.typescript.getJavaScriptWorker()
+              }
+              worker
+                .then(worker => worker?.(model.uri))
+                .then(client => client?.getEmitOutput(model.uri.toString()))
+                .then(result => {
+                  if (!result) return
+
+                  compileResultRef.current = result
+                  elBridgeP.send('compile-completed', result.outputFiles)
+                })
             }
-            editor.onDidChangeCursorPosition(updateLineAndColumn)
-            updateLineAndColumn()
-            addCommands(editor, monaco)
-          }}
-        />}
-      <div className='monaco-editor bottom-status'>
-        <Popover
-          style={{ cursor: 'pointer' }}
-          offset={[0, 3]}
-          content={<>
-            Find Help(<code>
-              {isMacOS ? '^' : 'Ctrl'}
-            </code> + <code>/</code>)
-          </>}
-          onClick={() => helpDialogRef.current?.open()}
-        >
-          <div className='cldr codicon codicon-info' />
-        </Popover>
-        <History theme={theme} setCode={setCode} />
-        <TypescriptVersionStatus
-          value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
-          onChange={changeTypescriptVersion}
-        />
-        <Popover style={{ cursor: 'pointer' }}
-                 offset={[0, 3]}
-                 content='Go to Line and Column'
-                 onClick={() => {
-                   if (!editorRef.current) return
-                   editorRef.current.focus()
-                   editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
-                 }}
-        >
-          <div className='line-and-column'>{line}:{column}</div>
-        </Popover>
-      </div>
-    </Resizable>
-  </>
+            return compile
+          }())
+          const updateLineAndColumn = () => {
+            const pos = editor.getPosition()
+            if (pos) setLineAndColumn([pos.lineNumber, pos.column])
+          }
+          editor.onDidChangeCursorPosition(updateLineAndColumn)
+          updateLineAndColumn()
+          addCommands(editor, monaco)
+        }}
+      />}
+    <div className='monaco-editor bottom-status'>
+      <Popover
+        style={{ cursor: 'pointer' }}
+        offset={[0, 3]}
+        content={<>
+          Find Help(<code>
+            {isMacOS ? '^' : 'Ctrl'}
+          </code> + <code>/</code>)
+        </>}
+        onClick={() => helpDialogRef.current?.open()}
+      >
+        <HelpDialog ref={helpDialogRef} />
+        <div className='cldr codicon codicon-info' />
+      </Popover>
+      <History theme={theme} setCode={setCode} />
+      <TypescriptVersionStatus
+        value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
+        onChange={changeTypescriptVersion}
+      />
+      <Popover style={{ cursor: 'pointer' }}
+               offset={[0, 3]}
+               content='Go to Line and Column'
+               onClick={() => {
+                 if (!editorRef.current) return
+                 editorRef.current.focus()
+                 editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
+               }}
+      >
+        <div className='line-and-column'>{line}:{column}</div>
+      </Popover>
+    </div>
+  </Resizable>
 }
