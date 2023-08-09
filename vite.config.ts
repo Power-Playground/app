@@ -29,6 +29,6 @@ export default defineConfig(async env => ({
     }
   },
   define: {
-    TYPESCRIPT_VERSIONS_META: await import('./core/src/utils/typescriptVersionMeta').then(({ getTypescriptVersionMeta }) => getTypescriptVersionMeta())
+    TYPESCRIPT_VERSIONS_META: await import('./core/src/utils').then(({ getTypescriptVersionMeta }) => getTypescriptVersionMeta())
   }
 }))

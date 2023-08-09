@@ -1,1 +1,3 @@
-export const isMacOS = navigator.platform.startsWith('Mac')
+var navigator: navigaor
+
+export const isMacOS = navigator?.platform?.startsWith('Mac')
