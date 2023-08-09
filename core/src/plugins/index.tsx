@@ -124,5 +124,10 @@ export function definePlugins(props: {
   devtools?: {
     panels?: Panel[]
     drawerPanels?: Panel[]
+    load?: (props: {
+      UI: typeof UITypes
+      inspectorView: UITypes.InspectorView.InspectorView
+      devtoolsWindow: DevtoolsWindow
+    }) => void | Promise<void>
   }
 }) { return props }

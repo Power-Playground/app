@@ -54,16 +54,11 @@ const plugins = import.meta.glob('../plugins/*/index.ts*', {
   import: 'default'
 }) as Record<string, () => Promise<ReturnType<typeof definePlugins>>>
 
-function registerPlugins(realUI: typeof UI, {
-  tabbedPane,
-  ...inspector
-}: {
-  tabbedPane: UI.TabbedPane.TabbedPane
-}) {
+function registerPlugins(realUI: typeof UI, inspectorView: UI.InspectorView.InspectorView) {
+  const { tabbedPane, ...inspector } = inspectorView
   const drawerTabbedPane: UI.TabbedPane.TabbedPane =
     // @ts-ignore
     inspector.drawerTabbedPane
-  // const drawerLeftToolbar = drawerTabbedPane.leftToolbar()
   Object.entries(plugins)
     .forEach(async ([, plugin]) => {
       const { devtools } = await plugin()
@@ -81,6 +76,9 @@ function registerPlugins(realUI: typeof UI, {
         if (!drawerTabbedPane.hasTab(panel.id)) {
           drawerTabbedPane?.appendTab(panel.id, panel.title, widget)
         }
+      })
+      devtools?.load?.({
+        devtoolsWindow, UI: realUI, inspectorView
       })
     })
 }
