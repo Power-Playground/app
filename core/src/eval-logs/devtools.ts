@@ -96,7 +96,6 @@ const runnable = () => ({
     const inspectorView = realUI.InspectorView.InspectorView.instance()
 
     const leftToolbar = inspectorView.tabbedPane.leftToolbar()
-    console.log(leftToolbar.items)
     leftToolbar.removeToolbarItems()
     registerPlugins(realUI, inspectorView)
     const rightToolbar = inspectorView.tabbedPane.rightToolbar()
