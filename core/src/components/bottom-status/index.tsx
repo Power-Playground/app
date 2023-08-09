@@ -20,7 +20,6 @@ export function BottomStatus() {
 
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
   useEffect(() => {
-    console.log(editorInstance)
     if (!editorInstance) return
 
     const updateLineAndColumn = () => {
