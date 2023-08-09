@@ -1,26 +1,28 @@
-import { useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 
 import { isMacOS } from '../../utils'
 import type { DialogRef } from '../Dialog.tsx'
+import { MonacoScopeContext } from '../EditorZone.tsx'
 import { Popover } from '../Popover.tsx'
 
 import { HistoryDialog } from './HistoryDialog.tsx'
 
-export interface HistoryProps {
-  theme: string
-  setCode: (code: string) => void
-}
-
-export function History({
-  theme,
-  setCode
-}: HistoryProps) {
+export function History() {
   const historyDialogRef = useRef<DialogRef>(null)
+
+  const { editorInstance, store } = useContext(MonacoScopeContext) ?? {}
+  const [, setCode] = store?.code ?? []
+  const [theme] = store?.theme ?? ['light']
+  useEffect(() => {
+    if (!editorInstance) return
+
+    editorInstance.onDidChangeConfiguration(console.log)
+  }, [editorInstance])
   return <>
     <HistoryDialog
       theme={theme}
       ref={historyDialogRef}
-      onChange={ch => setCode(ch.code)}
+      onChange={ch => setCode?.(ch.code)}
     />
     <Popover
       style={{ cursor: 'pointer' }}

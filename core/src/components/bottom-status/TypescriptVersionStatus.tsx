@@ -3,15 +3,12 @@ import type { QuickAccess } from '@power-playground/core'
 import { QuickAccessContext } from '@power-playground/core'
 
 import { typescriptVersionMeta, useDistTags } from '../editor.typescript.versions.ts'
+import { MonacoScopeContext } from '../EditorZone.tsx'
 import { Popover } from '../Popover.tsx'
 
-export function TypescriptVersionStatus({
-  value,
-  onChange
-}: {
-  value: string
-  onChange: (value: string) => void
-}) {
+export function TypescriptVersionStatus() {
+  const { store } = useContext(MonacoScopeContext) ?? {}
+  const [value, onChange] = store!.typescriptVersion
   const {
     data, fetching, error
   } = useDistTags()

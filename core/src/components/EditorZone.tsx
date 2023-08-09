@@ -1,25 +1,23 @@
 import './EditorZone.scss'
 
-import {
+import React, {
+  createContext,
   useEffect,
   useMemo,
   useRef,
-  useState } from 'react'
+  useState
+} from 'react'
 import loader from '@monaco-editor/loader'
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
-import { classnames, copyToClipboard, isMacOS } from '../utils'
+import { classnames, copyToClipboard } from '../utils'
 
-import { History } from './bottom-status/History.tsx'
 import { setCodeHistory } from './bottom-status/historyStore.ts'
-import { TypescriptVersionStatus } from './bottom-status/TypescriptVersionStatus.tsx'
-import { HelpDialog } from './editor-zone/HelpDialog.tsx'
-import type { DialogRef } from './Dialog.tsx'
+import { BottomStatus } from './bottom-status'
 import { typescriptVersionMeta } from './editor.typescript.versions.ts'
-import { Popover } from './Popover.tsx'
 import type { ResizableProps } from './Resizable.tsx'
 import { Resizable } from './Resizable.tsx'
 import { TopBar } from './TopBar.tsx'
@@ -60,7 +58,19 @@ function addCommands(
   editor.focus()
 }
 
-// monaco editor editorInstance
+interface MonacoScopeContextValue {
+  monaco: typeof monacoEditor | null
+  editorInstance: monacoEditor.editor.IStandaloneCodeEditor | null
+
+  store: {
+    code: [string, React.Dispatch<React.SetStateAction<string>>]
+    theme: [string, React.Dispatch<React.SetStateAction<string>>]
+    typescriptVersion: [string, (tsv: string) => void]
+  }
+}
+
+export const MonacoScopeContext = createContext<MonacoScopeContextValue | null>(null)
+
 export default function EditorZone(props: {
   style?: React.CSSProperties & {
     '--editor-width'?: unknown
@@ -184,8 +194,6 @@ export default function EditorZone(props: {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
-  const helpDialogRef = useRef<DialogRef>(null)
-
   const loadingNode = <section style={{
     display: 'flex',
     alignItems: 'center',
@@ -212,110 +220,85 @@ export default function EditorZone(props: {
       : <span>Downloading TypeScript{typescriptVersion && <>@<code>{typescriptVersion}</code></>} ...</span>}
   </section>
 
-  const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
-
-  return <Resizable
-    className={classnames('editor-zone', props.className)}
-    style={{
-      ...props.style,
-      width: 'var(--editor-width, 50%)',
-      minWidth: 'var(--editor-min-width)',
-      maxWidth: 'var(--editor-max-width)',
-      height: 'var(--editor-height, 50%)',
-      minHeight: 'var(--editor-min-height)',
-      maxHeight: 'var(--editor-max-height)'
-    }}
-    resizable={props.resizable ?? { right: true }}
-    >
-    <TopBar language={language} onChangeLanguage={changeLanguage} />
-    {!typescriptVersion
-      ? loadingNode
-      : <Editor
-        key={typescriptVersion}
-        language={{
-          js: 'javascript',
-          ts: 'typescript'
-        }[language]}
-        options={{
-          automaticLayout: true,
-          scrollbar: {
-            vertical: 'hidden',
-            verticalSliderSize: 0,
-            verticalScrollbarSize: 0
-          }
-        }}
-        theme={theme === 'light' ? 'vs' : 'vs-dark'}
-        loading={loadingNode}
-        path={`file://${curFilePath}`}
-        value={code}
-        onChange={code => setCode(code ?? '')}
-        onMount={(editor, monaco) => {
-          // @ts-ignore
-          editorRef.current = editor
-          editor.onDidChangeModelContent(function compile() {
-            const model = editor.getModel()
-            if (model) {
-              let worker:
-                | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
-                | Promise<undefined>
-                = Promise.resolve(undefined)
-              if (model.uri.path.match(/\.tsx?$/)) {
-                worker = monaco.languages.typescript.getTypeScriptWorker()
-              }
-              if (model.uri.path.match(/\.jsx?$/)) {
-                worker = monaco.languages.typescript.getJavaScriptWorker()
-              }
-              worker
-                .then(worker => worker?.(model.uri))
-                .then(client => client?.getEmitOutput(model.uri.toString()))
-                .then(result => {
-                  if (!result) return
-
-                  compileResultRef.current = result
-                  elBridgeP.send('compile-completed', result.outputFiles)
-                })
+  return <MonacoScopeContext.Provider value={{
+    monaco,
+    editorInstance: editorRef.current,
+    store: {
+      code: [code, setCode],
+      theme: [theme, setTheme],
+      typescriptVersion: [
+        typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0],
+        changeTypescriptVersion
+      ]
+    }
+  }}>
+    <Resizable
+      className={classnames('editor-zone', props.className)}
+      style={{
+        ...props.style,
+        width: 'var(--editor-width, 50%)',
+        minWidth: 'var(--editor-min-width)',
+        maxWidth: 'var(--editor-max-width)',
+        height: 'var(--editor-height, 50%)',
+        minHeight: 'var(--editor-min-height)',
+        maxHeight: 'var(--editor-max-height)'
+      }}
+      resizable={props.resizable ?? { right: true }}
+      >
+      <TopBar language={language} onChangeLanguage={changeLanguage} />
+      {!typescriptVersion
+        ? loadingNode
+        : <Editor
+          key={typescriptVersion}
+          language={{
+            js: 'javascript',
+            ts: 'typescript'
+          }[language]}
+          options={{
+            automaticLayout: true,
+            scrollbar: {
+              vertical: 'hidden',
+              verticalSliderSize: 0,
+              verticalScrollbarSize: 0
             }
-            return compile
-          }())
-          const updateLineAndColumn = () => {
-            const pos = editor.getPosition()
-            if (pos) setLineAndColumn([pos.lineNumber, pos.column])
-          }
-          editor.onDidChangeCursorPosition(updateLineAndColumn)
-          updateLineAndColumn()
-          addCommands(editor, monaco)
-        }}
-      />}
-    <div className='monaco-editor bottom-status'>
-      <Popover
-        style={{ cursor: 'pointer' }}
-        offset={[0, 3]}
-        content={<>
-          Find Help(<code>
-            {isMacOS ? '^' : 'Ctrl'}
-          </code> + <code>/</code>)
-        </>}
-        onClick={() => helpDialogRef.current?.open()}
-      >
-        <HelpDialog ref={helpDialogRef} />
-        <div className='cldr codicon codicon-info' />
-      </Popover>
-      <History theme={theme} setCode={setCode} />
-      <TypescriptVersionStatus
-        value={typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0]}
-        onChange={changeTypescriptVersion}
-      />
-      <Popover style={{ cursor: 'pointer' }}
-               offset={[0, 3]}
-               content='Go to Line and Column'
-               onClick={() => {
-                 if (!editorRef.current) return
-                 editorRef.current.focus()
-                 editorRef.current.trigger('editor', 'editor.action.quickCommand', {})
-               }}
-      >
-        <div className='line-and-column'>{line}:{column}</div>
-      </Popover>
-    </div>
-  </Resizable>
+          }}
+          theme={theme === 'light' ? 'vs' : 'vs-dark'}
+          loading={loadingNode}
+          path={`file://${curFilePath}`}
+          value={code}
+          onChange={code => setCode(code ?? '')}
+          onMount={(editor, monaco) => {
+            // @ts-ignore
+            editorRef.current = editor
+            editor.onDidChangeModelContent(function compile() {
+              const model = editor.getModel()
+              if (model) {
+                let worker:
+                  | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
+                  | Promise<undefined>
+                  = Promise.resolve(undefined)
+                if (model.uri.path.match(/\.tsx?$/)) {
+                  worker = monaco.languages.typescript.getTypeScriptWorker()
+                }
+                if (model.uri.path.match(/\.jsx?$/)) {
+                  worker = monaco.languages.typescript.getJavaScriptWorker()
+                }
+                worker
+                  .then(worker => worker?.(model.uri))
+                  .then(client => client?.getEmitOutput(model.uri.toString()))
+                  .then(result => {
+                    if (!result) return
+
+                    compileResultRef.current = result
+                    elBridgeP.send('compile-completed', result.outputFiles)
+                  })
+              }
+              return compile
+            }())
+            addCommands(editor, monaco)
+          }}
+        />}
+      <BottomStatus />
+    </Resizable>
+  </MonacoScopeContext.Provider>
 }
