@@ -1,0 +1,40 @@
+div.ppd-top-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+
+  width: 100%;
+  min-height: 27px;
+  padding-right: 10px;
+
+  background-color: color-mix(in srgb, var(--primary), #888 50%);
+
+  color: #fff;
+  transition: .1s;
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 3px;
+    background-color: #0000;
+    color: #fff;
+
+    cursor: pointer;
+    border: none;
+    border-radius: 2px;
+    outline: none;
+    transition: .1s;
+    &:hover { background-color: #0004; }
+    > .cldr.codicon {
+      font-size: 12px;
+    }
+  }
+  > .opts {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}

@@ -23,6 +23,7 @@ import { Popover } from './Popover.tsx'
 import type { ResizableProps } from './Resizable.tsx'
 import { Resizable } from './Resizable.tsx'
 import { Switcher } from './Switcher.tsx'
+import { TopBar } from './TopBar.tsx'
 
 const isMacOS = navigator.platform.startsWith('Mac')
 
@@ -187,25 +188,6 @@ export default function EditorZone(props: {
 
   const helpDialogRef = useRef<DialogRef>(null)
 
-  const tsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#4272ba' }}>
-    <span style={{
-      position: 'absolute',
-      right: -1,
-      bottom: -3,
-      transform: 'scale(0.4)',
-      fontWeight: 'blob'
-    }}>TS</span>
-  </div>
-  const jsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#f2d949' }}>
-    <span style={{
-      position: 'absolute',
-      right: -1,
-      bottom: -3,
-      transform: 'scale(0.4)',
-      fontWeight: 'blob',
-      color: 'black'
-    }}>JS</span>
-  </div>
   const loadingNode = <section style={{
     display: 'flex',
     alignItems: 'center',
@@ -248,31 +230,7 @@ export default function EditorZone(props: {
       }}
       resizable={props.resizable ?? { right: true }}
       >
-      <div className='menu'>
-        <div className='btns' style={{ visibility: 'hidden' }}>
-        </div>
-        <div className='opts'>
-          <Popover
-            placement='bottom'
-            content={<>
-              Execute(<code>
-                {isMacOS ? '⌘' : 'Ctrl'}
-              </code> + <code>E</code>)
-            </>}
-            offset={[0, 6]}
-          >
-            <button className='excute'
-                    onClick={() => elBridgeP.send('run')}>
-              <div className='cldr codicon codicon-play' />
-            </button>
-          </Popover>
-          <Switcher lText={tsIcon}
-                    rText={jsIcon}
-                    value={language === 'js'}
-                    onChange={checked => changeLanguage(checked ? 'js' : 'ts')}
-          />
-        </div>
-      </div>
+      <TopBar language={language} onChangeLanguage={changeLanguage} />
       {!typescriptVersion
         ? loadingNode
         : <Editor
