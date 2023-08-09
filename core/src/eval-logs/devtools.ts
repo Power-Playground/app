@@ -35,31 +35,48 @@ const devtools = document.querySelector('iframe')!
 const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
 const devtoolsDocument = devtools.contentDocument!
 
-let uiTheme = JSON.parse(localStorage.getItem('uiTheme') ?? '""')
-elBridgeC.on('update:localStorage', ([key, value]) => {
-  if (key === 'uiTheme' && uiTheme !== value) {
-    // TODO Setting page select value is wrong
-    const html = devtoolsDocument.querySelector('html')!
-    if (value === 'dark') {
-      html.classList.add('-theme-with-dark-background')
-    }
-    if (value === 'default') {
-      html.classList.remove('-theme-with-dark-background')
-    }
-    uiTheme = value
-  }
-})
+const plugins = import.meta
+  .glob('../plugins/*/index.ts*', {
+    import: 'default'
+  }) as Record<string, () => Promise<ReturnType<typeof definePlugin>>>
+// @ts-ignore
+const PPD_PLUGINS: typeof plugins = window.PPD_PLUGINS ?? {}
 
-const plugins = import.meta.glob('../plugins/*/index.ts*', {
-  import: 'default'
-}) as Record<string, () => Promise<ReturnType<typeof definePlugins>>>
+const ALL_PLUGINS = { ...plugins, ...PPD_PLUGINS }
+
+// eslint-disable-next-line no-unused-labels
+beforeMount: {
+  Object.entries(ALL_PLUGINS)
+    .forEach(async ([, plugin]) => {
+      const { devtools } = await plugin()
+      devtools?.beforeMount?.({ devtoolsWindow })
+    })
+}
+
+// eslint-disable-next-line no-unused-labels
+resolveElBridgeC: {
+  let uiTheme = JSON.parse(localStorage.getItem('uiTheme') ?? '""')
+  elBridgeC.on('update:localStorage', ([key, value]) => {
+    if (key === 'uiTheme' && uiTheme !== value) {
+      // TODO Setting page select value is wrong
+      const html = devtoolsDocument.querySelector('html')!
+      if (value === 'dark') {
+        html.classList.add('-theme-with-dark-background')
+      }
+      if (value === 'default') {
+        html.classList.remove('-theme-with-dark-background')
+      }
+      uiTheme = value
+    }
+  })
+}
 
 function registerPlugins(realUI: typeof UI, inspectorView: UI.InspectorView.InspectorView) {
   const { tabbedPane, ...inspector } = inspectorView
   const drawerTabbedPane: UI.TabbedPane.TabbedPane =
     // @ts-ignore
     inspector.drawerTabbedPane
-  Object.entries(plugins)
+  Object.entries(ALL_PLUGINS)
     .forEach(async ([, plugin]) => {
       const { devtools } = await plugin()
       devtools?.panels?.forEach(panel => {
@@ -93,8 +110,6 @@ const runnable = () => ({
     const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
     const inspectorView = realUI.InspectorView.InspectorView.instance()
 
-    const leftToolbar = inspectorView.tabbedPane.leftToolbar()
-    leftToolbar.removeToolbarItems()
     const rightToolbar = inspectorView.tabbedPane.rightToolbar()
     rightToolbar.appendSeparator()
     const dockToolbarIcons = [
