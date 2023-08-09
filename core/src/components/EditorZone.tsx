@@ -11,7 +11,7 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge.ts'
 import type { definePlugins } from '../plugins'
-import { classnames, copyToClipboard } from '../utils'
+import { classnames, copyToClipboard, isMacOS } from '../utils'
 
 import { History } from './bottom-status/History.tsx'
 import { setCodeHistory } from './bottom-status/historyStore.ts'
@@ -22,10 +22,7 @@ import { typescriptVersionMeta } from './editor.typescript.versions.ts'
 import { Popover } from './Popover.tsx'
 import type { ResizableProps } from './Resizable.tsx'
 import { Resizable } from './Resizable.tsx'
-import { Switcher } from './Switcher.tsx'
 import { TopBar } from './TopBar.tsx'
-
-const isMacOS = navigator.platform.startsWith('Mac')
 
 // TODO support filter plugins
 const plugins = import.meta.glob('../plugins/*/index.ts*', {
