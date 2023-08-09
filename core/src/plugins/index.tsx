@@ -119,7 +119,7 @@ export function defineDevtoolsPanel(
   return rtRender
 }
 
-export function definePlugins(props: {
+export function definePlugin(props: {
   editor?: (monaco: typeof import('monaco-editor')) => () => void
   devtools?: {
     panels?: Panel[]

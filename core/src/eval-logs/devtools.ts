@@ -1,6 +1,6 @@
 import type * as UI from '//chii/ui/legacy/legacy'
 
-import type { definePlugins } from '../plugins'
+import type { definePlugin } from '../plugins'
 
 import { elBridgeC } from './bridge.ts'
 

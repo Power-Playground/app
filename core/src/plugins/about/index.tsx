@@ -1,4 +1,4 @@
-import { defineDevtoolsPanel, definePlugins, useImports } from '../index'
+import { defineDevtoolsPanel, definePlugin, useImports } from '../index'
 
 const about = `## 这是什么？
 
@@ -33,6 +33,6 @@ const AboutPanel = defineDevtoolsPanel('ppd.about', 'About', 'react', () => {
   />
 })
 
-export default definePlugins({
+export default definePlugin({
   devtools: { drawerPanels: [AboutPanel] }
 })

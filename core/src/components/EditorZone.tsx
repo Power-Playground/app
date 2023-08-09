@@ -12,7 +12,7 @@ import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge.ts'
-import type { definePlugins } from '../plugins'
+import type { definePlugin } from '../plugins'
 import { classnames, copyToClipboard } from '../utils'
 
 import { setCodeHistory } from './bottom-status/historyStore.ts'
@@ -25,7 +25,7 @@ import { TopBar } from './TopBar.tsx'
 // TODO support filter plugins
 const plugins = import.meta.glob('../plugins/*/index.ts*', {
   eager: true, import: 'default'
-}) as Record<string, ReturnType<typeof definePlugins>>
+}) as Record<string, ReturnType<typeof definePlugin>>
 
 const extraModules = Object
   .entries(Object.assign(

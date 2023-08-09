@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useFiles } from '../../eval-logs/files.ts'
-import { defineDevtoolsPanel, definePlugins } from '../index.tsx'
+import { defineDevtoolsPanel, definePlugin } from '../index.tsx'
 
 import CodeHighlighter from './code-highlighter.tsx'
 
@@ -57,7 +57,7 @@ const DTSPanel = defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', ({ UI, de
 // Errors
 // AST
 
-export default definePlugins({
+export default definePlugin({
   editor(monaco) {
     const disposables = [
       monaco.languages.registerCompletionItemProvider('typescript', {

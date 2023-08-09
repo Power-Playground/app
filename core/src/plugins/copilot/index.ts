@@ -1,6 +1,6 @@
-import { definePlugins } from '../index.tsx'
+import { definePlugin } from '../index.tsx'
 
-export default definePlugins({
+export default definePlugin({
   editor(monaco) {
     const disposables = [
       monaco.languages.registerInlineCompletionsProvider('typescript', {
