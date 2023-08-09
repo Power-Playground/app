@@ -127,9 +127,10 @@ const realCommon = await devtoolsWindow.simport('core/common/common.js')
 realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
 
 main: {
-  const { MainImpl } = await devtoolsWindow.simport<
-    typeof import('//chii/entrypoints/main/main')
-  >('entrypoints/main/main.js')
+  const { MainImpl } = await devtoolsWindow
+    .simport<typeof import('//chii/entrypoints/main/main')>(
+      'entrypoints/main/main.js'
+    )
   let initializeTargetResolver: () => void
   const initializeTargetPromise = new Promise<void>(re => initializeTargetResolver = re)
   const _timeend = MainImpl.MainImpl.timeEnd
@@ -145,7 +146,7 @@ main: {
   const instance = MainImpl.MainImpl.instanceForTest
   if (instance === null) break main
 
-  const lateInitDonePromise = instance.lateInitDonePromise as Promise<void>
+  const lateInitDonePromise = (instance as any).lateInitDonePromise as Promise<void>
   if (lateInitDonePromise === undefined) {
     await initializeTargetPromise
   } else {
