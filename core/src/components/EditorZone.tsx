@@ -187,21 +187,21 @@ export default function EditorZone(props: {
 
   const helpDialogRef = useRef<DialogRef>(null)
 
-  const tsIcon = <div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#4272ba' }}>
+  const tsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#4272ba' }}>
     <span style={{
       position: 'absolute',
-      right: 1,
-      bottom: -2,
-      transform: 'scale(0.6)',
+      right: -1,
+      bottom: -3,
+      transform: 'scale(0.4)',
       fontWeight: 'blob'
     }}>TS</span>
   </div>
-  const jsIcon = <div style={{ position: 'relative', width: 24, height: 24, backgroundColor: '#f2d949' }}>
+  const jsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#f2d949' }}>
     <span style={{
       position: 'absolute',
-      right: 1,
-      bottom: -2,
-      transform: 'scale(0.6)',
+      right: -1,
+      bottom: -3,
+      transform: 'scale(0.4)',
       fontWeight: 'blob',
       color: 'black'
     }}>JS</span>
