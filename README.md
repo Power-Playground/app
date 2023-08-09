@@ -18,8 +18,11 @@
   * [ ] History
   * [ ] Snippets
   * [ ] Examples
+  * [ ] Unit test
 * [x] 更好的编辑体验
   * [x] 窗口控制
   * [x] Top operation bar
   * [x] Bottom tips
+  * [ ] 隐藏 devtools
+  * [ ] 隐藏 editor
 * [ ] i18n
