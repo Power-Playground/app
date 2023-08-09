@@ -35,26 +35,20 @@ const devtools = document.querySelector('iframe')!
 const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
 const devtoolsDocument = devtools.contentDocument!
 
-let inited = false
-async function checkInspectorViewIsLoaded() {
-  const realThemeSupport = await devtoolsWindow.simport('ui/legacy/theme_support/theme_support.js')
-  if (!realThemeSupport.ThemeSupport.hasInstance())
-    return
-
-  const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
-  const inspectorView = realUI.InspectorView.InspectorView.instance()
-  if (inspectorView && !inited) {
-    inited = true
-    await init()
+let uiTheme = JSON.parse(localStorage.getItem('uiTheme') ?? '""')
+elBridgeC.on('update:localStorage', ([key, value]) => {
+  if (key === 'uiTheme' && uiTheme !== value) {
+    // TODO Setting page select value is wrong
+    const html = devtoolsDocument.querySelector('html')!
+    if (value === 'dark') {
+      html.classList.add('-theme-with-dark-background')
+    }
+    if (value === 'default') {
+      html.classList.remove('-theme-with-dark-background')
+    }
+    uiTheme = value
   }
-}
-(async () => {
-  if (devtoolsDocument.readyState === 'complete') {
-    await checkInspectorViewIsLoaded()
-  } else {
-    devtoolsDocument.addEventListener('load', checkInspectorViewIsLoaded, true)
-  }
-})()
+})
 
 const plugins = import.meta.glob('../plugins/*/index.ts*', {
   import: 'default'
@@ -71,7 +65,7 @@ function registerPlugins(realUI: typeof UI, {
     inspector.drawerTabbedPane
   // const drawerLeftToolbar = drawerTabbedPane.leftToolbar()
   Object.entries(plugins)
-    .forEach(async ([path, plugin]) => {
+    .forEach(async ([, plugin]) => {
       const { devtools } = await plugin()
       devtools?.panels?.forEach(panel => {
         const Widget = panel(devtoolsWindow, realUI)
@@ -91,69 +85,77 @@ function registerPlugins(realUI: typeof UI, {
     })
 }
 
-async function init() {
-  let uiTheme = JSON.parse(localStorage.getItem('uiTheme') ?? '""')
-  elBridgeC.on('update:localStorage', ([key, value]) => {
-    if (key === 'uiTheme' && uiTheme !== value) {
-      // TODO Setting page select value is wrong
-      const html = devtoolsDocument.querySelector('html')!
-      if (value === 'dark') {
-        html.classList.add('-theme-with-dark-background')
-      }
-      if (value === 'default') {
-        html.classList.remove('-theme-with-dark-background')
-      }
-      uiTheme = value
-    }
-  })
+let runIsCalled = false
 
-  const realCommon = await devtoolsWindow.simport('core/common/common.js')
-  const { MainImpl: { MainImpl } } = await devtoolsWindow
-    .simport<typeof import('//chii/entrypoints/main/main')>('entrypoints/main/main.js')
-  const runnable = () => ({
-    run: async () => {
-      console.log('run')
-      const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
-      const inspectorView = realUI.InspectorView.InspectorView.instance()
+const runnable = () => ({
+  run: async () => {
+    if (runIsCalled) return
+    runIsCalled = true
 
-      const leftToolbar = inspectorView.tabbedPane.leftToolbar()
-      leftToolbar.removeToolbarItems()
-      registerPlugins(realUI, inspectorView)
-      const rightToolbar = inspectorView.tabbedPane.rightToolbar()
-      rightToolbar.appendSeparator()
-      const dockToolbarIcons = [
-        ['largeicon-dock-to-bottom', 'Dock to bottom'],
-        ['largeicon-dock-to-left', 'Dock to left'],
-        ['largeicon-dock-to-right', 'Dock to right']
-      ]
-      const dockBtns = dockToolbarIcons.map(([icon, title]) => {
-        const button = new realUI.Toolbar.ToolbarToggle(title, icon)
-        button.addEventListener(realUI.Toolbar.ToolbarButton.Events.Click, () => {
-          dockBtns.forEach(btn => btn.setToggled(false))
-          button.setToggled(!button.toggled())
-          if (button.toggled()) {
-            elBridgeC.send('dock-to', icon.slice('largeicon-dock-to-'.length))
-          }
-        })
-        if (icon === 'largeicon-dock-to-right') {
-          button.setToggled(true)
+    const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
+    const inspectorView = realUI.InspectorView.InspectorView.instance()
+
+    const leftToolbar = inspectorView.tabbedPane.leftToolbar()
+    console.log(leftToolbar.items)
+    leftToolbar.removeToolbarItems()
+    registerPlugins(realUI, inspectorView)
+    const rightToolbar = inspectorView.tabbedPane.rightToolbar()
+    rightToolbar.appendSeparator()
+    const dockToolbarIcons = [
+      ['largeicon-dock-to-bottom', 'Dock to bottom'],
+      ['largeicon-dock-to-left', 'Dock to left'],
+      ['largeicon-dock-to-right', 'Dock to right']
+    ]
+    const dockBtns = dockToolbarIcons.map(([icon, title]) => {
+      const button = new realUI.Toolbar.ToolbarToggle(title, icon)
+      button.addEventListener(realUI.Toolbar.ToolbarButton.Events.Click, () => {
+        dockBtns.forEach(btn => btn.setToggled(false))
+        button.setToggled(!button.toggled())
+        if (button.toggled()) {
+          elBridgeC.send('dock-to', icon.slice('largeicon-dock-to-'.length))
         }
-        rightToolbar.appendToolbarItem(button)
-        return button
       })
-    }
-  })
-  const promise = (
-    // @ts-ignore
-    MainImpl.instanceForTest.lateInitDonePromise as Promise<void> | undefined
-  )
-  const state = promise === undefined
-    ? 'pending'
-    : await promise.then(() => 'fulfilled', () => 'rejected')
-  if (state === 'pending') {
-    realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
+      if (icon === 'largeicon-dock-to-right') {
+        button.setToggled(true)
+      }
+      rightToolbar.appendToolbarItem(button)
+      return button
+    })
   }
-  if (state === 'fulfilled') {
-    runnable().run()
+})
+
+const realCommon = await devtoolsWindow.simport('core/common/common.js')
+realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
+
+main: {
+  const { MainImpl } = await devtoolsWindow.simport<
+    typeof import('//chii/entrypoints/main/main')
+  >('entrypoints/main/main.js')
+  let initializeTargetResolver: () => void
+  const initializeTargetPromise = new Promise<void>(re => initializeTargetResolver = re)
+  const _timeend = MainImpl.MainImpl.timeEnd
+  MainImpl.MainImpl.timeEnd = function (label: string) {
+    _timeend.call(MainImpl.MainImpl, label)
+    if ([
+      'Main._initializeTarget',
+      'Main._lateInitialization'
+    ].includes(label)) {
+      initializeTargetResolver()
+    }
+  }
+  const instance = MainImpl.MainImpl.instanceForTest
+  if (instance === null) break main
+
+  const lateInitDonePromise = instance.lateInitDonePromise as Promise<void>
+  if (lateInitDonePromise === undefined) {
+    await initializeTargetPromise
+  } else {
+    await lateInitDonePromise
+  }
+  try {
+    await runnable().run()
+  } catch (e) {
+    runIsCalled = false
+    console.debug(e)
   }
 }
