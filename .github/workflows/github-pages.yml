@@ -75,6 +75,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
     steps:
       - uses: actions/checkout@v2
@@ -87,11 +90,16 @@ jobs:
           name: dist
           path: dist
 
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v20
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
         with:
-          vercel-args: --prod
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-scope: ${{ secrets.VERCEL_SCOPE }}
+          node-version: '18'
+      - name: Install Vercel CLI
+        run: yarn global add vercel
+
+      - name: Deploy to Vercel
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          # VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
+        run: |
+            vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --build-env BASE=None
