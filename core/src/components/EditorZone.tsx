@@ -121,6 +121,27 @@ export default function EditorZone(props: {
 
   const monaco = useMonaco()
   useEffect(() => {
+    if (!monaco) return
+
+    try {
+      monaco.editor.addKeybindingRule({
+        keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
+        command: 'editor.action.quickCommand'
+      })
+    } catch (e) {
+      console.error(e)
+    }
+
+    const dispose = Object.values(plugins)
+      .reduce(
+        (acc, plugin) => plugin.editor
+          ? acc.concat(plugin.editor?.(monaco))
+          : acc,
+        [] as Function[]
+      )
+    return () => dispose.forEach(func => func())
+  }, [monaco])
+  useEffect(() => {
     if (!monaco || !typescriptVersion) return
 
     let defaults: monacoEditor.languages.typescript.LanguageServiceDefaults
@@ -144,23 +165,7 @@ export default function EditorZone(props: {
     console.log('typescript.CompilerOptions', monaco.languages.typescript.typescriptDefaults.getCompilerOptions())
     console.groupEnd()
 
-    try {
-      monaco.editor.addKeybindingRule({
-        keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
-        command: 'editor.action.quickCommand'
-      })
-    } catch (e) {
-      console.error(e)
-    }
-    const dispose = Object.values(plugins)
-      .reduce(
-        (acc, plugin) => plugin.editor
-          ? acc.concat(plugin.editor?.(monaco))
-          : acc,
-        [] as Function[]
-      )
     return () => {
-      dispose.forEach(func => func())
       monaco.editor.getModels().forEach(model => {
         if (model.uri.path !== curFilePath) model.dispose()
       })
