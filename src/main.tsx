@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom/client'
 
 import { App } from './App.tsx'
 
+window.__DEBUG__ = JSON.parse(localStorage.getItem('enableDebug') ?? 'false')
 Object.defineProperty(window, '牛逼', {
   get() {
     let flag = JSON.parse(localStorage.getItem('enableDebug') ?? 'false')
@@ -17,7 +18,7 @@ Object.defineProperty(window, '牛逼', {
     }
     // debug 模式启动
     console.log(`debug 模式${flag ? '关闭' : '启动'}`)
-    window.__DEBUG__ = flag
+    setTimeout(location.reload.bind(location), 500)
   }
 })
 
