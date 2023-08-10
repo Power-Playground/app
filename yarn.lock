@@ -2055,6 +2055,11 @@ semver@^7.3.7, semver@^7.5.4:
   dependencies:
     lru-cache "^6.0.0"
 
+sentinel-js@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.npmjs.org/sentinel-js/-/sentinel-js-0.0.7.tgz#62733a8355e157b7f2529227613ecb5576ace3b4"
+  integrity sha512-jbGZvDqhmjd5IZh8a3qCypmc1Hlgdu+vastCCT6nK2Vopfsoq/3fstVMJxZJtxy2wlw9EVVGmFeGFObVp9E6MA==
+
 shebang-command@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz#ccd0af4f8835fbdc265b82461aaf0c36663f34ea"

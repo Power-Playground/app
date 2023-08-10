@@ -1,5 +1,12 @@
+import sentinel from 'sentinel-js'
+
 import { elBridgeC } from './bridge.ts'
 import { Files } from './files.ts'
+
+sentinel.on('.__chobitsu-hide__', _el => {
+  const el = /** @type {HTMLDivElement} */ (_el)
+  el.children[0]?.remove()
+})
 
 // @ts-ignore
 window.require = function (name) {

@@ -16,7 +16,8 @@ export default defineConfig(async env => ({
     env.mode === 'production' ? viteExternalsPlugin({
       '@babel/standalone': 'Babel',
       'react': 'React',
-      'react-dom': 'ReactDOM'
+      'react-dom': 'ReactDOM',
+      'sentinel-js': 'sentinel'
     }) : null
   ],
   publicDir: './core/public',
