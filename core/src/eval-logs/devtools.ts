@@ -155,7 +155,6 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
       devtoolsWindow.addEventListener('load', () => re())
     })
     console.log(devtoolsWindow.simport)
-    debugger
     const realCommon = await devtoolsWindow.simport('core/common/common.js')
     realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
 
