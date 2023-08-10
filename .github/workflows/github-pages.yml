@@ -50,7 +50,7 @@ jobs:
           path: dist
 
   deploy-to-github:
-    depends-on: build-dist
+    needs: build-dist
     runs-on: ubuntu-latest
     permissions:
       contents: write
