@@ -3,6 +3,8 @@ import sentinel from 'sentinel-js'
 import { elBridgeC } from './bridge.ts'
 import { Files } from './files.ts'
 
+console.log('init')
+
 window.__DEBUG__ = JSON.parse(localStorage.getItem('enableDebug') ?? 'false')
 
 sentinel.on('.__chobitsu-hide__', _el => {
