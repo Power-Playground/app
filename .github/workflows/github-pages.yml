@@ -102,6 +102,7 @@ jobs:
 
       - name: Deploy to Vercel
         env:
+          BASE: None
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
             vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --build-env BASE=None

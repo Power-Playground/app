@@ -4,8 +4,5 @@
   ],
   "rewrites": [
     { "source": "/(.*)", "destination": "/dist/$1" }
-  ],
-  "env": {
-    "BASE": "None"
-  }
+  ]
 }
