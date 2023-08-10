@@ -1,5 +1,11 @@
 {
   "builds": [
-    { "src": "dist", "use": "@vercel/static" }
-  ]
+    { "src": "dist/**/*", "use": "@vercel/static" }
+  ],
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/dist/$1" }
+  ],
+  "env": {
+    "BASE": "None"
+  }
 }

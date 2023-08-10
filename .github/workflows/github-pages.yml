@@ -43,11 +43,14 @@ jobs:
         run: |
           yarn build
 
-      - name: upload dist
+      - name: upload dist and vercel.json
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: dist
+          path: |
+            dist
+            vercel.json
+
 
   deploy-to-github:
     needs: build-dist
@@ -60,7 +63,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
-          path: dist
+          path: .
 
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v3
@@ -88,7 +91,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: dist
-          path: dist
+          path: .
 
       - name: Setup Node.js
         uses: actions/setup-node@v1
@@ -100,7 +103,5 @@ jobs:
       - name: Deploy to Vercel
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          # VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
         run: |
             vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --build-env BASE=None
-            echo Hello
