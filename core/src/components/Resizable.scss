@@ -26,7 +26,6 @@
       cursor: ew-resize;
       &:hover {
         width: calc(var(--inner-border-width) * 1.6);
-        transform: translateX(calc(0.3 * var(--inner-border-width)));
       }
     }
     &__top, &__bottom {
@@ -34,22 +33,30 @@
       width: 100%;
       height: var(--inner-border-width);
       cursor: ns-resize;
-      &:hover {
-        height: calc(var(--inner-border-width) * 1.6);
-        transform: translateY(calc(0.3 * var(--inner-border-width)));
-      }
     }
     &__left {
       left: calc(-1 * var(--inner-border-width));
+      &:hover {
+        transform: translateX(calc(-0.3 * var(--inner-border-width)));
+      }
     }
     &__right {
       right: calc(-1 * var(--inner-border-width));
+      &:hover {
+        transform: translateX(calc(0.3 * var(--inner-border-width)));
+      }
     }
     &__top {
       top: calc(-1 * var(--inner-border-width));
+      &:hover {
+        height: calc(var(--inner-border-width) * -1.6);
+      }
     }
     &__bottom {
       bottom: calc(-1 * var(--inner-border-width));
+      &:hover {
+        height: calc(var(--inner-border-width) * 1.6);
+      }
     }
     &:hover {
       z-index: 10;
