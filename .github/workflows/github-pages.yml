@@ -38,6 +38,8 @@ jobs:
         run: yarn --frozen-lockfile
 
       - name: Build site
+        env:
+          BASE_URL: app
         run: |
           yarn build
 
