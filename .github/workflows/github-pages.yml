@@ -103,3 +103,4 @@ jobs:
           # VERCEL_SCOPE: ${{ secrets.VERCEL_SCOPE }}
         run: |
             vercel --token=${{ secrets.VERCEL_TOKEN }} --prod --build-env BASE=None
+            echo Hello
