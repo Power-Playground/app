@@ -40,7 +40,7 @@ const plugins = import.meta
     import: 'default'
   }) as Record<string, () => Promise<ReturnType<typeof definePlugin>>>
 // @ts-ignore
-const PPD_PLUGINS: typeof plugins = window.PPD_PLUGINS ?? {}
+const PPD_PLUGINS: typeof plugins = window.parent.PPD_PLUGINS ?? {}
 
 const ALL_PLUGINS = { ...plugins, ...PPD_PLUGINS }
 

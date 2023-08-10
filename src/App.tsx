@@ -17,6 +17,9 @@ const plugins = import.meta
     import: 'default'
   }) as Record<string, () => Promise<ReturnType<typeof definePlugin>>>
 
+// @ts-ignore
+window.PPD_PLUGINS = plugins
+
 export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {
     light: 'default', dark: 'dark'
@@ -55,12 +58,6 @@ export function App() {
             }}
           />
           <iframe
-            ref={ele => {
-              if (!ele) return
-
-              // @ts-ignore
-              ele.contentWindow!.PPD_PLUGINS = plugins
-            }}
             src='./eval-logs.html'
             frameBorder={0}
             className='eval-logs'
