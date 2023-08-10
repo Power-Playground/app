@@ -36,6 +36,8 @@ export type DevtoolsWindow = Window & typeof globalThis & {
 sentinel.on('iframe', (devtools: HTMLIFrameElement) => {
   const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
   const devtoolsDocument = devtools.contentDocument!
+  __DEBUG__ && console.debug('devtools', devtoolsWindow, devtoolsDocument)
+  __DEBUG__ && console.debug('readyState', devtoolsDocument.readyState)
 
   devtoolsWindow.eval(`window.simport = path => import(\`https://cdn.jsdelivr.net/npm/chii/public/front_end/\${path}\`)`)
 
