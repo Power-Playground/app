@@ -3,6 +3,7 @@
     { "src": "dist/**/*", "use": "@vercel/static" }
   ],
   "rewrites": [
-    { "source": "/(.*)", "destination": "/dist/$1" }
+    { "source": "/(.*)", "destination": "/dist/$1" },
+    { "source": "/app/(.*)", "destination": "/dist/$1" }
   ]
 }
