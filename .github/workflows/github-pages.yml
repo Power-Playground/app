@@ -100,4 +100,5 @@ jobs:
         env:
           BASE: None
         run: |
-            vercel --token=${{ secrets.VERCEL_TOKEN }} --prod
+          mv dist app
+          vercel --token=${{ secrets.VERCEL_TOKEN }} --prod
