@@ -9,7 +9,7 @@ on:
       - 'main'
 
 jobs:
-  pages:
+  build-dist:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -42,6 +42,25 @@ jobs:
           BASE_URL: app
         run: |
           yarn build
+
+      - name: upload dist
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+  deploy-to-github:
+    depends-on: build-dist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
 
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v3
