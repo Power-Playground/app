@@ -40,9 +40,8 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
   const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
   const devtoolsDocument = devtools.contentDocument!
 
-  devtoolsWindow.eval(`window.simport = path => import(\`https://cdn.jsdelivr.net/npm/chii/public/front_end/\${path}\`)`)
-
-  await new Promise<void>(re => setTimeout(re, 10))
+  // devtoolsWindow.eval(`window.simport = path => import(\`https://cdn.jsdelivr.net/npm/chii/public/front_end/\${path}\`)`)
+  // await new Promise<void>(re => setTimeout(re, 5000))
   __DEBUG__ && console.debug('devtools', devtoolsWindow, devtoolsDocument)
   __DEBUG__ && console.debug('readyState', devtoolsDocument.readyState)
 
@@ -149,6 +148,14 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
   })
 
   async function main() {
+    await new Promise<void>(re => {
+      if (devtoolsDocument.readyState === 'complete' && devtoolsWindow.simport!) {
+        re()
+      }
+      devtoolsWindow.addEventListener('load', () => re())
+    })
+    console.log(devtoolsWindow.simport)
+    debugger
     const realCommon = await devtoolsWindow.simport('core/common/common.js')
     realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
 
