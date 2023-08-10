@@ -35,6 +35,10 @@ const devtools = document.querySelector('iframe')!
 const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
 const devtoolsDocument = devtools.contentDocument!
 
+devtoolsWindow.window.eval(`
+window.simport = path => import(\`https://cdn.jsdelivr.net/npm/chii/public/front_end/\${path}\`)
+`)
+
 const plugins = import.meta
   .glob('../plugins/*/index.ts*', {
     import: 'default'
