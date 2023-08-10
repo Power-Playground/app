@@ -137,10 +137,10 @@ const runnable = () => ({
   }
 })
 
-const realCommon = await devtoolsWindow.simport('core/common/common.js')
-realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
+async function main() {
+  const realCommon = await devtoolsWindow.simport('core/common/common.js')
+  realCommon.Runnable.registerEarlyInitializationRunnable(runnable)
 
-main: {
   const { MainImpl } = await devtoolsWindow
     .simport<typeof import('//chii/entrypoints/main/main')>(
       'entrypoints/main/main.js'
@@ -158,7 +158,7 @@ main: {
     }
   }
   const instance = MainImpl.MainImpl.instanceForTest
-  if (instance === null) break main
+  if (instance === null) return
 
   const lateInitDonePromise = (instance as any).lateInitDonePromise as Promise<void>
   if (lateInitDonePromise === undefined) {
@@ -173,3 +173,5 @@ main: {
     console.debug(e)
   }
 }
+
+main()
