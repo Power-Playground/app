@@ -39,11 +39,17 @@ export const ImportsContext = createContext<ImportsContextValue | null>(null)
 export function useImports<
   const Paths extends string[]
 >(...paths: Paths) {
+  const pathsRef = React.useRef(paths)
+  if (pathsRef.current.some((path, i) => path !== paths[i])) {
+    pathsRef.current = paths
+  }
   const [modules, setModules] = React.useState<
     Record<Paths[number], unknown>
   >({} as any)
   const { get } = useContext(ImportsContext) ?? { get: () => Promise.reject() }
   useEffect(() => {
+    const paths = pathsRef.current
+
     let isMounted = true
     async function load() {
       const mods = await Promise.all(paths.map(path => get(path)))
@@ -57,7 +63,7 @@ export function useImports<
     }
     load()
     return () => { isMounted = false }
-  }, [get, paths])
+  }, [get, pathsRef.current])
   return modules
 }
 
