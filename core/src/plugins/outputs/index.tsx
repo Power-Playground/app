@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
-import { elBridgeP } from '@power-playground/core'
 import type * as monacoEditor from 'monaco-editor'
 
+import { elBridgeP } from '../../eval-logs/bridge.ts'
 import { useFiles } from '../../eval-logs/files.ts'
 import { defineDevtoolsPanel, definePlugin } from '../index.tsx'
 
