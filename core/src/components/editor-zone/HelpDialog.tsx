@@ -1,8 +1,8 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { isMacOS } from '@power-playground/core'
 
 import type { DialogRef } from '../Dialog.tsx'
-
 
 export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
   const [open, setOpen] = useState(false)
@@ -11,9 +11,8 @@ export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
     hide: () => setOpen(false)
   }), [])
 
-  const isMac = navigator.platform.includes('Mac')
-  const cmdOrCtrl = isMac ? '⌘' : 'Ctrl'
-  const ctrl = isMac ? '⌃' : 'Ctrl'
+  const cmdOrCtrl = isMacOS ? '⌘' : 'Ctrl'
+  const ctrl = isMacOS ? '⌃' : 'Ctrl'
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
