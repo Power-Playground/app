@@ -15,7 +15,6 @@ import type { StatusBarItemProps } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
-import { typescriptVersionMeta } from './editor.typescript.versions'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
