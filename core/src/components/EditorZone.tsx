@@ -116,11 +116,13 @@ export default function EditorZone(props: {
   const [typescriptVersion, setTypescriptVersion] = useState<string>()
   const isFirstSetTypescriptVersion = useRef(true)
   function changeTypescriptVersion(ts: string) {
+    loader.config({
+      paths: { vs: `https://typescript.azureedge.net/cdn/${ts}/monaco/min/vs` }
+    })
     setTypescriptVersion(ts)
     searchParams.set('ts', ts)
 
     const code = editor?.getValue()
-    if (!code) return
 
     const hash = code ? '#' + btoa(encodeURIComponent(code)) : ''
     history.replaceState(null, '', '?' + searchParams.toString() + hash)
@@ -187,9 +189,6 @@ export default function EditorZone(props: {
     }
   }, [curFilePath, language, monaco, typescriptVersion])
 
-  typescriptVersion && loader.config({
-    paths: { vs: `https://typescript.azureedge.net/cdn/${typescriptVersion}/monaco/min/vs` }
-  })
   const [loadError, setLoadError] = useState<string>()
   useEffect(() => {
     function onResourceLoadError(e: ErrorEvent) {
