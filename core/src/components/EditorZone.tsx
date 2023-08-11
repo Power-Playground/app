@@ -1,13 +1,12 @@
 import './EditorZone.scss'
 
 import React, {
-  createContext, useCallback,
+  createContext,
   useEffect,
   useMemo,
   useRef,
   useState
 } from 'react'
-import loader from '@monaco-editor/loader'
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
@@ -30,19 +29,6 @@ const PLUGINS = import.meta
   ], {
     eager: true, import: 'default'
   }) as Record<string, ReturnType<typeof definePlugin>>
-
-const extraModules = Object
-  .entries(Object.assign(
-    {} as Record<string, string>, {}
-  ))
-  .reduce((acc, [filePath, content]) => acc.concat({
-    filePath,
-    content
-  }), [] as { content: string, filePath: string }[])
-const compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
-  moduleResolution: 2,
-  declaration: true
-}
 
 function addCommands(
   editor: monacoEditor.editor.IStandaloneCodeEditor,
@@ -88,46 +74,21 @@ export default function EditorZone(props: {
       ...acc,
       ...plugin.editor?.uses?.reduce((acc, use) => ({
         ...acc,
-        ...use?.({})
+        ...use?.({ searchParams: searchParams.current, editor })
       }), {})
     }), {} as ShareState)
   const {
-    code, setCode
+    code, setCode,
+    loadingNode,
+    curFilePath,
+    language,
+    changeLanguage,
+    typescriptVersion,
+    changeTypescriptVersion
   } = shareState
   if (setCode === undefined) {
     throw new Error('You must register a plugin to provide `setCode` function')
   }
-
-  const [language, setLanguage] = useState<'js' | 'ts'>(
-    searchParams.current.get('lang') === 'js' ? 'js' : 'ts'
-  )
-  function changeLanguage(lang: 'js' | 'ts') {
-    setLanguage(lang)
-    searchParams.current.set('lang', lang)
-    history.replaceState(null, '', '?' + searchParams.current.toString() + location.hash)
-  }
-  const curFilePath = useMemo(() => `/index.${language}`, [language])
-
-  const [typescriptVersion, setTypescriptVersion] = useState<string>()
-  const isFirstSetTypescriptVersion = useRef(true)
-  const changeTypescriptVersion = useCallback((ts: string) => {
-    loader.config({
-      paths: { vs: `https://typescript.azureedge.net/cdn/${ts}/monaco/min/vs` }
-    })
-    setTypescriptVersion(ts)
-    searchParams.current.set('ts', ts)
-
-    const computeCode = editor?.getValue() ?? code
-
-    const hash = computeCode ? '#' + btoa(encodeURIComponent(computeCode)) : ''
-    history.replaceState(null, '', '?' + searchParams.current.toString() + hash)
-
-    if (isFirstSetTypescriptVersion.current) {
-      isFirstSetTypescriptVersion.current = false
-    } else {
-      location.reload()
-    }
-  }, [code, editor])
 
   const monaco = useMonaco()
   useEffect(() => {
@@ -145,79 +106,11 @@ export default function EditorZone(props: {
     const dispose = plugins.map(plugin => plugin.editor?.preload?.(monaco))
     return () => dispose.forEach(func => func?.())
   }, [monaco, plugins])
-  useEffect(() => {
-    if (!monaco || !typescriptVersion) return
-
-    let defaults: monacoEditor.languages.typescript.LanguageServiceDefaults
-    if (language === 'js') {
-      defaults = monaco.languages.typescript.javascriptDefaults
-    } else {
-      defaults = monaco.languages.typescript.typescriptDefaults
-    }
-    extraModules.forEach(({ content, filePath }) => {
-      monaco.editor.createModel(
-        content,
-        language === 'js' ? 'javascript' : 'typescript',
-        monaco.Uri.parse(filePath)
-      )
-    })
-
-    defaults.setCompilerOptions({ ...defaults.getCompilerOptions(), ...compilerOptions })
-
-    console.group('monaco detail data')
-    console.log('typescript.version', monaco.languages.typescript.typescriptVersion)
-    console.log('typescript.CompilerOptions', monaco.languages.typescript.typescriptDefaults.getCompilerOptions())
-    console.groupEnd()
-
-    return () => {
-      monaco.editor.getModels().forEach(model => {
-        if (model.uri.path !== curFilePath) model.dispose()
-      })
-    }
-  }, [curFilePath, language, monaco, typescriptVersion])
-
-  const [loadError, setLoadError] = useState<string>()
-  useEffect(() => {
-    function onResourceLoadError(e: ErrorEvent) {
-      if (e.target instanceof HTMLScriptElement) {
-        const src = e.target.src
-        if (src.startsWith('https://typescript.azureedge.net/cdn/')) {
-          setLoadError(`TypeScript@${typescriptVersion} unavailable`)
-        }
-      }
-    }
-    window.addEventListener('error', onResourceLoadError, true)
-    return () => window.removeEventListener('error', onResourceLoadError)
-  }, [typescriptVersion])
+  plugins
+    .forEach(plugin => plugin.editor?.useShare?.(shareState, monaco))
 
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
-
-  const loadingNode = <section style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column'
-  }}>
-    <div style={{
-      position: 'relative',
-      width: 72,
-      height: 72,
-      backgroundColor: '#4272ba',
-      userSelect: 'none'
-    }}>
-      <span style={{
-        position: 'absolute',
-        right: 5,
-        bottom: -2,
-        fontSize: 30,
-        fontWeight: 'blob'
-      }}>TS</span>
-    </div>
-    {loadError
-      ? <span>{loadError}</span>
-      : <span>Downloading TypeScript{typescriptVersion && <>@<code>{typescriptVersion}</code></>} ...</span>}
-  </section>
 
   return <MonacoScopeContext.Provider value={{
     monaco,
@@ -245,34 +138,32 @@ export default function EditorZone(props: {
       resizable={props.resizable ?? { right: true }}
       >
       <TopBar language={language} onChangeLanguage={changeLanguage} />
-      {!typescriptVersion
-        ? loadingNode
-        : <Editor
-          key={typescriptVersion}
-          language={{
-            js: 'javascript',
-            ts: 'typescript'
-          }[language]}
-          options={{
-            automaticLayout: true,
-            scrollbar: {
-              vertical: 'hidden',
-              verticalSliderSize: 0,
-              verticalScrollbarSize: 0
-            }
-          }}
-          theme={theme === 'light' ? 'vs' : 'vs-dark'}
-          loading={loadingNode}
-          path={`file://${curFilePath}`}
-          value={code}
-          onChange={code => setCode(code ?? '')}
-          onMount={(editor, monaco) => {
-            plugins
-              .forEach(plugin => plugin.editor?.load?.(editor, monaco))
-            setEditor(editor)
-            addCommands(editor, monaco)
-          }}
-        />}
+      {loadingNode ?? <Editor
+        key={typescriptVersion}
+        language={{
+          js: 'javascript',
+          ts: 'typescript'
+        }[language]}
+        options={{
+          automaticLayout: true,
+          scrollbar: {
+            vertical: 'hidden',
+            verticalSliderSize: 0,
+            verticalScrollbarSize: 0
+          }
+        }}
+        theme={theme === 'light' ? 'vs' : 'vs-dark'}
+        loading={loadingNode}
+        path={`file://${curFilePath}`}
+        value={code}
+        onChange={code => setCode(code ?? '')}
+        onMount={(editor, monaco) => {
+          plugins
+            .forEach(plugin => plugin.editor?.load?.(editor, monaco))
+          setEditor(editor)
+          addCommands(editor, monaco)
+        }}
+      />}
       <BottomStatus />
     </Resizable>
   </MonacoScopeContext.Provider>

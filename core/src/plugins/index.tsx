@@ -131,14 +131,20 @@ export type Dispose = () => void
 export interface ShareState {
   code: string
   setCode: React.Dispatch<React.SetStateAction<string>>
+  curFilePath: string
+  loadingNode: React.ReactNode
 }
 
-export type UseFunction = (props: {}) => Partial<ShareState> | void
+export type UseFunction = (props: {
+  editor: MonacoEditor.editor.IStandaloneCodeEditor | null
+  searchParams: URLSearchParams
+}) => Partial<ShareState> | void
 
 export function definePlugin(props: {
   editor?: {
     uses?: UseFunction[]
     preload?: (monaco: typeof MonacoEditor) => Dispose | void
+    useShare?: (shareState: ShareState, monaco: typeof MonacoEditor | null) => void
     load?: (
       editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
       monaco: typeof MonacoEditor
