@@ -20,7 +20,12 @@ export const Langs = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ shareS
   </div>
 
   return <Switcher
-    style={{ '--gap': '0px', '--bor-size': '3px' }}
+    style={{
+      '--gap': '0px',
+      '--bor-size': '3px',
+      order: -100,
+      alignSelf: 'end'
+    }}
     lText={tsIcon}
     rText={jsIcon}
     value={language === 'javascript'}

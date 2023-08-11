@@ -2,13 +2,13 @@ div.ppd-top-bar {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   box-sizing: border-box;
 
   width: 100%;
   height: 27px;
 
-  background-color: color-mix(in srgb, var(--primary), #888 50%);
+  background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
 
   color: #fff;
   transition: .1s;
@@ -24,15 +24,18 @@ div.ppd-top-bar {
 
     cursor: pointer;
     border: none;
-    outline: none;
-    transition: .1s;
-    border-bottom: transparent solid 2px;
+
+    border-bottom: transparent solid 3px;
     box-sizing: border-box;
+
+    outline: none;
+    transition: .2s;
     &:hover {
-      background-color: #0004;
-      border-bottom: #0008 solid 2px;
+      background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 80%);
+      border-bottom: color-mix(in srgb, var(--primary), var(--bg-cr) 20%) solid 3px;
     }
     > .cldr.codicon {
+      padding-top: 3px;
       font-size: 14px;
     }
   }
