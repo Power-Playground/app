@@ -13,9 +13,8 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge'
 import type { definePlugin, ShareState } from '../plugins'
-import { classnames, copyToClipboard } from '../utils'
+import { classnames } from '../utils'
 
-import { setCodeHistory } from './bottom-status/historyStore'
 import { BottomStatus } from './bottom-status'
 import { typescriptVersionMeta } from './editor.typescript.versions'
 import type { ResizableProps } from './Resizable'
@@ -49,16 +48,6 @@ function addCommands(
   editor: monacoEditor.editor.IStandaloneCodeEditor,
   monaco: typeof monacoEditor
 ) {
-  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-    const code = editor.getValue()
-    history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
-    copyToClipboard(location.href)
-    editor.focus()
-    setCodeHistory(old => old.concat({
-      code,
-      time: Date.now()
-    }))
-  })
   editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, () => elBridgeP.send('run'))
   editor.focus()
 }

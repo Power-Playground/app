@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { definePlugin } from '@power-playground/core'
+import { copyToClipboard, definePlugin } from '@power-playground/core'
+
+import { setCodeHistory } from '../components/bottom-status/historyStore'
 
 export default definePlugin({
   editor: {
@@ -23,6 +25,15 @@ export default definePlugin({
           code, setCode
         }
       }
-    ]
+    ],
+    load(editor, monaco) {
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+        const code = editor.getValue()
+        history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
+        copyToClipboard(location.href)
+        editor.focus()
+        setCodeHistory(old => old.concat({ code, time: Date.now() }))
+      })
+    }
   }
 })
