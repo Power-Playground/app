@@ -5,7 +5,7 @@ import { defineBarItem } from '..'
 
 export const Run = defineBarItem(() => {
   return <Popover
-    placement='bottom'
+    placement='top'
     content={<>
       Execute(<code>{isMacOS ? '⌘' : 'Ctrl'}</code> + <code>E</code>)
     </>}

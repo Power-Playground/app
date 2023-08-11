@@ -8,7 +8,7 @@ div.ppd-top-bar {
   width: 100%;
   height: 27px;
 
-  border-bottom: color-mix(in srgb, var(--primary), var(--bg-cr) 10%) solid 1px;
+  border-bottom: color-mix(in srgb, var(--primary), var(--bg-cr) 20%) solid 1px;
   background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
 
   color: #fff;
@@ -19,7 +19,7 @@ div.ppd-top-bar {
     justify-content: center;
     margin: 0;
     padding: 0 10px;
-    height: 25px;
+    height: 26px;
     background-color: #0000;
     color: #fff;
 
