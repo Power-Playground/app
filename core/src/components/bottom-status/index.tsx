@@ -2,10 +2,10 @@ import './index.scss'
 
 import React, { useContext, useEffect, useState } from 'react'
 
-import { Help } from '../editor-zone/Help.tsx'
 import { MonacoScopeContext } from '../EditorZone.tsx'
 import { Popover } from '../Popover.tsx'
 
+import { Help } from './Help.tsx'
 import { History } from './History.tsx'
 import { TypescriptVersionStatus } from './TypescriptVersionStatus.tsx'
 
