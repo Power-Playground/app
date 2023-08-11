@@ -28,7 +28,7 @@ export default definePlugin({
             paths: { vs: `https://typescript.azureedge.net/cdn/${ts}/monaco/min/vs` }
           })
           setTypescriptVersion(ts)
-          searchParams.set('ts', ts)
+          searchParams.set('typescript', ts)
 
           const computeCode = editor?.getValue()
 
@@ -42,10 +42,10 @@ export default definePlugin({
           }
         }, [editor, searchParams])
 
-        const [language, setLanguage] = useState<'js' | 'ts'>(
-          searchParams.get('lang') === 'js' ? 'js' : 'ts'
+        const [language, setLanguage] = useState<'javascript' | 'typescript'>(
+          searchParams.get('lang') === 'javascript' ? 'javascript' : 'typescript'
         )
-        function changeLanguage(lang: 'js' | 'ts') {
+        function changeLanguage(lang: 'javascript' | 'typescript') {
           setLanguage(lang)
           searchParams.set('lang', lang)
           history.replaceState(null, '', '?' + searchParams.toString() + location.hash)
@@ -109,7 +109,7 @@ export default definePlugin({
         if (!monaco || !typescriptVersion) return
 
         let defaults: monacoEditor.languages.typescript.LanguageServiceDefaults
-        if (language === 'js') {
+        if (language === 'javascript') {
           defaults = monaco.languages.typescript.javascriptDefaults
         } else {
           defaults = monaco.languages.typescript.typescriptDefaults
@@ -117,7 +117,7 @@ export default definePlugin({
         extraModules.forEach(({ content, filePath }) => {
           monaco.editor.createModel(
             content,
-            language === 'js' ? 'javascript' : 'typescript',
+            language === 'javascript' ? 'javascript' : 'typescript',
             monaco.Uri.parse(filePath)
           )
         })

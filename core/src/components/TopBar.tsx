@@ -6,15 +6,15 @@ import { isMacOS } from '../utils'
 
 import { Popover } from './Popover.tsx'
 import { Switcher } from './Switcher.tsx'
+import { useContext } from 'react'
+import { MonacoScopeContext } from './EditorZone.tsx'
 
 const prefix = 'ppd-top-bar'
 
-export function TopBar({
-  language, onChangeLanguage
-}: {
-  language: string
-  onChangeLanguage: (language: 'js' | 'ts') => void
-}) {
+export function TopBar() {
+  const { store: {
+    language: [language, onChangeLanguage] = []
+  } = {} } = useContext(MonacoScopeContext) ?? {}
   const tsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#4272ba' }}>
     <span style={{
       position: 'absolute',
@@ -56,7 +56,7 @@ export function TopBar({
       <Switcher lText={tsIcon}
                 rText={jsIcon}
                 value={language === 'js'}
-                onChange={checked => onChangeLanguage(checked ? 'js' : 'ts')}
+                onChange={checked => onChangeLanguage?.(checked ? 'javascript' : 'typescript')}
       />
     </div>
   </div>

@@ -10,7 +10,6 @@ import React, {
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
-import { elBridgeP } from '../eval-logs/bridge'
 import type { definePlugin, ShareState } from '../plugins'
 import { classnames } from '../utils'
 
@@ -30,14 +29,6 @@ const PLUGINS = import.meta
     eager: true, import: 'default'
   }) as Record<string, ReturnType<typeof definePlugin>>
 
-function addCommands(
-  editor: monacoEditor.editor.IStandaloneCodeEditor,
-  monaco: typeof monacoEditor
-) {
-  editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, () => elBridgeP.send('run'))
-  editor.focus()
-}
-
 interface MonacoScopeContextValue {
   monaco: typeof monacoEditor | null
   editorInstance: monacoEditor.editor.IStandaloneCodeEditor | null
@@ -45,6 +36,7 @@ interface MonacoScopeContextValue {
   store: {
     code: [string, React.Dispatch<React.SetStateAction<string>>]
     theme: [string, React.Dispatch<React.SetStateAction<string>>]
+    language: [string, (lang: string) => void]
     typescriptVersion: [string, (tsv: string) => void]
   }
 }
@@ -118,6 +110,7 @@ export default function EditorZone(props: {
     store: {
       code: [code, setCode],
       theme: [theme, setTheme],
+      language: [language, changeLanguage],
       typescriptVersion: [
         typescriptVersion ?? searchParams.current.get('ts') ?? typescriptVersionMeta.versions[0],
         changeTypescriptVersion
@@ -137,13 +130,10 @@ export default function EditorZone(props: {
       }}
       resizable={props.resizable ?? { right: true }}
       >
-      <TopBar language={language} onChangeLanguage={changeLanguage} />
+      <TopBar />
       {loadingNode ?? <Editor
         key={typescriptVersion}
-        language={{
-          js: 'javascript',
-          ts: 'typescript'
-        }[language]}
+        language={language}
         options={{
           automaticLayout: true,
           scrollbar: {
@@ -161,7 +151,7 @@ export default function EditorZone(props: {
           plugins
             .forEach(plugin => plugin.editor?.load?.(editor, monaco))
           setEditor(editor)
-          addCommands(editor, monaco)
+          editor.focus()
         }}
       />}
       <BottomStatus />

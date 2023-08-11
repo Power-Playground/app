@@ -131,6 +131,7 @@ export default definePlugin({
         }
         return compile
       }())
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, () => elBridgeP.send('run'))
     }
   },
   devtools: {
