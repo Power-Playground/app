@@ -13,10 +13,10 @@ import {
   QuickAccessContext
 } from '@power-playground/core'
 
+import PP from '../PP.svg'
+
 import { I18N } from './components/I18N.tsx'
 import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
-
-import PP from '../PP.svg'
 
 const plugins = import.meta
   .glob([
