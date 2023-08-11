@@ -12,7 +12,7 @@ import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge'
-import type { definePlugin } from '../plugins'
+import type { definePlugin, ShareState } from '../plugins'
 import { classnames, copyToClipboard } from '../utils'
 
 import { setCodeHistory } from './bottom-status/historyStore'
@@ -93,12 +93,21 @@ export default function EditorZone(props: {
   const searchParams = useRef(new URLSearchParams(location.search))
   const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
-  const hash = location.hash.slice(1)
-  const [code, setCode] = useState(hash
-    ? decodeURIComponent(atob(hash))
-    : 'console.log("Hello world!")')
-
   const plugins = useMemo(() => Object.values(PLUGINS), [])
+  const shareState = plugins
+    .reduce((acc, plugin) => ({
+      ...acc,
+      ...plugin.editor?.uses?.reduce((acc, use) => ({
+        ...acc,
+        ...use?.({})
+      }), {})
+    }), {} as ShareState)
+  const {
+    code, setCode
+  } = shareState
+  if (setCode === undefined) {
+    throw new Error('You must register a plugin to provide `setCode` function')
+  }
 
   const [language, setLanguage] = useState<'js' | 'ts'>(
     searchParams.current.get('lang') === 'js' ? 'js' : 'ts'

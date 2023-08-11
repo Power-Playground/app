@@ -128,8 +128,16 @@ export function defineDevtoolsPanel(
 
 export type Dispose = () => void
 
+export interface ShareState {
+  code: string
+  setCode: React.Dispatch<React.SetStateAction<string>>
+}
+
+export type UseFunction = (props: {}) => Partial<ShareState> | void
+
 export function definePlugin(props: {
   editor?: {
+    uses?: UseFunction[]
     preload?: (monaco: typeof MonacoEditor) => Dispose | void
     load?: (
       editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
