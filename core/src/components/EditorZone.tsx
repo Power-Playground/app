@@ -12,7 +12,7 @@ import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
 import { elBridgeP } from '../eval-logs/bridge'
-import type { definePlugin, Dispose } from '../plugins'
+import type { definePlugin } from '../plugins'
 import { classnames, copyToClipboard } from '../utils'
 
 import { setCodeHistory } from './bottom-status/historyStore'
@@ -151,13 +151,8 @@ export default function EditorZone(props: {
       console.error(e)
     }
 
-    const dispose = plugins.reduce(
-      (acc, plugin) => plugin.editor?.preload
-        ? acc.concat(plugin.editor?.preload(monaco))
-        : acc,
-      [] as Dispose[]
-    )
-    return () => dispose.forEach(func => func())
+    const dispose = plugins.map(plugin => plugin.editor?.preload?.(monaco))
+    return () => dispose.forEach(func => func?.())
   }, [monaco, plugins])
   useEffect(() => {
     if (!monaco || !typescriptVersion) return
