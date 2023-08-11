@@ -10,8 +10,8 @@ import {
   QuickAccessContext
 } from '@power-playground/core'
 
-import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
 import { I18N } from './components/I18N.tsx'
+import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
 
 const plugins = import.meta
   .glob([
@@ -35,9 +35,10 @@ export function App() {
     [K in 'left' | 'right' | 'bottom']?: boolean
   }), [dockTo])
 
+  const [displayHeader, setDisplayHeader] = useState(true)
   return (
     <>
-      <header>
+      <header style={{ display: displayHeader ? 'flex' : 'none' }}>
         <h1>
           <a href='https://github.com/power-playground/app'
              target='_blank'
@@ -49,6 +50,22 @@ export function App() {
           >Power Playground</a>
         </h1>
         <div className='opts'>
+          <div
+            className='hide-topbar'
+            dangerouslySetInnerHTML={{
+              __html: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 -960 960 960"><path fill="var(--fr-cr)" d="M450-160v-371L330-411l-43-43 193-193 193 193-43 43-120-120v371h-60ZM160-597v-143q0-24 18-42t42-18h520q24 0 42 18t18 42v143h-60v-143H220v143h-60Z"/></svg>'
+            }}
+            onClick={() => {
+              setDisplayHeader(false)
+              function onEsc(e: KeyboardEvent) {
+                if (e.key === 'Escape') {
+                  setDisplayHeader(true)
+                  document.removeEventListener('keydown', onEsc)
+                }
+              }
+              document.addEventListener('keydown', onEsc)
+            }}
+          />
           <I18N />
           <ThemeSwitcher />
         </div>
