@@ -11,7 +11,7 @@ import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
 import type { Plugin, ShareState } from '../plugins'
-import type { StatusBarItemProps } from '../plugins'
+import type { BarItemProps } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
@@ -31,7 +31,7 @@ const PLUGINS = import.meta
     eager: true, import: 'default'
   }) as Plugins
 
-export const ExtensionContext = createContext<StatusBarItemProps<unknown> & { plugins: Plugin[] }>({
+export const ExtensionContext = createContext<BarItemProps<unknown> & { plugins: Plugin[] }>({
   plugins: [],
   searchParams: new URLSearchParams(),
   shareState: {}

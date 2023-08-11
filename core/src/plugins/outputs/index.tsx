@@ -6,6 +6,7 @@ import { useFiles } from '../../eval-logs/files.ts'
 import { defineDevtoolsPanel, definePlugin } from '../index.tsx'
 
 import CodeHighlighter from './code-highlighter.tsx'
+import { Run } from './Run.tsx'
 
 const JSPanel = defineDevtoolsPanel('outputs.js', '.JS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
   const files = useFiles()
@@ -132,7 +133,8 @@ export default definePlugin({
         return compile
       }())
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyE, () => elBridgeP.send('run'))
-    }
+    },
+    topbar: [Run]
   },
   devtools: {
     panels: [JSPanel, DTSPanel]

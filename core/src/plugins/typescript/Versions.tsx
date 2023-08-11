@@ -4,11 +4,11 @@ import { typescriptVersionMeta, useDistTags } from '../../components/editor.type
 import { Popover } from '../../components/Popover.tsx'
 import type { QuickAccess } from '../../components/QuickAccess.tsx'
 import { QuickAccessContext } from '../../components/QuickAccess.tsx'
-import { defineStatusBarItem } from '../../plugins'
+import { defineBarItem } from '../../plugins'
 
 import type { TypeScriptPluginX } from './index.tsx'
 
-export const Versions = defineStatusBarItem<TypeScriptPluginX['ExtShareState']>(({ searchParams, shareState }) => {
+export const Versions = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ searchParams, shareState }) => {
   const [value, onChange] = [
     shareState.typescriptVersion ?? searchParams.get('typescript') ?? typescriptVersionMeta.versions[0],
     shareState.changeTypescriptVersion

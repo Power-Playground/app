@@ -140,12 +140,12 @@ export type UseFunction<T = unknown> = (props: {
   searchParams: URLSearchParams
 }) => Partial<ShareState & T> | void
 
-export interface StatusBarItemProps<S> {
+export interface BarItemProps<S> {
   searchParams: URLSearchParams
   shareState: Partial<ShareState & S>
 }
 
-export const defineStatusBarItem: <S>(Comp: React.ComponentType<StatusBarItemProps<S>>) => typeof Comp = comp => comp
+export const defineBarItem: <S>(Comp: React.ComponentType<BarItemProps<S>>) => typeof Comp = comp => comp
 
 export type Plugin<X extends {
   ExtShareState: unknown
@@ -167,8 +167,9 @@ export type Plugin<X extends {
       monaco: typeof MonacoEditor
     ) => void | Promise<void>
 
+    topbar?: React.ComponentType<BarItemProps<X['ExtShareState']>>[]
     statusbar?: React.ComponentType<
-      StatusBarItemProps<X['ExtShareState']>
+      BarItemProps<X['ExtShareState']>
     >[]
   }
   devtools?: {

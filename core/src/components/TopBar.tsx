@@ -1,17 +1,19 @@
 import './TopBar.scss'
 
-import { useContext } from 'react'
-import { elBridgeP } from '@power-playground/core'
+import { useContext, useMemo } from 'react'
 
-import { isMacOS } from '../utils'
-
-import { MonacoScopeContext } from './EditorZone.tsx'
-import { Popover } from './Popover.tsx'
+import { ExtensionContext, MonacoScopeContext } from './EditorZone.tsx'
 import { Switcher } from './Switcher.tsx'
 
 const prefix = 'ppd-top-bar'
 
 export function TopBar() {
+  const { plugins, ...rest } = useContext(ExtensionContext)
+
+  const topBarItems = useMemo(() => plugins
+    .filter(plugin => plugin.editor?.topbar)
+    .flatMap(plugin => plugin.editor?.topbar ?? []), [plugins])
+
   const { store: {
     language: [language, onChangeLanguage] = []
   } = {} } = useContext(MonacoScopeContext) ?? {}
@@ -36,23 +38,10 @@ export function TopBar() {
   </div>
 
   return <div className={prefix}>
+    {topBarItems.map((Item, i) => <Item key={i} {...rest} />)}
     <div className='btns'>
     </div>
     <div className='opts'>
-      <Popover
-        placement='bottom'
-        content={<>
-          Execute(<code>
-            {isMacOS ? '⌘' : 'Ctrl'}
-          </code> + <code>E</code>)
-        </>}
-        offset={[0, 6]}
-      >
-        <button className='excute'
-                onClick={() => elBridgeP.send('run')}>
-          <div className='cldr codicon codicon-play' />
-        </button>
-      </Popover>
       <Switcher lText={tsIcon}
                 rText={jsIcon}
                 value={language === 'js'}
