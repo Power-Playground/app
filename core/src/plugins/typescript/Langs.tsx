@@ -5,7 +5,7 @@ import type { TypeScriptPluginX } from './index'
 
 export const Langs = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ shareState }) => {
   const { language, changeLanguage } = shareState
-  const size = 27
+  const size = 26
   const transformStyle: React.CSSProperties = {
     position: 'absolute',
     right: 4,
