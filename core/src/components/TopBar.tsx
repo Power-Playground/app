@@ -13,7 +13,6 @@ export function TopBar() {
     .filter(plugin => plugin.editor?.topbar)
     .flatMap(plugin => plugin.editor?.topbar ?? []), [plugins])
 
-  console.log(topBarItems)
   return <div className={prefix}>
     {topBarItems.map((Item, i) => <Item key={i} {...rest} />)}
   </div>
