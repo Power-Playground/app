@@ -17,9 +17,9 @@ export function BottomStatus() {
     .flatMap(plugin => plugin.editor?.statusbar ?? []), [plugins])
 
   return <div className={`monaco-editor ${prefix}`}>
-    {statusBarItems.map((Item, i) => <Item key={i} {...rest} />)}
     <Help />
     <History />
     <GoToLC />
+    {statusBarItems.map((Item, i) => <Item key={i} {...rest} />)}
   </div>
 }
