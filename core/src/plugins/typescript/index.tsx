@@ -61,7 +61,9 @@ export default definePlugin<TypeScriptPluginX>({
         searchParams.set('lang', lang)
         history.replaceState(null, '', '?' + searchParams.toString() + location.hash)
       }
-      const curFilePath = useMemo(() => `/index.${language}`, [language])
+      const curFilePath = useMemo(() => `/index.${
+        language === 'javascript' ? 'js' : 'ts'
+      }`, [language])
 
       const [loadError, setLoadError] = useState<string>()
       useEffect(() => {
