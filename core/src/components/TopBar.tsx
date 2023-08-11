@@ -44,7 +44,7 @@ export function TopBar() {
     <div className='opts'>
       <Switcher lText={tsIcon}
                 rText={jsIcon}
-                value={language === 'js'}
+                value={language === 'javascript'}
                 onChange={checked => onChangeLanguage?.(checked ? 'javascript' : 'typescript')}
       />
     </div>
