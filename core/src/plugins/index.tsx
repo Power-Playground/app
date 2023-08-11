@@ -131,6 +131,7 @@ export type Dispose = () => void
 export interface ShareState {
   code: string
   setCode: React.Dispatch<React.SetStateAction<string>>
+  language: string
   curFilePath: string
   loadingNode: React.ReactNode
 }

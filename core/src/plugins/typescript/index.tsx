@@ -4,6 +4,7 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { definePlugin } from '../index.tsx'
 
+import { Langs } from './Langs.tsx'
 import { Versions } from './Versions.tsx'
 
 const extraModules = Object
@@ -145,6 +146,7 @@ export default definePlugin<TypeScriptPluginX>({
         }
       }, [monaco, curFilePath, language, typescriptVersion])
     },
+    topbar: [Langs],
     statusbar: [Versions]
   }
 })

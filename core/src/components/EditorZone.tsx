@@ -44,7 +44,6 @@ interface MonacoScopeContextValue {
   store: {
     code: [string, React.Dispatch<React.SetStateAction<string>>]
     theme: [string, React.Dispatch<React.SetStateAction<string>>]
-    language: [string, (lang: string) => void]
   }
 }
 
@@ -80,8 +79,7 @@ export default function EditorZone(props: {
     code, setCode,
     loadingNode,
     curFilePath,
-    language,
-    changeLanguage
+    language
   } = shareState
   if (setCode === undefined) {
     throw new Error('You must register a plugin to provide `setCode` function')
@@ -118,8 +116,7 @@ export default function EditorZone(props: {
       editorInstance: editor,
       store: {
         code: [code, setCode],
-        theme: [theme, setTheme],
-        language: [language, changeLanguage]
+        theme: [theme, setTheme]
       }
     }}>
       <Resizable
