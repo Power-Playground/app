@@ -7,13 +7,17 @@
 #root > header {
   flex: 0 0 auto;
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
   padding: .5em 1.7em;
   background-color: var(--primary);
   color: #fff;
   transition: .1s;
+  > h1 { margin: 0 }
+  > .opts {
+    display: flex;
+    align-items: center;
+  }
 }
 
 #root > div.main {

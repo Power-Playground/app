@@ -37,18 +37,19 @@ export function App() {
   return (
     <>
       <header>
-        <h1 style={{ margin: 0 }}>
+        <h1>
           <a href='https://github.com/power-playground/app'
              target='_blank'
              style={{
-              color: '#fff',
-              textDecoration: 'none'
-            }} rel='noreferrer'
-          >
-            Power Playground
-          </a>
+               color: '#fff',
+               textDecoration: 'none'
+             }}
+             rel='noreferrer'
+          >Power Playground</a>
         </h1>
-        <ThemeSwitcher />
+        <div className='opts'>
+          <ThemeSwitcher />
+        </div>
       </header>
       <div className={`main ${dockTo}`}>
         <QuickAccessContext.Provider value={createQuickAccessInstance()}>
