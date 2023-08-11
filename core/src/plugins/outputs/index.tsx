@@ -1,4 +1,6 @@
 import { useMemo } from 'react'
+import { elBridgeP } from '@power-playground/core'
+import type * as monacoEditor from 'monaco-editor'
 
 import { useFiles } from '../../eval-logs/files.ts'
 import { defineDevtoolsPanel, definePlugin } from '../index.tsx'
@@ -57,32 +59,78 @@ const DTSPanel = defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', ({ UI, de
 // Errors
 // AST
 
-export default definePlugin({
-  editor(monaco) {
-    const disposables = [
-      monaco.languages.registerCompletionItemProvider('typescript', {
-        triggerCharacters: ['@'],
-        async provideCompletionItems(model, position) {
-          if (position.lineNumber !== 1) return
+let compileResult: monacoEditor.languages.typescript.EmitOutput | undefined
 
-          const line = model.getLineContent(position.lineNumber)
-          if (line.startsWith('// @')) {
-            return {
-              suggestions: [
-                {
-                  label: 'devtools.output.compiled',
-                  detail: 'Display the compiled output in the console\'s `.JS` tab',
-                  kind: monaco.languages.CompletionItemKind.Text,
-                  insertText: 'devtools.output.compiled',
-                  range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column)
-                }
-              ]
+export default definePlugin({
+  editor: {
+    preload(monaco) {
+      const dispose = elBridgeP.on('compile', () => {
+        if (!compileResult) {
+          elBridgeP.send('compile-completed', [{
+            name: '(compile error).js',
+            text: 'No output to compile'
+          }])
+          return
+        }
+
+        elBridgeP.send('compile-completed', compileResult.outputFiles)
+      })
+
+      const disposables = [
+        monaco.languages.registerCompletionItemProvider('typescript', {
+          triggerCharacters: ['@'],
+          async provideCompletionItems(model, position) {
+            if (position.lineNumber !== 1) return
+
+            const line = model.getLineContent(position.lineNumber)
+            if (line.startsWith('// @')) {
+              return {
+                suggestions: [
+                  {
+                    label: 'devtools.output.compiled',
+                    detail: 'Display the compiled output in the console\'s `.JS` tab',
+                    kind: monaco.languages.CompletionItemKind.Text,
+                    insertText: 'devtools.output.compiled',
+                    range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column)
+                  }
+                ]
+              }
             }
           }
+        })
+      ]
+      return () => {
+        dispose()
+        disposables.forEach(d => d.dispose())
+      }
+    },
+    load(editor, monaco) {
+      editor.onDidChangeModelContent(function compile() {
+        const model = editor.getModel()
+        if (model) {
+          let worker:
+            | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
+            | Promise<undefined>
+            = Promise.resolve(undefined)
+          if (model.uri.path.match(/\.tsx?$/)) {
+            worker = monaco.languages.typescript.getTypeScriptWorker()
+          }
+          if (model.uri.path.match(/\.jsx?$/)) {
+            worker = monaco.languages.typescript.getJavaScriptWorker()
+          }
+          worker
+            .then(worker => worker?.(model.uri))
+            .then(client => client?.getEmitOutput(model.uri.toString()))
+            .then(result => {
+              if (!result) return
+
+              compileResult = result
+              elBridgeP.send('compile-completed', result.outputFiles)
+            })
         }
-      })
-    ]
-    return () => disposables.forEach(d => d.dispose())
+        return compile
+      }())
+    }
   },
   devtools: {
     panels: [JSPanel, DTSPanel]

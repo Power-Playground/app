@@ -3,6 +3,7 @@ import type * as UITypes from '//chii/ui/legacy/legacy.js'
 import type { ReactElement } from 'react'
 import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
+import type * as MonacoEditor from 'monaco-editor'
 
 import type { DevtoolsWindow } from '../eval-logs/devtools.ts'
 
@@ -125,8 +126,16 @@ export function defineDevtoolsPanel(
   return rtRender
 }
 
+export type Dispose = () => void
+
 export function definePlugin(props: {
-  editor?: (monaco: typeof import('monaco-editor')) => () => void
+  editor?: {
+    preload?: (monaco: typeof MonacoEditor) => Dispose
+    load?: (
+      editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
+      monaco: typeof MonacoEditor
+    ) => void | Promise<void>
+  }
   devtools?: {
     panels?: Panel[]
     drawerPanels?: Panel[]

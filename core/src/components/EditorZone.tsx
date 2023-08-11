@@ -11,16 +11,16 @@ import loader from '@monaco-editor/loader'
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
-import { elBridgeP } from '../eval-logs/bridge.ts'
-import type { definePlugin } from '../plugins'
+import { elBridgeP } from '../eval-logs/bridge'
+import type { definePlugin, Dispose } from '../plugins'
 import { classnames, copyToClipboard } from '../utils'
 
-import { setCodeHistory } from './bottom-status/historyStore.ts'
+import { setCodeHistory } from './bottom-status/historyStore'
 import { BottomStatus } from './bottom-status'
-import { typescriptVersionMeta } from './editor.typescript.versions.ts'
-import type { ResizableProps } from './Resizable.tsx'
-import { Resizable } from './Resizable.tsx'
-import { TopBar } from './TopBar.tsx'
+import { typescriptVersionMeta } from './editor.typescript.versions'
+import type { ResizableProps } from './Resizable'
+import { Resizable } from './Resizable'
+import { TopBar } from './TopBar'
 
 // TODO support filter plugins
 const plugins = import.meta
@@ -138,10 +138,10 @@ export default function EditorZone(props: {
 
     const dispose = Object.values(plugins)
       .reduce(
-        (acc, plugin) => plugin.editor
-          ? acc.concat(plugin.editor?.(monaco))
+        (acc, plugin) => plugin.editor?.preload
+          ? acc.concat(plugin.editor?.preload(monaco))
           : acc,
-        [] as Function[]
+        [] as Dispose[]
       )
     return () => dispose.forEach(func => func())
   }, [monaco])
@@ -175,13 +175,6 @@ export default function EditorZone(props: {
       })
     }
   }, [curFilePath, language, monaco, typescriptVersion])
-
-  const compileResultRef = useRef<monacoEditor.languages.typescript.EmitOutput>()
-  useEffect(() => elBridgeP.on('compile', () => {
-    if (!compileResultRef.current) return
-
-    elBridgeP.send('compile-completed', compileResultRef.current.outputFiles)
-  }), [])
 
   typescriptVersion && loader.config({
     paths: { vs: `https://typescript.azureedge.net/cdn/${typescriptVersion}/monaco/min/vs` }
@@ -279,31 +272,8 @@ export default function EditorZone(props: {
           onMount={(editor, monaco) => {
             // @ts-ignore
             editorRef.current = editor
-            editor.onDidChangeModelContent(function compile() {
-              const model = editor.getModel()
-              if (model) {
-                let worker:
-                  | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
-                  | Promise<undefined>
-                  = Promise.resolve(undefined)
-                if (model.uri.path.match(/\.tsx?$/)) {
-                  worker = monaco.languages.typescript.getTypeScriptWorker()
-                }
-                if (model.uri.path.match(/\.jsx?$/)) {
-                  worker = monaco.languages.typescript.getJavaScriptWorker()
-                }
-                worker
-                  .then(worker => worker?.(model.uri))
-                  .then(client => client?.getEmitOutput(model.uri.toString()))
-                  .then(result => {
-                    if (!result) return
-
-                    compileResultRef.current = result
-                    elBridgeP.send('compile-completed', result.outputFiles)
-                  })
-              }
-              return compile
-            }())
+            Object.values(plugins)
+              .forEach(plugin => plugin.editor?.load?.(editor, monaco))
             addCommands(editor, monaco)
           }}
         />}
