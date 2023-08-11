@@ -16,6 +16,8 @@ import {
 import { I18N } from './components/I18N.tsx'
 import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
 
+import PP from '../PP.svg'
+
 const plugins = import.meta
   .glob([
     './plugins/*.ts*',
@@ -52,7 +54,7 @@ export function App() {
              }}
              rel='noreferrer'
           >
-            <img src='../PP.svg' width='24px' />
+            <img src={PP} width='24px' alt='Power Playground Icon' />
             &nbsp;
             Power Playground
           </a>
