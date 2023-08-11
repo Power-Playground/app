@@ -140,11 +140,11 @@ export type UseFunction<T = unknown> = (props: {
   searchParams: URLSearchParams
 }) => Partial<ShareState & T> | void
 
-export function definePlugin<X extends {
+export type Plugin<X extends {
   ExtShareState: unknown
 } = {
   ExtShareState: unknown
-}>(props: {
+}> = {
   editor?: {
     /**
      * use tuple wrap the function which is mean to check by `eslint-plugin-react-hooks`
@@ -159,6 +159,8 @@ export function definePlugin<X extends {
       editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
       monaco: typeof MonacoEditor
     ) => void | Promise<void>
+
+    statusbar?: React.ComponentType<{}>[]
   }
   devtools?: {
     panels?: Panel[]
@@ -172,4 +174,10 @@ export function definePlugin<X extends {
       devtoolsWindow: DevtoolsWindow
     }) => void
   }
-}) { return props }
+}
+
+export function definePlugin<X extends {
+  ExtShareState: unknown
+} = {
+  ExtShareState: unknown
+}>(plugin: Plugin<X>) { return plugin }

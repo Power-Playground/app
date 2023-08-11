@@ -10,7 +10,7 @@ import React, {
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
-import type { definePlugin, ShareState } from '../plugins'
+import type { Plugin, ShareState } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
@@ -18,6 +18,8 @@ import { typescriptVersionMeta } from './editor.typescript.versions'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
+
+type Plugins = Record<string, Plugin>
 
 // TODO support filter plugins
 const PLUGINS = import.meta
@@ -27,7 +29,9 @@ const PLUGINS = import.meta
     '../plugins/*/index.ts*'
   ], {
     eager: true, import: 'default'
-  }) as Record<string, ReturnType<typeof definePlugin>>
+  }) as Plugins
+
+const PluginContext = createContext<Plugin[]>([])
 
 interface MonacoScopeContextValue {
   monaco: typeof monacoEditor | null
@@ -104,57 +108,59 @@ export default function EditorZone(props: {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
-  return <MonacoScopeContext.Provider value={{
-    monaco,
-    editorInstance: editor,
-    store: {
-      code: [code, setCode],
-      theme: [theme, setTheme],
-      language: [language, changeLanguage],
-      typescriptVersion: [
-        typescriptVersion ?? searchParams.current.get('ts') ?? typescriptVersionMeta.versions[0],
-        changeTypescriptVersion
-      ]
-    }
-  }}>
-    <Resizable
-      className={classnames(prefix, props.className)}
-      style={{
-        ...props.style,
-        width: 'var(--editor-width, 50%)',
-        minWidth: 'var(--editor-min-width)',
-        maxWidth: 'var(--editor-max-width)',
-        height: 'var(--editor-height, 50%)',
-        minHeight: 'var(--editor-min-height)',
-        maxHeight: 'var(--editor-max-height)'
-      }}
-      resizable={props.resizable ?? { right: true }}
+  return <PluginContext.Provider value={plugins}>
+    <MonacoScopeContext.Provider value={{
+      monaco,
+      editorInstance: editor,
+      store: {
+        code: [code, setCode],
+        theme: [theme, setTheme],
+        language: [language, changeLanguage],
+        typescriptVersion: [
+          typescriptVersion ?? searchParams.current.get('ts') ?? typescriptVersionMeta.versions[0],
+          changeTypescriptVersion
+        ]
+      }
+    }}>
+      <Resizable
+        className={classnames(prefix, props.className)}
+        style={{
+          ...props.style,
+          width: 'var(--editor-width, 50%)',
+          minWidth: 'var(--editor-min-width)',
+          maxWidth: 'var(--editor-max-width)',
+          height: 'var(--editor-height, 50%)',
+          minHeight: 'var(--editor-min-height)',
+          maxHeight: 'var(--editor-max-height)'
+        }}
+        resizable={props.resizable ?? { right: true }}
       >
-      <TopBar />
-      {loadingNode ?? <Editor
-        key={typescriptVersion}
-        language={language}
-        options={{
-          automaticLayout: true,
-          scrollbar: {
-            vertical: 'hidden',
-            verticalSliderSize: 0,
-            verticalScrollbarSize: 0
-          }
-        }}
-        theme={theme === 'light' ? 'vs' : 'vs-dark'}
-        loading={loadingNode}
-        path={`file://${curFilePath}`}
-        value={code}
-        onChange={code => setCode(code ?? '')}
-        onMount={(editor, monaco) => {
-          plugins
-            .forEach(plugin => plugin.editor?.load?.(editor, monaco))
-          setEditor(editor)
-          editor.focus()
-        }}
-      />}
-      <BottomStatus />
-    </Resizable>
-  </MonacoScopeContext.Provider>
+        <TopBar />
+        {loadingNode ?? <Editor
+          key={typescriptVersion}
+          language={language}
+          options={{
+            automaticLayout: true,
+            scrollbar: {
+              vertical: 'hidden',
+              verticalSliderSize: 0,
+              verticalScrollbarSize: 0
+            }
+          }}
+          theme={theme === 'light' ? 'vs' : 'vs-dark'}
+          loading={loadingNode}
+          path={`file://${curFilePath}`}
+          value={code}
+          onChange={code => setCode(code ?? '')}
+          onMount={(editor, monaco) => {
+            plugins
+              .forEach(plugin => plugin.editor?.load?.(editor, monaco))
+            setEditor(editor)
+            editor.focus()
+          }}
+        />}
+        <BottomStatus />
+      </Resizable>
+    </MonacoScopeContext.Provider>
+  </PluginContext.Provider>
 }
