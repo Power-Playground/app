@@ -11,6 +11,7 @@ import {
 } from '@power-playground/core'
 
 import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
+import { I18N } from './components/I18N.tsx'
 
 const plugins = import.meta
   .glob([
@@ -48,6 +49,7 @@ export function App() {
           >Power Playground</a>
         </h1>
         <div className='opts'>
+          <I18N />
           <ThemeSwitcher />
         </div>
       </header>

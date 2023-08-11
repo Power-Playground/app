@@ -66,15 +66,25 @@ export function Popover(props: PopoverProps) {
       popper.current?.update()
     }
   }, [visible])
+  const classname = `${prefix}-reference ${prefix}-${trigger}`
+    + (props.className ? ' ' + props.className : '')
   return <>
     <div
       ref={setReferenceElement}
-      className={
-      `${prefix}-reference ${prefix}-${trigger}`
-        + (props.className ? ' ' + props.className : '')
-      }
+      className={classname}
       style={props.style}
       onClick={() => {
+        function clickOther(event: MouseEvent) {
+          if (event.target instanceof HTMLElement) {
+            if (!event.target.closest(`.${prefix}`)) {
+              setVisible(false)
+              removeEventListener('click', clickOther)
+            }
+          }
+        }
+        if (!visible) {
+          addEventListener('click', clickOther)
+        }
         if (trigger === 'click') {
           setVisible(!visible)
         }

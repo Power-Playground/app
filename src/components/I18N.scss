@@ -1,0 +1,22 @@
+.i18n {
+  > .icon {
+    display: flex;
+    align-items: center;
+    width: 24px;
+    &:focus {
+      > .option-icon:hover {
+        filter: drop-shadow(0 0 8px var(--fr-cr));
+      }
+    }
+    > .option-icon {
+      filter: drop-shadow(0 0 0 var(--fr-cr));
+      transition: .3s;
+      &:hover {
+        filter: drop-shadow(0 0 8px var(--fr-cr));
+      }
+    }
+    > .option-icon > path:nth-child(2) {
+      fill: var(--fr-cr);
+    }
+  }
+}

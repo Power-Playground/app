@@ -24,12 +24,12 @@
       height: 0;
       border: 6px solid transparent;
     }
-    &[data-position=top]::before {
+    &[data-position^=top]::before {
       border-top-color: var(--vscode-dropdown-background);
       left: -6px;
       bottom: -16px;
     }
-    &[data-position=bottom]::before {
+    &[data-position^=bottom]::before {
       border-bottom-color: var(--vscode-dropdown-background);
       left: -6px;
       top: -34px;
