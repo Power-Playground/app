@@ -14,7 +14,7 @@
       position: absolute;
       height: calc(100% - var(--gap) * 2);
       box-sizing: border-box;
-      border: var(--bor-size) solid var(--primary);
+      border: var(--bor-size) solid color-mix(in srgb, var(--primary), #fff 50%);
       transition: .3s;
     }
   }
