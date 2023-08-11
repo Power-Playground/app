@@ -149,7 +149,6 @@ function useActiveHandlerResults(keyword: string) {
 
     let canceled = false
     !async function () {
-      console.log('run handler', keyword)
       const results = await handler(keyword)
       if (!canceled) {
         setResults(results)
