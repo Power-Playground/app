@@ -1,4 +1,4 @@
-import './ThemeSwithcer.scss'
+import './ThemeSwitcher.scss'
 
 import { useState } from 'react'
 
