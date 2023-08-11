@@ -9,11 +9,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: .5em 1.7em;
+  padding: .6em;
   background-color: var(--primary);
   color: #fff;
   transition: .1s;
-  > h1 { margin: 0 }
+  > h1 {
+    margin: 0;
+    line-height: 32px;
+  }
   > .opts {
     display: flex;
     align-items: center;
