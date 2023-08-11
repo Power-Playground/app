@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with Vectornator (http://vectornator.io/) -->
+<svg height="1024.0px" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 1024 1024" width="1024.0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs/>
+<g id="图层-1" visibility="hidden">
+<path d="M0 0L1024 0L1024 1024L0 1024L0 0Z" fill="#3f5dae" fill-rule="nonzero" opacity="1" stroke="none"/>
+<text fill="#ffffff" font-family="HackNerdFontComplete-Bold" font-size="500" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 256.989 338.285)" x="0" y="0">
+<tspan font-family="PingFangSC-Semibold" font-weight="bold" textLength="655" x="0" y="530">PP</tspan>
+</text>
+</g>
+<g id="图层-2">
+<path d="M0 0L1024 0L1024 1024L0 1024L0 0Z" fill="#ffffff" fill-rule="nonzero" opacity="1" stroke="none"/>
+<text fill="#3f5dae" font-family="HackNerdFontComplete-Bold" font-size="500" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 256.989 338.285)" x="0" y="0">
+<tspan font-family="PingFangSC-Semibold" font-weight="bold" textLength="655" x="0" y="530">PP</tspan>
+</text>
+</g>
+</svg>

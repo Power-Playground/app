@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="./PP.svg" alt="Power Playground Icon" width="320">
+</div>
+
 # Power Playground
 
 ~~强大的 Playground~~，提供一系列可扩展的 API 简化你去构建一个属于自己的 Playground 的成本。
