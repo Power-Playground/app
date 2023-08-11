@@ -76,6 +76,8 @@ interface MonacoScopeContextValue {
 
 export const MonacoScopeContext = createContext<MonacoScopeContextValue | null>(null)
 
+const prefix = 'ppd-editor-zone'
+
 export default function EditorZone(props: {
   style?: React.CSSProperties & {
     '--editor-width'?: unknown
@@ -244,7 +246,7 @@ export default function EditorZone(props: {
     }
   }}>
     <Resizable
-      className={classnames('editor-zone', props.className)}
+      className={classnames(prefix, props.className)}
       style={{
         ...props.style,
         width: 'var(--editor-width, 50%)',
