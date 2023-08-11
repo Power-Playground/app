@@ -1,17 +1,20 @@
-.switcher {
+.ppd-switcher {
+  --gap: 5px;
+  --bor-size: 2px;
+
   display: flex;
-  gap: 5px;
+  gap: var(--gap);
   position: relative;
-  padding: 5px;
+  padding: var(--gap);
   box-sizing: border-box;
   &__item {
     text-align: center;
     cursor: pointer;
     &--bar {
       position: absolute;
-      height: calc(100% - 10px);
+      height: calc(100% - var(--gap) * 2);
       box-sizing: border-box;
-      border: 2px solid var(--primary);
+      border: var(--bor-size) solid var(--primary);
       transition: .3s;
     }
   }

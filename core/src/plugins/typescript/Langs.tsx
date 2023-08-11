@@ -5,27 +5,22 @@ import type { TypeScriptPluginX } from './index'
 
 export const Langs = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ shareState }) => {
   const { language, changeLanguage } = shareState
-  const tsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#4272ba' }}>
-    <span style={{
-      position: 'absolute',
-      right: -1,
-      bottom: -3,
-      transform: 'scale(0.4)',
-      fontWeight: 'blob'
-    }}>TS</span>
+  const size = 27
+  const transformStyle: React.CSSProperties = {
+    position: 'absolute',
+    right: 4,
+    bottom: 1,
+    fontWeight: 'blob'
+  }
+  const tsIcon = <div style={{ position: 'relative', width: size, height: size, backgroundColor: '#4272ba' }}>
+    <span style={transformStyle}>TS</span>
   </div>
-  const jsIcon = <div style={{ position: 'relative', width: 16, height: 16, backgroundColor: '#f2d949' }}>
-    <span style={{
-      position: 'absolute',
-      right: -1,
-      bottom: -3,
-      transform: 'scale(0.4)',
-      fontWeight: 'blob',
-      color: 'black'
-    }}>JS</span>
+  const jsIcon = <div style={{ position: 'relative', width: size, height: size, backgroundColor: '#f2d949' }}>
+    <span style={{ ...transformStyle, color: 'black' }}>JS</span>
   </div>
 
   return <Switcher
+    style={{ '--gap': '0px', '--bor-size': '3px' }}
     lText={tsIcon}
     rText={jsIcon}
     value={language === 'javascript'}
