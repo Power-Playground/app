@@ -1,13 +1,13 @@
 import './TopBar.scss'
 
+import { useContext } from 'react'
 import { elBridgeP } from '@power-playground/core'
 
 import { isMacOS } from '../utils'
 
+import { MonacoScopeContext } from './EditorZone.tsx'
 import { Popover } from './Popover.tsx'
 import { Switcher } from './Switcher.tsx'
-import { useContext } from 'react'
-import { MonacoScopeContext } from './EditorZone.tsx'
 
 const prefix = 'ppd-top-bar'
 
