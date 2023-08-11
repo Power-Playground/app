@@ -135,19 +135,26 @@ export interface ShareState {
   loadingNode: React.ReactNode
 }
 
-export type UseFunction = (props: {
+export type UseFunction<T = unknown> = (props: {
   editor: MonacoEditor.editor.IStandaloneCodeEditor | null
   searchParams: URLSearchParams
-}) => Partial<ShareState> | void
+}) => Partial<ShareState & T> | void
 
-export function definePlugin(props: {
+export function definePlugin<X extends {
+  ExtShareState: unknown
+} = {
+  ExtShareState: unknown
+}>(props: {
   editor?: {
     /**
      * use tuple wrap the function which is mean to check by `eslint-plugin-react-hooks`
      */
-    use?: [UseFunction]
+    use?: [UseFunction<X['ExtShareState']>]
+    useShare?: (
+      shareState: ShareState & X['ExtShareState'],
+      monaco: typeof MonacoEditor | null
+    ) => void
     preload?: (monaco: typeof MonacoEditor) => Dispose | void
-    useShare?: (shareState: ShareState, monaco: typeof MonacoEditor | null) => void
     load?: (
       editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
       monaco: typeof MonacoEditor

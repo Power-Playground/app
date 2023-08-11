@@ -17,7 +17,16 @@ const compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
   declaration: true
 }
 
-export default definePlugin({
+interface TypeScriptPluginX {
+  ExtShareState: {
+    typescriptVersion: string
+    changeTypescriptVersion: (ts: string) => void
+    language: 'javascript' | 'typescript'
+    changeLanguage: (lang: 'javascript' | 'typescript') => void
+  }
+}
+
+export default definePlugin<TypeScriptPluginX>({
   editor: {
     use: [({ searchParams, editor }) => {
       const [typescriptVersion, setTypescriptVersion] = useState<string>()
