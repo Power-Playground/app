@@ -51,7 +51,11 @@ export function App() {
                textDecoration: 'none'
              }}
              rel='noreferrer'
-          >Power Playground</a>
+          >
+            <img src='../PP.svg' width='24px' />
+            &nbsp;
+            Power Playground
+          </a>
         </h1>
         <div className='opts'>
           <div

@@ -16,6 +16,10 @@
   > h1 {
     margin: 0;
     line-height: 32px;
+    > a {
+      display: flex;
+      align-items: center;
+    }
   }
   > .opts {
     display: flex;
