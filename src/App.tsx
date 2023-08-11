@@ -57,13 +57,12 @@ export function App() {
             }}
             onClick={() => {
               setDisplayHeader(false)
-              function onEsc(e: KeyboardEvent) {
+              document.addEventListener('keydown', function onEsc(e: KeyboardEvent) {
                 if (e.key === 'Escape') {
                   setDisplayHeader(true)
                   document.removeEventListener('keydown', onEsc)
                 }
-              }
-              document.addEventListener('keydown', onEsc)
+              })
             }}
           />
           <I18N />
