@@ -23,7 +23,7 @@ import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
 
 // TODO support filter plugins
-const plugins = import.meta
+const PLUGINS = import.meta
   .glob([
     '../plugins/*.ts*',
     '!../plugins/index.tsx',
@@ -88,6 +88,17 @@ export default function EditorZone(props: {
   className?: string
   resizable?: ResizableProps['resizable']
 }) {
+  const plugins = useMemo(() => Object.values(PLUGINS), [])
+  const onlyOnce = useRef(true)
+  useEffect(() => {
+    if (onlyOnce.current) {
+      onlyOnce.current = false
+      return
+    }
+    return () => plugins
+      .map(plugin => plugin.editor?.init?.())
+      .forEach(func => func?.())
+  }, [plugins])
   const searchParams = new URLSearchParams(location.search)
 
   const [language, setLanguage] = useState<'js' | 'ts'>(
@@ -140,15 +151,14 @@ export default function EditorZone(props: {
       console.error(e)
     }
 
-    const dispose = Object.values(plugins)
-      .reduce(
-        (acc, plugin) => plugin.editor?.preload
-          ? acc.concat(plugin.editor?.preload(monaco))
-          : acc,
-        [] as Dispose[]
-      )
+    const dispose = plugins.reduce(
+      (acc, plugin) => plugin.editor?.preload
+        ? acc.concat(plugin.editor?.preload(monaco))
+        : acc,
+      [] as Dispose[]
+    )
     return () => dispose.forEach(func => func())
-  }, [monaco])
+  }, [monaco, plugins])
   useEffect(() => {
     if (!monaco || !typescriptVersion) return
 
@@ -274,7 +284,7 @@ export default function EditorZone(props: {
           value={code}
           onChange={code => setCode(code ?? '')}
           onMount={(editor, monaco) => {
-            Object.values(plugins)
+            plugins
               .forEach(plugin => plugin.editor?.load?.(editor, monaco))
             setEditor(editor)
             addCommands(editor, monaco)
