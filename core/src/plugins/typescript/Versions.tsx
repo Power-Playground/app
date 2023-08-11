@@ -1,14 +1,18 @@
 import { useContext, useEffect, useMemo, useRef } from 'react'
-import type { QuickAccess } from '@power-playground/core'
-import { QuickAccessContext } from '@power-playground/core'
 
-import { typescriptVersionMeta, useDistTags } from '../editor.typescript.versions.ts'
-import { MonacoScopeContext } from '../EditorZone.tsx'
-import { Popover } from '../Popover.tsx'
+import { typescriptVersionMeta, useDistTags } from '../../components/editor.typescript.versions.ts'
+import { Popover } from '../../components/Popover.tsx'
+import type { QuickAccess } from '../../components/QuickAccess.tsx'
+import { QuickAccessContext } from '../../components/QuickAccess.tsx'
+import { defineStatusBarItem } from '../../plugins'
 
-export function TypescriptVersionStatus() {
-  const { store } = useContext(MonacoScopeContext) ?? {}
-  const [value, onChange] = store!.typescriptVersion
+import type { TypeScriptPluginX } from './index.tsx'
+
+export const Versions = defineStatusBarItem<TypeScriptPluginX['ExtShareState']>(({ searchParams, shareState }) => {
+  const [value, onChange] = [
+    shareState.typescriptVersion ?? searchParams.get('typescript') ?? typescriptVersionMeta.versions[0],
+    shareState.changeTypescriptVersion
+  ]
   const {
     data, fetching, error
   } = useDistTags()
@@ -28,10 +32,14 @@ export function TypescriptVersionStatus() {
       : typescriptVersionMeta.distCategory
   }, [distTagsMemo])
   const isNeedCheckFetching = useMemo(() => {
+    if (value === undefined) return false
+
     // 不在推荐的版本中，说明是 dist tags 模式
     return typescriptVersionMeta.suggestedVersions.indexOf(value) === -1
   }, [value])
   const realVersion = useMemo(() => {
+    if (value === undefined) return undefined
+
     return isNeedCheckFetching
       ? distTagEnumMemo?.[value]
       : value
@@ -43,7 +51,7 @@ export function TypescriptVersionStatus() {
         return
       }
       onlyOnce.current = true
-      onChange(realVersion)
+      onChange?.(realVersion)
     }
   }, [onChange, realVersion])
 
@@ -100,7 +108,7 @@ export function TypescriptVersionStatus() {
         const result = await quickAccess.run('typescript.versions')
         if ('id' in result) {
           const { id: version } = result
-          onChange(isNeedCheckFetching
+          onChange?.(isNeedCheckFetching
             ? distTagEnumMemo?.[version]
             : version)
         }
@@ -115,4 +123,4 @@ export function TypescriptVersionStatus() {
     >
     TypeScript@{value}
   </Popover>
-}
+})

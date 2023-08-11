@@ -11,6 +11,7 @@ import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
 import type { Plugin, ShareState } from '../plugins'
+import type { StatusBarItemProps } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
@@ -31,7 +32,11 @@ const PLUGINS = import.meta
     eager: true, import: 'default'
   }) as Plugins
 
-const PluginContext = createContext<Plugin[]>([])
+export const ExtensionContext = createContext<StatusBarItemProps<unknown> & { plugins: Plugin[] }>({
+  plugins: [],
+  searchParams: new URLSearchParams(),
+  shareState: {}
+})
 
 interface MonacoScopeContextValue {
   monaco: typeof monacoEditor | null
@@ -41,7 +46,6 @@ interface MonacoScopeContextValue {
     code: [string, React.Dispatch<React.SetStateAction<string>>]
     theme: [string, React.Dispatch<React.SetStateAction<string>>]
     language: [string, (lang: string) => void]
-    typescriptVersion: [string, (tsv: string) => void]
   }
 }
 
@@ -78,9 +82,7 @@ export default function EditorZone(props: {
     loadingNode,
     curFilePath,
     language,
-    changeLanguage,
-    typescriptVersion,
-    changeTypescriptVersion
+    changeLanguage
   } = shareState
   if (setCode === undefined) {
     throw new Error('You must register a plugin to provide `setCode` function')
@@ -108,18 +110,17 @@ export default function EditorZone(props: {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
-  return <PluginContext.Provider value={plugins}>
+  return <ExtensionContext.Provider value={{
+    searchParams: searchParams.current,
+    plugins, shareState
+  }}>
     <MonacoScopeContext.Provider value={{
       monaco,
       editorInstance: editor,
       store: {
         code: [code, setCode],
         theme: [theme, setTheme],
-        language: [language, changeLanguage],
-        typescriptVersion: [
-          typescriptVersion ?? searchParams.current.get('ts') ?? typescriptVersionMeta.versions[0],
-          changeTypescriptVersion
-        ]
+        language: [language, changeLanguage]
       }
     }}>
       <Resizable
@@ -137,7 +138,6 @@ export default function EditorZone(props: {
       >
         <TopBar />
         {loadingNode ?? <Editor
-          key={typescriptVersion}
           language={language}
           options={{
             automaticLayout: true,
@@ -162,5 +162,5 @@ export default function EditorZone(props: {
         <BottomStatus />
       </Resizable>
     </MonacoScopeContext.Provider>
-  </PluginContext.Provider>
+  </ExtensionContext.Provider>
 }

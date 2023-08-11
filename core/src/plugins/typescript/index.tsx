@@ -4,6 +4,8 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { definePlugin } from '../index.tsx'
 
+import { Versions } from './Versions.tsx'
+
 const extraModules = Object
   .entries(Object.assign(
     {} as Record<string, string>, {}
@@ -17,7 +19,7 @@ const compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
   declaration: true
 }
 
-interface TypeScriptPluginX {
+export interface TypeScriptPluginX {
   ExtShareState: {
     typescriptVersion: string
     changeTypescriptVersion: (ts: string) => void
@@ -142,6 +144,7 @@ export default definePlugin<TypeScriptPluginX>({
           })
         }
       }, [monaco, curFilePath, language, typescriptVersion])
-    }
+    },
+    statusbar: [Versions]
   }
 })
