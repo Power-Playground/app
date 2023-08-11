@@ -14,7 +14,6 @@ const prefix = 'ppd-bottom-status'
 export function BottomStatus() {
   const { editorInstance } = useContext(MonacoScopeContext) ?? {}
 
-
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
   useEffect(() => {
     if (!editorInstance) return
