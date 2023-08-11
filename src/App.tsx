@@ -13,7 +13,10 @@ import {
 import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
 
 const plugins = import.meta
-  .glob(['./plugins/*.ts', './plugins/*/index.ts'], {
+  .glob([
+    './plugins/*.ts*',
+    './plugins/*/index.ts*'
+  ], {
     import: 'default'
   }) as Record<string, () => Promise<ReturnType<typeof definePlugin>>>
 

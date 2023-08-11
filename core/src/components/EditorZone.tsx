@@ -23,9 +23,13 @@ import { Resizable } from './Resizable.tsx'
 import { TopBar } from './TopBar.tsx'
 
 // TODO support filter plugins
-const plugins = import.meta.glob('../plugins/*/index.ts*', {
-  eager: true, import: 'default'
-}) as Record<string, ReturnType<typeof definePlugin>>
+const plugins = import.meta
+  .glob([
+    '../plugins/*.ts*',
+    '../plugins/*/index.ts*'
+  ], {
+    eager: true, import: 'default'
+  }) as Record<string, ReturnType<typeof definePlugin>>
 
 const extraModules = Object
   .entries(Object.assign(
