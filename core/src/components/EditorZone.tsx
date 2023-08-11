@@ -105,7 +105,10 @@ export default function EditorZone(props: {
   function changeTypescriptVersion(ts: string) {
     setTypescriptVersion(ts)
     searchParams.set('ts', ts)
-    const code = editorRef.current?.getValue()
+
+    const code = editor?.getValue()
+    if (!code) return
+
     const hash = code ? '#' + btoa(encodeURIComponent(code)) : ''
     history.replaceState(null, '', '?' + searchParams.toString() + hash)
 
@@ -122,7 +125,7 @@ export default function EditorZone(props: {
     : 'console.log("Hello world!")'
   )
 
-  const editorRef = useRef<monacoEditor.editor.IStandaloneCodeEditor>(null)
+  const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
   const monaco = useMonaco()
   useEffect(() => {
@@ -225,7 +228,7 @@ export default function EditorZone(props: {
 
   return <MonacoScopeContext.Provider value={{
     monaco,
-    editorInstance: editorRef.current,
+    editorInstance: editor,
     store: {
       code: [code, setCode],
       theme: [theme, setTheme],
@@ -271,10 +274,9 @@ export default function EditorZone(props: {
           value={code}
           onChange={code => setCode(code ?? '')}
           onMount={(editor, monaco) => {
-            // @ts-ignore
-            editorRef.current = editor
             Object.values(plugins)
               .forEach(plugin => plugin.editor?.load?.(editor, monaco))
+            setEditor(editor)
             addCommands(editor, monaco)
           }}
         />}
