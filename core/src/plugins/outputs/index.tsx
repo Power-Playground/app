@@ -114,10 +114,12 @@ export default definePlugin({
             | ReturnType<typeof monaco.languages.typescript.getTypeScriptWorker>
             | Promise<undefined>
             = Promise.resolve(undefined)
+          let isJS = false
           if (model.uri.path.match(/\.tsx?$/)) {
             worker = monaco.languages.typescript.getTypeScriptWorker()
           }
           if (model.uri.path.match(/\.jsx?$/)) {
+            isJS = true
             worker = monaco.languages.typescript.getJavaScriptWorker()
           }
           worker
@@ -127,7 +129,17 @@ export default definePlugin({
               if (!result) return
 
               compileResult = result
-              elBridgeP.send('compile-completed', result.outputFiles)
+              if (isJS) {
+                const modelContent = model.getValue()
+                compileResult.outputFiles = [
+                  {
+                    name: model.uri.toString(),
+                    writeByteOrderMark: false,
+                    text: modelContent
+                  }
+                ].concat(compileResult.outputFiles)
+              }
+              elBridgeP.send('compile-completed', compileResult.outputFiles)
             })
         }
         return compile
