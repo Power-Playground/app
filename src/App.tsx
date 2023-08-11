@@ -4,7 +4,7 @@ import 'react-toastify/dist/ReactToastify.css'
 
 import { useEffect, useMemo, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
-import type { definePlugin } from '@power-playground/core'
+import type { Plugin } from '@power-playground/core'
 import {
   createQuickAccessInstance,
   EditorZone,
@@ -12,19 +12,24 @@ import {
   QuickAccess,
   QuickAccessContext
 } from '@power-playground/core'
+import commonPlugins from '@power-playground/core/common-plugins'
 
 import PP from '../PP.svg'
 
 import { I18N } from './components/I18N.tsx'
 import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
 
-const plugins = import.meta
-  .glob([
-    './plugins/*.ts*',
-    './plugins/*/index.ts*'
-  ], {
-    import: 'default'
-  }) as Record<string, () => Promise<ReturnType<typeof definePlugin>>>
+const plugins = Object.assign(
+  {},
+  commonPlugins,
+  import.meta
+    .glob([
+      './plugins/*.ts*',
+      './plugins/*/index.ts*'
+    ], {
+      eager: true, import: 'default'
+    })
+) as Record<string, Plugin>
 
 // @ts-ignore
 window.PPD_PLUGINS = plugins
@@ -97,6 +102,7 @@ export function App() {
               '--editor-width': dockTo === 'bottom' ? '100%' : '50%',
               '--editor-height': dockTo === 'bottom' ? '50%' : '100%'
             }}
+            plugins={plugins}
           />
           <iframe
             src='./eval-logs.html'

@@ -2,6 +2,17 @@
   "name": "@power-playground/core",
   "version": "0.1.0",
   "module": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    },
+    "./common-plugins": {
+      "import": "./src/common-plugins.ts"
+    },
+    "./components/*": {
+      "import": "./src/components/*"
+    }
+  },
   "dependencies": {
     "@babel/standalone": "^7.22.9",
     "@popperjs/core": "^2.11.8",

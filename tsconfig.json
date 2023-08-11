@@ -20,6 +20,8 @@
 
     "paths": {
       "@power-playground/core": ["./core/src"],
+      "@power-playground/core/common-plugins": ["./core/src/common-plugins.ts"],
+      "@power-playground/core/components/*": ["./core/src/components/*"],
       "//chii/*": ["./external/chrome-devtools/front_end/*"],
     }
   },

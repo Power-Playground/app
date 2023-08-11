@@ -19,18 +19,6 @@ import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
 
-type Plugins = Record<string, Plugin>
-
-// TODO support filter plugins
-const PLUGINS = import.meta
-  .glob([
-    '../plugins/*.ts*',
-    '!../plugins/index.tsx',
-    '../plugins/*/index.ts*'
-  ], {
-    eager: true, import: 'default'
-  }) as Plugins
-
 export const ExtensionContext = createContext<BarItemProps<unknown> & { plugins: Plugin[] }>({
   plugins: [],
   searchParams: new URLSearchParams(),
@@ -62,11 +50,12 @@ export default function EditorZone(props: {
   }
   className?: string
   resizable?: ResizableProps['resizable']
+  plugins?: Record<string, Plugin>
 }) {
   const searchParams = useRef(new URLSearchParams(location.search))
   const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
-  const plugins = useMemo(() => Object.values(PLUGINS), [])
+  const plugins = useMemo(() => Object.values(props.plugins ?? {}), [props.plugins])
   const shareState = plugins
     .reduce((acc, plugin) => ({
       ...acc,

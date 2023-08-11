@@ -2,7 +2,7 @@ import type * as UI from '//chii/ui/legacy/legacy'
 
 import sentinel from 'sentinel-js'
 
-import type { definePlugin } from '../plugins'
+import type { Plugin } from '../plugins'
 
 import { elBridgeC } from './bridge.ts'
 
@@ -41,20 +41,13 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
   __DEBUG__ && console.debug('devtools', devtoolsWindow, devtoolsDocument)
   __DEBUG__ && console.debug('readyState', devtoolsDocument.readyState)
 
-  const plugins = import.meta
-    .glob('../plugins/*/index.ts*', {
-      import: 'default'
-    }) as Record<string, () => Promise<ReturnType<typeof definePlugin>>>
   // @ts-ignore
-  const PPD_PLUGINS: typeof plugins = window.parent.PPD_PLUGINS ?? {}
-
-  const ALL_PLUGINS = { ...plugins, ...PPD_PLUGINS }
+  const ALL_PLUGINS: Record<string, Plugin> = window.parent.PPD_PLUGINS ?? {}
 
   // eslint-disable-next-line no-unused-labels
   beforeMount: {
     Object.entries(ALL_PLUGINS)
-      .forEach(async ([, plugin]) => {
-        const { devtools } = await plugin()
+      .forEach(([, { devtools }]) => {
         devtools?.beforeMount?.({ devtoolsWindow })
       })
   }
@@ -83,8 +76,7 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
       // @ts-ignore
       inspector.drawerTabbedPane
     Object.entries(ALL_PLUGINS)
-      .forEach(async ([, plugin]) => {
-        const { devtools } = await plugin()
+      .forEach(async ([, { devtools }]) => {
         devtools?.panels?.forEach(panel => {
           const Widget = panel(devtoolsWindow, realUI)
           const widget = new Widget()
