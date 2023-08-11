@@ -26,6 +26,7 @@ import { TopBar } from './TopBar'
 const plugins = import.meta
   .glob([
     '../plugins/*.ts*',
+    '!../plugins/index.tsx',
     '../plugins/*/index.ts*'
   ], {
     eager: true, import: 'default'
