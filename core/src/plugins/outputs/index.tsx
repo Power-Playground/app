@@ -67,8 +67,8 @@ export default definePlugin({
       const dispose = elBridgeP.on('compile', () => {
         if (!compileResult) {
           elBridgeP.send('compile-completed', [{
-            name: '(compile error).js',
-            text: 'No output to compile'
+            name: '(compile error)',
+            text: 'No output to compile, maybe the Editor is still loading'
           }])
           return
         }
