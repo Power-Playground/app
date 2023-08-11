@@ -100,6 +100,7 @@ export default definePlugin({
         })
       ]
       return () => {
+        compileResult = undefined
         dispose()
         disposables.forEach(d => d.dispose())
       }
