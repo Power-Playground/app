@@ -142,7 +142,10 @@ export type UseFunction = (props: {
 
 export function definePlugin(props: {
   editor?: {
-    uses?: UseFunction[]
+    /**
+     * use tuple wrap the function which is mean to check by `eslint-plugin-react-hooks`
+     */
+    use?: [UseFunction]
     preload?: (monaco: typeof MonacoEditor) => Dispose | void
     useShare?: (shareState: ShareState, monaco: typeof MonacoEditor | null) => void
     load?: (

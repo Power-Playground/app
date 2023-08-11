@@ -64,7 +64,7 @@ export default function EditorZone(props: {
   const shareState = plugins
     .reduce((acc, plugin) => ({
       ...acc,
-      ...plugin.editor?.uses?.reduce((acc, use) => ({
+      ...plugin.editor?.use?.reduce((acc, use) => ({
         ...acc,
         ...use?.({ searchParams: searchParams.current, editor })
       }), {})
