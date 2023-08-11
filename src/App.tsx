@@ -1,6 +1,9 @@
 import './App.scss'
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import 'react-toastify/dist/ReactToastify.css'
 
 import { useEffect, useMemo, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
 import type { definePlugin } from '@power-playground/core'
 import {
   createQuickAccessInstance,
@@ -38,6 +41,7 @@ export function App() {
   const [displayHeader, setDisplayHeader] = useState(true)
   return (
     <>
+      <ToastContainer />
       <header style={{ display: displayHeader ? 'flex' : 'none' }}>
         <h1>
           <a href='https://github.com/power-playground/app'
@@ -57,6 +61,15 @@ export function App() {
             }}
             onClick={() => {
               setDisplayHeader(false)
+              toast(<>Press <kbd>Esc</kbd> to show the header again</>, {
+                type: 'info',
+                position: 'bottom-right',
+                autoClose: 3000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true
+              })
               document.addEventListener('keydown', function onEsc(e: KeyboardEvent) {
                 if (e.key === 'Escape') {
                   setDisplayHeader(true)
