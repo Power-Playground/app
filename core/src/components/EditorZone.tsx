@@ -1,7 +1,7 @@
 import './EditorZone.scss'
 
 import React, {
-  createContext,
+  createContext, useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -90,57 +90,46 @@ export default function EditorZone(props: {
   className?: string
   resizable?: ResizableProps['resizable']
 }) {
+  const searchParams = useRef(new URLSearchParams(location.search))
+  const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
+
+  const hash = location.hash.slice(1)
+  const [code, setCode] = useState(hash
+    ? decodeURIComponent(atob(hash))
+    : 'console.log("Hello world!")')
+
   const plugins = useMemo(() => Object.values(PLUGINS), [])
-  const onlyOnce = useRef(true)
-  useEffect(() => {
-    if (onlyOnce.current) {
-      onlyOnce.current = false
-      return
-    }
-    return () => plugins
-      .map(plugin => plugin.editor?.init?.())
-      .forEach(func => func?.())
-  }, [plugins])
-  const searchParams = new URLSearchParams(location.search)
 
   const [language, setLanguage] = useState<'js' | 'ts'>(
-    searchParams.get('lang') === 'js' ? 'js' : 'ts'
+    searchParams.current.get('lang') === 'js' ? 'js' : 'ts'
   )
   function changeLanguage(lang: 'js' | 'ts') {
     setLanguage(lang)
-    searchParams.set('lang', lang)
-    history.replaceState(null, '', '?' + searchParams.toString() + location.hash)
+    searchParams.current.set('lang', lang)
+    history.replaceState(null, '', '?' + searchParams.current.toString() + location.hash)
   }
   const curFilePath = useMemo(() => `/index.${language}`, [language])
 
   const [typescriptVersion, setTypescriptVersion] = useState<string>()
   const isFirstSetTypescriptVersion = useRef(true)
-  function changeTypescriptVersion(ts: string) {
+  const changeTypescriptVersion = useCallback((ts: string) => {
     loader.config({
       paths: { vs: `https://typescript.azureedge.net/cdn/${ts}/monaco/min/vs` }
     })
     setTypescriptVersion(ts)
-    searchParams.set('ts', ts)
+    searchParams.current.set('ts', ts)
 
-    const code = editor?.getValue()
+    const computeCode = editor?.getValue() ?? code
 
-    const hash = code ? '#' + btoa(encodeURIComponent(code)) : ''
-    history.replaceState(null, '', '?' + searchParams.toString() + hash)
+    const hash = computeCode ? '#' + btoa(encodeURIComponent(computeCode)) : ''
+    history.replaceState(null, '', '?' + searchParams.current.toString() + hash)
 
     if (isFirstSetTypescriptVersion.current) {
       isFirstSetTypescriptVersion.current = false
     } else {
       location.reload()
     }
-  }
-
-  const hash = location.hash.slice(1)
-  const [code, setCode] = useState<string>(hash
-    ? decodeURIComponent(atob(hash))
-    : 'console.log("Hello world!")'
-  )
-
-  const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
+  }, [code, editor])
 
   const monaco = useMonaco()
   useEffect(() => {
@@ -239,7 +228,7 @@ export default function EditorZone(props: {
       code: [code, setCode],
       theme: [theme, setTheme],
       typescriptVersion: [
-        typescriptVersion ?? searchParams.get('ts') ?? typescriptVersionMeta.versions[0],
+        typescriptVersion ?? searchParams.current.get('ts') ?? typescriptVersionMeta.versions[0],
         changeTypescriptVersion
       ]
     }

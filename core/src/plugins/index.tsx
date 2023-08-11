@@ -130,7 +130,6 @@ export type Dispose = () => void
 
 export function definePlugin(props: {
   editor?: {
-    init?: () => Dispose | void
     preload?: (monaco: typeof MonacoEditor) => Dispose | void
     load?: (
       editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
