@@ -34,4 +34,6 @@
   * [x] Bottom tips
   * [ ] 隐藏 devtools
   * [ ] 隐藏 editor
+* [ ] 更好的插件开发体验
+  * [ ] hmr support (50%)
 * [ ] i18n
