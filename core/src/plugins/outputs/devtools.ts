@@ -1,9 +1,8 @@
 import { defineDevtools, elBridgeC } from '@power-playground/core'
 
-import { Files } from '../../eval-logs/files'
-
 import { JSPanel } from './panels/javascript'
 import { DTSPanel } from './panels/typescript'
+import { Files } from './files'
 
 // @ts-ignore
 window.require = function (name) {
@@ -38,6 +37,9 @@ elBridgeC.on('run', () => {
   })
 })
 
+// TODO More Panel
+//   Errors
+//   AST
 export default defineDevtools({
   panels: [JSPanel, DTSPanel]
 })

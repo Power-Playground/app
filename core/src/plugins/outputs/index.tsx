@@ -5,10 +5,6 @@ import { definePlugin } from '../index'
 
 import { Run } from './Run'
 
-// TODO More Panel
-//   Errors
-//   AST
-
 let compileResult: monacoEditor.languages.typescript.EmitOutput | undefined
 
 export default definePlugin({

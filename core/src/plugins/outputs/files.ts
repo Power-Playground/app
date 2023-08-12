@@ -1,8 +1,8 @@
 import { useSyncExternalStore } from 'react'
 import * as Babel from '@babel/standalone'
 
-import type { EvalLogsIframeParentEvent } from './bridge.ts'
-import { elBridgeC } from './bridge.ts'
+import type { EvalLogsIframeParentEvent } from '../../eval-logs/bridge'
+import { elBridgeC } from '../../eval-logs/bridge'
 
 export let Files: (
   & Extract<EvalLogsIframeParentEvent, { type: 'compile-completed' }>['data'][number]

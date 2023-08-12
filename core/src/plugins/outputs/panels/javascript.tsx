@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 import { defineDevtoolsPanel } from '@power-playground/core'
 
-import { useFiles } from '../../../eval-logs/files.ts'
 import CodeHighlighter from '../code-highlighter.tsx'
+import { useFiles } from '../files.ts'
 
 export const JSPanel = defineDevtoolsPanel('outputs.js', '.JS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
   const files = useFiles()
