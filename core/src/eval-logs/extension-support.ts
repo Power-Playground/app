@@ -61,18 +61,15 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
       main()
     })
     import.meta.hot.dispose(dispose)
-    console.debug(1)
     if (window.__isFirstLoad === undefined) {
       window.__isFirstLoad = new Promise(re => resolve = re)
     } else {
       await window.__isFirstLoad
     }
-    console.debug(2)
     import.meta.hot.accept(cache)
     if (window.__DEVTOOLS__) {
       DEVTOOLS = window.__DEVTOOLS__
     }
-    console.debug(3)
   }
 
   if (!DEVTOOLS) {
