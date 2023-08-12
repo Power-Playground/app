@@ -18,7 +18,10 @@ export type DevtoolsWindow = Window & typeof globalThis & {
   >
 }
 
-sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
+!async function () {
+  const devtools: HTMLIFrameElement = await new Promise(
+    re => sentinel.on('iframe', devtools => re(devtools as HTMLIFrameElement))
+  )
   const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
   const devtoolsDocument = devtools.contentDocument!
 
@@ -182,4 +185,4 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
   }
 
   main()
-})
+}()
