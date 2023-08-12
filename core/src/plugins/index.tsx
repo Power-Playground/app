@@ -10,11 +10,12 @@ import type { DevtoolsWindow } from '../eval-logs/devtools.ts'
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 
 export type Render = (devtoolsWindow: DevtoolsWindow, UI: typeof UITypes) => typeof UITypes.Widget.Widget
-export type ReactRender = (props: {
+export type ReactRenderProps = {
   devtoolsWindow: DevtoolsWindow,
   UI: typeof UITypes,
   onTraverseNextNode: (lis: TraverseNextNode) => () => void
-}) => ReactElement
+}
+export type ReactRender = (props: ReactRenderProps) => ReactElement
 
 type PanelMeta = {
   id: string

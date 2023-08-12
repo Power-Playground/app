@@ -4,7 +4,7 @@ import type { DevtoolsWindow } from '../../eval-logs/devtools.ts'
 
 type CodeHighlighter = typeof import('//chii/ui/components/code_highlighter/CodeHighlighter.ts')
 
-export default ({
+export default function CodeHighlighter({
   code,
   lang,
   devtoolsWindow: { simport }
@@ -12,7 +12,7 @@ export default ({
   code: string
   lang: string
   devtoolsWindow: Pick<DevtoolsWindow, 'simport'>
-}) => {
+}) {
   const [highlightNodeRef, setHighlightNodeRef] = useState<
     CodeHighlighter['highlightNode'] | undefined
   >(undefined)

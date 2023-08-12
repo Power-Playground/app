@@ -1,4 +1,4 @@
-import { defineDevtools, elBridgeC } from '@power-playground/core'
+import { defineDevtools, defineDevtoolsPanel, elBridgeC } from '@power-playground/core'
 
 import { JSPanel } from './panels/javascript'
 import { DTSPanel } from './panels/typescript'
@@ -41,5 +41,8 @@ elBridgeC.on('run', () => {
 //   Errors
 //   AST
 export default defineDevtools({
-  panels: [JSPanel, DTSPanel]
+  panels: [
+    defineDevtoolsPanel('outputs.js', '.JS', 'react', JSPanel),
+    defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', DTSPanel)
+  ]
 })

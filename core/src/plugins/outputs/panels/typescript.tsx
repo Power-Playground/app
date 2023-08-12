@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import { defineDevtoolsPanel } from '@power-playground/core'
+import type { ReactRenderProps } from '@power-playground/core'
 
-import CodeHighlighter from '../code-highlighter.tsx'
-import { useFiles } from '../files.ts'
+import CodeHighlighter from '../code-highlighter'
+import { useFiles } from '../files'
 
-export const DTSPanel = defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
+export function DTSPanel({ UI, devtoolsWindow: { simport } }: ReactRenderProps) {
   const files = useFiles()
   return <CodeHighlighter
     code={useMemo(
@@ -17,4 +17,4 @@ export const DTSPanel = defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', ({
     lang='typescript'
     devtoolsWindow={{ simport }}
   />
-})
+}

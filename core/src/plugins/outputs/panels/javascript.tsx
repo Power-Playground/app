@@ -1,41 +1,36 @@
 import { useMemo } from 'react'
-import { defineDevtoolsPanel } from '@power-playground/core'
+import type { ReactRenderProps } from '@power-playground/core'
 
 import CodeHighlighter from '../code-highlighter.tsx'
 import { useFiles } from '../files.ts'
 
-export const JSPanel = defineDevtoolsPanel('outputs.js', '.JS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
+export function JSPanel({ UI, devtoolsWindow: { simport } }: ReactRenderProps) {
   const files = useFiles()
   const containerError = useMemo(
     () => files.find(({ name }) => name.endsWith('(compile error)')),
     [files]
   )
-  if (containerError) {
-    return <CodeHighlighter
-      code={useMemo(
-        () => files
-          .filter(({ name }) => name.endsWith('(compile error)'))
-          .map(({ text }) => text)
-          .join('\n\n'),
-        [files]
-      )}
-      lang='text'
-      devtoolsWindow={{ simport }}
-    />
-  }
-  return <CodeHighlighter
-    code={useMemo(
-      () => files
+  const code = useMemo(
+    () => {
+      if (containerError) return files
+        .filter(({ name }) => name.endsWith('(compile error)'))
+        .map(({ text }) => text)
+        .join('\n\n')
+
+      return files
         .filter(({ name }) => name.endsWith('.js'))
         .map(({ name, text, originalText }) => `// @filename:${name}\n${
           originalText.match(/^\/\/ @devtools.output.compiled\r?\n/)
             ? text
             : originalText
         }`)
-        .join('\n\n'),
-      [files]
-    )}
-    lang='javascript'
+        .join('\n\n')
+    },
+    [containerError, files]
+  )
+  return <CodeHighlighter
+    code={code}
+    lang={containerError ? 'text' : 'javascript'}
     devtoolsWindow={{ simport }}
   />
-})
+}
