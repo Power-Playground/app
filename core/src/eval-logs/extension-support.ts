@@ -1,3 +1,5 @@
+// noinspection ES6ConvertVarToLetConst
+
 import type * as UI from '//chii/ui/legacy/legacy.ts'
 
 import type { Plugin } from '@power-playground/core'
@@ -18,10 +20,52 @@ export type DevtoolsWindow = Window & typeof globalThis & {
   >
 }
 
+declare global {
+  // eslint-disable-next-line no-var
+  var __isFirstLoad: Promise<void> | null
+  // eslint-disable-next-line no-var
+  var __DEVTOOLS__: HTMLIFrameElement | null
+  // eslint-disable-next-line no-var
+  var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
+}
+
+const __ENABLE_HOT_MODULE_REPLACE__ = true
+
 !async function () {
-  const devtools: HTMLIFrameElement = await new Promise(
-    re => sentinel.on('iframe', devtools => re(devtools as HTMLIFrameElement))
-  )
+  let resolve: Function | null = null
+  let DEVTOOLS: HTMLIFrameElement | null = null
+  if (import.meta.hot && __ENABLE_HOT_MODULE_REPLACE__) {
+    if (window.__isFirstLoad === undefined) {
+      window.__isFirstLoad = new Promise(re => resolve = re)
+    } else {
+      await window.__isFirstLoad
+    }
+    import.meta.hot.accept(() => {
+      window.__OLD_PPD_PLUGINS__ = (window.parent as any).PPD_PLUGINS
+      // 当模块被 hot replaced 时，接下来的代码会被触发
+      // 在这里我们可以将上一个模块的状态保存下来
+      // 以便在新模块加载完成后恢复
+      window.__DEVTOOLS__ = DEVTOOLS!
+      // 同时我们将上一个模块的设置的阻塞 Promise 完成，让新模块继续执行
+      // 这样子新模块就能处理上一个模块的状态，并将它们恢复
+      resolve?.()
+      __DEBUG__ && console.debug('extension-support.ts: hot accept')
+    })
+    if (window.__DEVTOOLS__) {
+      DEVTOOLS = window.__DEVTOOLS__
+    }
+  }
+
+  if (!DEVTOOLS) {
+    DEVTOOLS = await new Promise(
+      re => sentinel.on('iframe', devtools => re(devtools as HTMLIFrameElement))
+    ) as HTMLIFrameElement
+  }
+  if (DEVTOOLS === null) {
+    throw new Error('Cannot find devtools')
+  }
+  const devtools = DEVTOOLS
+
   const devtoolsWindow: DevtoolsWindow = devtools.contentWindow! as DevtoolsWindow
   const devtoolsDocument = devtools.contentDocument!
 
@@ -33,7 +77,6 @@ export type DevtoolsWindow = Window & typeof globalThis & {
   const ALL_PLUGINS: Record<string, Plugin> = window.parent.PPD_PLUGINS ?? {}
 
   const DEVTOOLS_PLUGINS = Object.entries(ALL_PLUGINS)
-    // .filter(isNotUndefined)
     .filter(
       <T>(entry: [string, {
         devtools?: T | undefined
@@ -41,28 +84,30 @@ export type DevtoolsWindow = Window & typeof globalThis & {
         entry[1].devtools !== undefined
       )
     )
+    .filter(([id, plugin]) => {
+      if (!import.meta.hot) return true
+      return plugin !== window.__OLD_PPD_PLUGINS__?.[id]
+    })
     .map(([id, { devtools }]) => {
       __DEBUG__ && console.debug('loading plugin', `[${id}]\n`, devtools)
       if (typeof devtools === 'function') {
         return Promise.resolve<
           ReturnType<typeof devtools>
-        >(eval(devtools.toString())())
+        >((0, eval)(devtools.toString())())
       }
       return Promise.resolve(devtools)
     })
 
   // eslint-disable-next-line no-unused-labels
   beforeMount: {
-    DEVTOOLS_PLUGINS.forEach(
-      devtools => devtools.then(({ beforeMount }) => {
-        beforeMount?.({ devtoolsWindow })
-      })
-    )
+    DEVTOOLS_PLUGINS
+      .forEach(devtools => devtools.then(({ beforeMount }) => beforeMount?.({ devtoolsWindow })))
   }
 
   // eslint-disable-next-line no-unused-labels
   resolveElBridgeC: {
     let uiTheme = JSON.parse(localStorage.getItem('uiTheme') ?? '""')
+    // TODO resolve hot module replace logic
     elBridgeC.on('update:localStorage', ([key, value]) => {
       if (key === 'uiTheme' && uiTheme !== value) {
         // TODO Setting page select value is wrong
@@ -114,29 +159,9 @@ export type DevtoolsWindow = Window & typeof globalThis & {
       const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
       const inspectorView = realUI.InspectorView.InspectorView.instance()
 
-      const rightToolbar = inspectorView.tabbedPane.rightToolbar()
-      rightToolbar.appendSeparator()
-      const dockToolbarIcons = [
-        ['largeicon-dock-to-bottom', 'Dock to bottom'],
-        ['largeicon-dock-to-left', 'Dock to left'],
-        ['largeicon-dock-to-right', 'Dock to right']
-      ]
-      const dockBtns = dockToolbarIcons.map(([icon, title]) => {
-        const button = new realUI.Toolbar.ToolbarToggle(title, icon)
-        button.addEventListener(realUI.Toolbar.ToolbarButton.Events.Click, () => {
-          dockBtns.forEach(btn => btn.setToggled(false))
-          button.setToggled(!button.toggled())
-          if (button.toggled()) {
-            elBridgeC.send('dock-to', icon.slice('largeicon-dock-to-'.length))
-          }
-        })
-        if (icon === 'largeicon-dock-to-right') {
-          button.setToggled(true)
-        }
-        rightToolbar.appendToolbarItem(button)
-        return button
-      })
-
+      DEVTOOLS_PLUGINS.forEach(devtools => devtools.then(({ load }) => {
+        load?.({ UI: realUI, inspectorView, devtoolsWindow })
+      }))
       registerPlugins(realUI, inspectorView)
     }
   })
