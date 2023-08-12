@@ -29,17 +29,17 @@ elBridgeC.on('compile-completed', files => {
   Files = files.map(({ name, text }) => {
     let code = text
     if (name.endsWith('.js')) {
-      const filename = name.slice(7)
+      name = name.slice(7)
       try {
         code = Babel.transform(text, {
           presets: ['es2015'],
           plugins: [
           ],
-          filename
+          filename: name
         })?.code ?? ''
       } catch (e) {
         return {
-          name: `${filename} (compile error)`,
+          name: `${name} (compile error)`,
           originalText: text,
           // @ts-ignore
           text: e!.message!
