@@ -3,12 +3,11 @@ import type * as monacoEditor from 'monaco-editor'
 import { elBridgeP } from '../../eval-logs/bridge'
 import { definePlugin } from '../index'
 
-import { JSPanel } from './panels/javascript'
-import { DTSPanel } from './panels/typescript'
 import { Run } from './Run'
 
-// Errors
-// AST
+// TODO More Panel
+//   Errors
+//   AST
 
 let compileResult: monacoEditor.languages.typescript.EmitOutput | undefined
 
@@ -98,7 +97,5 @@ export default definePlugin({
     },
     topbar: [Run]
   },
-  devtools: {
-    panels: [JSPanel, DTSPanel]
-  }
+  devtools: () => import('./devtools').then(m => m.default)
 })

@@ -44,12 +44,33 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
   // @ts-ignore
   const ALL_PLUGINS: Record<string, Plugin> = window.parent.PPD_PLUGINS ?? {}
 
+  const DEVTOOLS_PLUGINS = Object.entries(ALL_PLUGINS)
+    // .filter(isNotUndefined)
+    .filter(
+      <T>(entry: [string, {
+        devtools?: T | undefined
+      }]): entry is [string, { devtools: T }] => (
+        console.log(entry),
+        entry[1].devtools !== undefined
+      )
+    )
+    .map(([id, { devtools }]) => {
+      __DEBUG__ && console.debug('devtools', id, devtools)
+      if (typeof devtools === 'function') {
+        return Promise.resolve<
+          ReturnType<typeof devtools>
+        >(eval(devtools.toString())())
+      }
+      return Promise.resolve(devtools)
+    })
+
   // eslint-disable-next-line no-unused-labels
   beforeMount: {
-    Object.entries(ALL_PLUGINS)
-      .forEach(([, { devtools }]) => {
-        devtools?.beforeMount?.({ devtoolsWindow })
+    DEVTOOLS_PLUGINS.forEach(
+      devtools => devtools.then(({ beforeMount }) => {
+        beforeMount?.({ devtoolsWindow })
       })
+    )
   }
 
   // eslint-disable-next-line no-unused-labels
@@ -75,16 +96,16 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
     const drawerTabbedPane: UI.TabbedPane.TabbedPane =
       // @ts-ignore
       inspector.drawerTabbedPane
-    Object.entries(ALL_PLUGINS)
-      .forEach(async ([, { devtools }]) => {
-        devtools?.panels?.forEach(panel => {
+    DEVTOOLS_PLUGINS.forEach(
+      devtools => devtools.then(({ panels, drawerPanels }) => {
+        panels?.forEach(panel => {
           const Widget = panel(devtoolsWindow, realUI)
           const widget = new Widget()
           if (!tabbedPane.hasTab(panel.id)) {
             tabbedPane?.appendTab(panel.id, panel.title, widget)
           }
         })
-        devtools?.drawerPanels?.forEach(panel => {
+        drawerPanels?.forEach(panel => {
           const Widget = panel(devtoolsWindow, realUI)
           const widget = new Widget()
 
@@ -92,10 +113,8 @@ sentinel.on('iframe', async (devtools: HTMLIFrameElement) => {
             drawerTabbedPane?.appendTab(panel.id, panel.title, widget)
           }
         })
-        devtools?.load?.({
-          devtoolsWindow, UI: realUI, inspectorView
-        })
       })
+    )
   }
 
   let runIsCalled = false

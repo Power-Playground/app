@@ -148,6 +148,19 @@ export interface BarItemProps<S> {
 
 export const defineBarItem: <S>(Comp: React.ComponentType<BarItemProps<S>>) => typeof Comp = comp => comp
 
+export type Devtools = {
+  panels?: Panel[]
+  drawerPanels?: Panel[]
+  load?: (props: {
+    UI: typeof UITypes
+    inspectorView: UITypes.InspectorView.InspectorView
+    devtoolsWindow: DevtoolsWindow
+  }) => void | Promise<void>
+  beforeMount?: (props: {
+    devtoolsWindow: DevtoolsWindow
+  }) => void
+}
+
 export type Plugin<X extends {
   ExtShareState: unknown
 } = {
@@ -173,18 +186,7 @@ export type Plugin<X extends {
       BarItemProps<X['ExtShareState']>
     >[]
   }
-  devtools?: {
-    panels?: Panel[]
-    drawerPanels?: Panel[]
-    load?: (props: {
-      UI: typeof UITypes
-      inspectorView: UITypes.InspectorView.InspectorView
-      devtoolsWindow: DevtoolsWindow
-    }) => void | Promise<void>
-    beforeMount?: (props: {
-      devtoolsWindow: DevtoolsWindow
-    }) => void
-  }
+  devtools?: Devtools | (() => Promise<Devtools> | Devtools)
 }
 
 export function definePlugin<X extends {
@@ -192,3 +194,5 @@ export function definePlugin<X extends {
 } = {
   ExtShareState: unknown
 }>(plugin: Plugin<X>) { return plugin }
+
+export function defineDevtools(devtools: Devtools) { return devtools }
