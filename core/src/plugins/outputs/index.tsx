@@ -7,6 +7,12 @@ import { Run } from './Run'
 
 let compileResult: monacoEditor.languages.typescript.EmitOutput | undefined
 
+if (import.meta.hot) {
+  if (import.meta.hot.data['plugins:outputs:compileResult']) {
+    compileResult = import.meta.hot.data['plugins:outputs:compileResult']
+  }
+}
+
 export default definePlugin({
   editor: {
     preload(monaco) {
@@ -83,6 +89,9 @@ export default definePlugin({
                     text: modelContent
                   }
                 ].concat(compileResult.outputFiles)
+              }
+              if (import.meta.hot) {
+                import.meta.hot.data['plugins:outputs:compileResult'] = compileResult
               }
               elBridgeP.send('compile-completed', compileResult.outputFiles)
             })
