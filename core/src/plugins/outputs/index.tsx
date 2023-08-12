@@ -1,62 +1,12 @@
-import { useMemo } from 'react'
 import type * as monacoEditor from 'monaco-editor'
 
-import { elBridgeP } from '../../eval-logs/bridge.ts'
-import { useFiles } from '../../eval-logs/files.ts'
-import { defineDevtoolsPanel, definePlugin } from '../index.tsx'
+import { elBridgeP } from '../../eval-logs/bridge'
+import { definePlugin } from '../index'
 
-import CodeHighlighter from './code-highlighter.tsx'
-import { Run } from './Run.tsx'
+import { JSPanel } from './panels/javascript'
+import { DTSPanel } from './panels/typescript'
+import { Run } from './Run'
 
-const JSPanel = defineDevtoolsPanel('outputs.js', '.JS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
-  const files = useFiles()
-  const containerError = useMemo(
-    () => files.find(({ name }) => name.endsWith('(compile error)')),
-    [files]
-  )
-  if (containerError) {
-    return <CodeHighlighter
-      code={useMemo(
-        () => files
-          .filter(({ name }) => name.endsWith('(compile error)'))
-          .map(({ text }) => text)
-          .join('\n\n'),
-        [files]
-      )}
-      lang='text'
-      devtoolsWindow={{ simport }}
-    />
-  }
-  return <CodeHighlighter
-    code={useMemo(
-      () => files
-        .filter(({ name }) => name.endsWith('.js'))
-        .map(({ name, text, originalText }) => `// @filename:${name}\n${
-          originalText.match(/^\/\/ @devtools.output.compiled\r?\n/)
-            ? text
-            : originalText
-        }`)
-        .join('\n\n'),
-      [files]
-    )}
-    lang='javascript'
-    devtoolsWindow={{ simport }}
-  />
-})
-const DTSPanel = defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', ({ UI, devtoolsWindow: { simport } }) => {
-  const files = useFiles()
-  return <CodeHighlighter
-    code={useMemo(
-      () => files
-        .filter(({ name }) => name.endsWith('.d.ts'))
-        .map(({ name, text }) => `// @filename:${name}\n${text}`)
-        .join('\n\n'),
-      [files]
-    )}
-    lang='typescript'
-    devtoolsWindow={{ simport }}
-  />
-})
 // Errors
 // AST
 
