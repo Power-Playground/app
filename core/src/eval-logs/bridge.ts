@@ -15,6 +15,9 @@ export type EvalLogsIframeParentEvent =
   type: 'update:localStorage'
   data: [key: string, value: any]
 }
+| {
+  type: 'hmr:plugins-update'
+}
 
 export type EvalLogsIframeChildEvent =
 | {

@@ -31,8 +31,22 @@ const plugins = Object.assign(
     })
 ) as Record<string, Plugin>
 
-// @ts-ignore
-window.PPD_PLUGINS = plugins
+declare global {
+  // eslint-disable-next-line no-var
+  var __PPD_PLUGINS__: Record<string, Plugin> | null
+  // eslint-disable-next-line no-var
+  var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
+}
+
+if (import.meta.hot) {
+  window.__OLD_PPD_PLUGINS__ = window.__PPD_PLUGINS__
+  window.__PPD_PLUGINS__ = plugins
+  import.meta.hot.accept(() => {
+    console.debug('plugins updated')
+    elBridgeP.send('hmr:plugins-update')
+  })
+}
+window.__PPD_PLUGINS__ = plugins
 
 export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {

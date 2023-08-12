@@ -25,35 +25,54 @@ declare global {
   var __isFirstLoad: Promise<void> | null
   // eslint-disable-next-line no-var
   var __DEVTOOLS__: HTMLIFrameElement | null
-  // eslint-disable-next-line no-var
-  var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
 }
 
 const __ENABLE_HOT_MODULE_REPLACE__ = true
 
-!async function () {
+if (Object.getOwnPropertyDescriptor(window, '__PPD_PLUGINS__')?.get === undefined)
+  Object.defineProperty(window, '__PPD_PLUGINS__', { get: () => (window.parent as any).__PPD_PLUGINS__ })
+if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === undefined)
+  Object.defineProperty(window, '__OLD_PPD_PLUGINS__', { get: () => (window.parent as any).__OLD_PPD_PLUGINS__ })
+
+!async function main() {
+  function dispose() {
+    console.debug('hmr:plugins-update dispose')
+    import.meta.hot?.data['hmr:plugins-update']?.()
+  }
+  function cache() {
+    // 当模块被 hot replaced 时，接下来的代码会被触发
+    // 在这里我们可以将上一个模块的状态保存下来
+    // 以便在新模块加载完成后恢复
+    window.__DEVTOOLS__ = DEVTOOLS!
+    // 同时我们将上一个模块的设置的阻塞 Promise 完成，让新模块继续执行
+    // 这样子新模块就能处理上一个模块的状态，并将它们恢复
+    resolve?.()
+    console.debug('extension-support.ts: state cached')
+  }
+
   let resolve: Function | null = null
   let DEVTOOLS: HTMLIFrameElement | null = null
   if (import.meta.hot && __ENABLE_HOT_MODULE_REPLACE__) {
+    import.meta.hot.data['hmr:plugins-update'] = elBridgeC.on('hmr:plugins-update', () => {
+      console.debug('hmr:plugins-update')
+      cache()
+
+      dispose()
+      main()
+    })
+    import.meta.hot.dispose(dispose)
+    console.debug(1)
     if (window.__isFirstLoad === undefined) {
       window.__isFirstLoad = new Promise(re => resolve = re)
     } else {
       await window.__isFirstLoad
     }
-    import.meta.hot.accept(() => {
-      window.__OLD_PPD_PLUGINS__ = (window.parent as any).PPD_PLUGINS
-      // 当模块被 hot replaced 时，接下来的代码会被触发
-      // 在这里我们可以将上一个模块的状态保存下来
-      // 以便在新模块加载完成后恢复
-      window.__DEVTOOLS__ = DEVTOOLS!
-      // 同时我们将上一个模块的设置的阻塞 Promise 完成，让新模块继续执行
-      // 这样子新模块就能处理上一个模块的状态，并将它们恢复
-      resolve?.()
-      __DEBUG__ && console.debug('extension-support.ts: hot accept')
-    })
+    console.debug(2)
+    import.meta.hot.accept(cache)
     if (window.__DEVTOOLS__) {
       DEVTOOLS = window.__DEVTOOLS__
     }
+    console.debug(3)
   }
 
   if (!DEVTOOLS) {
@@ -73,8 +92,7 @@ const __ENABLE_HOT_MODULE_REPLACE__ = true
   __DEBUG__ && console.debug('devtools', devtoolsWindow, devtoolsDocument)
   __DEBUG__ && console.debug('readyState', devtoolsDocument.readyState)
 
-  // @ts-ignore
-  const ALL_PLUGINS: Record<string, Plugin> = window.parent.PPD_PLUGINS ?? {}
+  const ALL_PLUGINS: Record<string, Plugin> = window.__PPD_PLUGINS__ ?? {}
 
   const DEVTOOLS_PLUGINS = Object.entries(ALL_PLUGINS)
     .filter(
@@ -86,6 +104,8 @@ const __ENABLE_HOT_MODULE_REPLACE__ = true
     )
     .filter(([id, plugin]) => {
       if (!import.meta.hot) return true
+      if (window.__OLD_PPD_PLUGINS__ === undefined) return true
+
       return plugin !== window.__OLD_PPD_PLUGINS__?.[id]
     })
     .map(([id, { devtools }]) => {
@@ -97,6 +117,8 @@ const __ENABLE_HOT_MODULE_REPLACE__ = true
       }
       return Promise.resolve(devtools)
     })
+
+  __DEBUG__ && console.debug('DEVTOOLS_PLUGINS', DEVTOOLS_PLUGINS)
 
   // eslint-disable-next-line no-unused-labels
   beforeMount: {
@@ -166,7 +188,7 @@ const __ENABLE_HOT_MODULE_REPLACE__ = true
     }
   })
 
-  async function main() {
+  await async function () {
     await new Promise<void>(re => {
       if (devtoolsDocument.readyState === 'complete' && devtoolsWindow.simport!) {
         re()
@@ -207,7 +229,5 @@ const __ENABLE_HOT_MODULE_REPLACE__ = true
       runIsCalled = false
       console.debug(e)
     }
-  }
-
-  main()
+  }()
 }()

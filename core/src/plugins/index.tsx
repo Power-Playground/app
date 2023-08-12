@@ -156,10 +156,10 @@ export type Devtools = {
     UI: typeof UITypes
     inspectorView: UITypes.InspectorView.InspectorView
     devtoolsWindow: DevtoolsWindow
-  }) => void | Promise<void>
+  }) => Dispose | void
   beforeMount?: (props: {
     devtoolsWindow: DevtoolsWindow
-  }) => void
+  }) => Dispose | void
 }
 
 export type Plugin<X extends {
