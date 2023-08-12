@@ -19,8 +19,6 @@ function addDisposeFunc(func?: Function) {
   }
 }
 
-console.log(1111)
-
 elBridgeC.on('run', () => {
   Files.forEach(({ name, text: code }) => {
     if (name !== '/index.js') return
