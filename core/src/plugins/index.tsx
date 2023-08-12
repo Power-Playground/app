@@ -5,7 +5,7 @@ import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import type * as MonacoEditor from 'monaco-editor'
 
-import type { DevtoolsWindow } from '../eval-logs/devtools.ts'
+import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 
