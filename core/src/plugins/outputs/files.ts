@@ -28,8 +28,8 @@ export function useFiles() {
 elBridgeC.on('compile-completed', files => {
   Files = files.map(({ name, text }) => {
     let code = text
-    const filename = name.slice(7)
-    if (filename.endsWith('.js')) {
+    if (name.endsWith('.js')) {
+      const filename = name.slice(7)
       try {
         code = Babel.transform(text, {
           presets: ['es2015'],
@@ -46,7 +46,7 @@ elBridgeC.on('compile-completed', files => {
         }
       }
     }
-    return { name: filename, originalText: text, text: code ?? '' }
+    return { name, originalText: text, text: code ?? '' }
   })
   listeners.forEach(func => func(Files))
 })
