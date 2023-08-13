@@ -102,5 +102,12 @@ export default definePlugin({
     },
     topbar: [Run]
   },
-  devtools: () => import('./devtools').then(m => m.default)
+  devtools: ({ importInEvalLogs }) => importInEvalLogs(
+    new URL(
+      Object.values(import.meta.glob('./devtools.ts'))[0]
+        .toString()
+        .replace(/.*import\("(.+?)"\).*/, '$1'),
+      import.meta.url
+    ).href
+  ).then(m => m.default)
 })
