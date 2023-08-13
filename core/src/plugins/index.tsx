@@ -191,7 +191,9 @@ export type Plugin<X extends {
    * 如果你返回的是一个函数，那么它将会在 Devtools 的 iframe 作用域中被调用，反之则在他的上层作用域中被使用。
    * 你可以在其中使用 `window` 来访问 Devtools 的 iframe 作用域。
    */
-  devtools?: Devtools | (() => Promise<Devtools> | Devtools)
+  devtools?: Devtools | ((window: {
+    importInEvalLogs: (path: string) => Promise<{ default: Devtools }>
+  }) => Promise<Devtools> | Devtools)
 }
 
 export function definePlugin<X extends {

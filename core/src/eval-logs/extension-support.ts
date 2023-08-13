@@ -2,7 +2,6 @@
 
 import type * as UI from '//chii/ui/legacy/legacy.ts'
 
-import type { Plugin } from '@power-playground/core'
 import { elBridgeC } from '@power-playground/core'
 import sentinel from 'sentinel-js'
 
@@ -28,6 +27,9 @@ declare global {
 }
 
 const __ENABLE_HOT_MODULE_REPLACE__ = true
+
+// @ts-ignore
+window.importInEvalLogs = (path: string) => import(path)
 
 if (Object.getOwnPropertyDescriptor(window, '__PPD_PLUGINS__')?.get === undefined)
   Object.defineProperty(window, '__PPD_PLUGINS__', { get: () => (window.parent as any).__PPD_PLUGINS__ })
@@ -89,7 +91,7 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
   __DEBUG__ && console.debug('devtools', devtoolsWindow, devtoolsDocument)
   __DEBUG__ && console.debug('readyState', devtoolsDocument.readyState)
 
-  const ALL_PLUGINS: Record<string, Plugin> = window.__PPD_PLUGINS__ ?? {}
+  const ALL_PLUGINS = window.__PPD_PLUGINS__ ?? {}
 
   const DEVTOOLS_PLUGINS = Object.entries(ALL_PLUGINS)
     .filter(
@@ -103,14 +105,14 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
       if (!import.meta.hot) return true
       if (window.__OLD_PPD_PLUGINS__ === undefined) return true
 
-      return plugin !== window.__OLD_PPD_PLUGINS__?.[id]
+      return plugin.devtools !== window.__OLD_PPD_PLUGINS__?.[id].devtools
     })
     .map(([id, { devtools }]) => {
       __DEBUG__ && console.debug('loading plugin', `[${id}]\n`, devtools)
       if (typeof devtools === 'function') {
         return Promise.resolve<
           ReturnType<typeof devtools>
-        >((0, eval)(devtools.toString())())
+        >(devtools(window as any))
       }
       return Promise.resolve(devtools)
     })
