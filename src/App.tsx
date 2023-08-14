@@ -1,3 +1,5 @@
+// noinspection ES6ConvertVarToLetConst
+
 import './App.scss'
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import 'react-toastify/dist/ReactToastify.css'
@@ -10,14 +12,15 @@ import {
   EditorZone,
   elBridgeP,
   QuickAccess,
-  QuickAccessContext
+  QuickAccessContext, registerPluginConfigures
 } from '@power-playground/core'
 import commonPlugins from '@power-playground/core/common-plugins'
 
 import PP from '../PP_P.svg'
 
-import { I18N } from './components/I18N.tsx'
-import { ThemeSwitcher } from './components/ThemeSwitcher.tsx'
+import { I18N } from './components/I18N'
+import { ThemeSwitcher } from './components/ThemeSwitcher'
+import configure from './configure'
 
 const plugins = Object.assign(
   {},
@@ -36,12 +39,16 @@ const plugins = Object.assign(
 
 declare global {
   // eslint-disable-next-line no-var
+  var __PPD_CONFIGURES__: typeof configure
+  // eslint-disable-next-line no-var
   var __PPD_PLUGINS__: Record<string, Plugin> | null
   // eslint-disable-next-line no-var
   var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
 }
 
+registerPluginConfigures(configure)
 if (import.meta.hot) {
+  window.__PPD_CONFIGURES__ = configure
   window.__OLD_PPD_PLUGINS__ = window.__PPD_PLUGINS__
   window.__PPD_PLUGINS__ = plugins
   import.meta.hot.accept(() => {
@@ -50,6 +57,7 @@ if (import.meta.hot) {
   })
 }
 window.__PPD_PLUGINS__ = plugins
+window.__PPD_CONFIGURES__ = configure
 
 export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {

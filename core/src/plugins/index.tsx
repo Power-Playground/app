@@ -7,6 +7,9 @@ import type * as MonacoEditor from 'monaco-editor'
 
 import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
+import type { PluginConfigureIds, PluginConfigures } from './configure'
+import { getConfigure } from './configure'
+
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 
 export type Render = (devtoolsWindow: DevtoolsWindow, UI: typeof UITypes) => typeof UITypes.Widget.Widget
@@ -196,10 +199,52 @@ export type Plugin<X extends {
   }) => Promise<Devtools> | Devtools)
 }
 
-export function definePlugin<X extends {
-  ExtShareState: unknown
-} = {
-  ExtShareState: unknown
-}>(plugin: Plugin<X>) { return plugin }
+export * from './configure'
+
+const configureToPluginCache = new Map<unknown, Plugin>()
+
+function cachePlugin(configure: unknown, plugin: Plugin) {
+  configureToPluginCache.set(configure, plugin)
+}
+
+function isExistPlugin(configure: unknown) {
+  return configureToPluginCache.has(configure)
+}
+
+export function clearPluginCache() {
+  configureToPluginCache.clear()
+}
+
+export function definePlugin<
+  X extends { ExtShareState: unknown } = { ExtShareState: unknown }
+>(plugin: Plugin<X>): Plugin<X>
+export function definePlugin<
+  ID extends PluginConfigureIds,
+  X extends { ExtShareState: unknown } = { ExtShareState: unknown }
+>(
+  id: ID,
+  pluginInit: (conf?: PluginConfigures[ID]) => Plugin<X>
+): Plugin<X>
+export function definePlugin<
+  ID extends PluginConfigureIds,
+  X extends { ExtShareState: unknown } = { ExtShareState: unknown }
+>(
+  a: ID | Plugin<X>,
+  pluginInit?: (conf?: PluginConfigures[ID]) => Plugin<X>
+) {
+  if (typeof a === 'string') {
+    if (!pluginInit)
+      throw new Error('The second argument is required')
+
+    const config = getConfigure(a)
+    if (isExistPlugin(config))
+      return configureToPluginCache.get(config)!
+    const plugin = pluginInit(config)
+    cachePlugin(config, plugin)
+    return plugin
+  }
+
+  return a
+}
 
 export function defineDevtools(devtools: Devtools) { return devtools }

@@ -2,7 +2,7 @@
 
 import type * as UI from '//chii/ui/legacy/legacy.ts'
 
-import { elBridgeC } from '@power-playground/core'
+import { elBridgeC, registerPluginConfigures } from '@power-playground/core'
 import sentinel from 'sentinel-js'
 
 type ImportMap = {
@@ -35,6 +35,8 @@ if (Object.getOwnPropertyDescriptor(window, '__PPD_PLUGINS__')?.get === undefine
   Object.defineProperty(window, '__PPD_PLUGINS__', { get: () => (window.parent as any).__PPD_PLUGINS__ })
 if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === undefined)
   Object.defineProperty(window, '__OLD_PPD_PLUGINS__', { get: () => (window.parent as any).__OLD_PPD_PLUGINS__ })
+if (Object.getOwnPropertyDescriptor(window, '__PPD_CONFIGURES__')?.get === undefined)
+  Object.defineProperty(window, '__PPD_CONFIGURES__', { get: () => (window.parent as any).__PPD_CONFIGURES__ })
 
 !async function main() {
   function dispose() {
@@ -55,6 +57,7 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
   let resolve: Function | null = null
   let DEVTOOLS: HTMLIFrameElement | null = null
   if (import.meta.hot && __ENABLE_HOT_MODULE_REPLACE__) {
+    registerPluginConfigures(window.__PPD_CONFIGURES__)
     import.meta.hot.data['hmr:plugins-update'] = elBridgeC.on('hmr:plugins-update', () => {
       console.debug('hmr:plugins-update')
       cache()

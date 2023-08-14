@@ -13,7 +13,17 @@ if (import.meta.hot) {
   }
 }
 
-export default definePlugin({
+declare module '@power-playground/core' {
+  interface PluginConfigures {
+    outputs: {
+      foo: string
+    }
+  }
+}
+
+export const id = 'outputs'
+
+export default definePlugin(id, () => ({
   editor: {
     preload(monaco) {
       const dispose = elBridgeP.on('compile', () => {
@@ -110,4 +120,4 @@ export default definePlugin({
       import.meta.url
     ).href
   ).then(m => m.default)
-})
+}))

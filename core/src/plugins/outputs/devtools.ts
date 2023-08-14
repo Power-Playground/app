@@ -1,11 +1,12 @@
 import './devtools-init'
 
 import * as Babel from '@babel/standalone'
-import { defineDevtools, defineDevtoolsPanel, elBridgeC } from '@power-playground/core'
+import { defineDevtools, defineDevtoolsPanel, elBridgeC, getConfigure } from '@power-playground/core'
 
 import { JSPanel } from './panels/javascript'
 import { DTSPanel } from './panels/typescript'
 import { Files, setFiles } from './files'
+import { id } from './index.ts'
 
 // TODO More Panel
 //   Errors
@@ -16,6 +17,7 @@ export default defineDevtools({
     defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', DTSPanel)
   ],
   load() {
+    console.log('getConfigure(id)', getConfigure(id))
     let prevDisposeFunc: Function
     function addDisposeFunc(func?: Function) {
       const oldDisposeFunc = prevDisposeFunc
