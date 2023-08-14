@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./PP_P.svg" alt="Power Playground Icon" width="320">
+  <img src="./PP.svg" alt="Power Playground Icon" width="320">
 </div>
 
 # Power Playground
