@@ -38,7 +38,7 @@ export default definePlugin(id, () => ({
       })
 
       const disposables = [
-        monaco.languages.registerCompletionItemProvider('typescript', {
+        monaco.languages.registerCompletionItemProvider(['typescript', 'javascript'], {
           triggerCharacters: ['@'],
           async provideCompletionItems(model, position) {
             if (position.lineNumber !== 1) return
