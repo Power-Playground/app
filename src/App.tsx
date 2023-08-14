@@ -25,7 +25,10 @@ const plugins = Object.assign(
   import.meta
     .glob([
       './plugins/*.ts*',
-      './plugins/*/index.ts*'
+      './plugins/*/index.ts*',
+
+      '../ppd-plugins/*.ts*',
+      '../ppd-plugins/*/index.ts*'
     ], {
       eager: true, import: 'default'
     })
