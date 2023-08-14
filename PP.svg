@@ -5,14 +5,14 @@
 <defs/>
 <g id="图层-1" visibility="hidden">
 <path d="M0 0L1024 0L1024 1024L0 1024L0 0Z" fill="#3f5dae" fill-rule="nonzero" opacity="1" stroke="none"/>
-<text fill="#ffffff" font-family="HackNerdFontComplete-Bold" font-size="500" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 256.989 338.285)" x="0" y="0">
-<tspan font-family="PingFangSC-Semibold" font-weight="bold" textLength="655" x="0" y="530">PP</tspan>
+<text fill="#ffffff" font-family="HackNerdFontCompleteM-Bold" font-size="680" opacity="1" stroke="none" text-anchor="end" transform="matrix(1 0 0 1 0 365.247)" x="0" y="0">
+<tspan font-weight="bold" textLength="818.789" x="1024" y="631">PP</tspan>
 </text>
 </g>
 <g id="图层-2">
 <path d="M0 0L1024 0L1024 1024L0 1024L0 0Z" fill="#ffffff" fill-rule="nonzero" opacity="1" stroke="none"/>
-<text fill="#3f5dae" font-family="HackNerdFontComplete-Bold" font-size="500" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 256.989 338.285)" x="0" y="0">
-<tspan font-family="PingFangSC-Semibold" font-weight="bold" textLength="655" x="0" y="530">PP</tspan>
+<text fill="#3f5dae" font-family="HackNerdFontCompleteM-Bold" font-size="680" opacity="1" stroke="none" text-anchor="end" transform="matrix(1 0 0 1 0 365.247)" x="0" y="0">
+<tspan font-weight="bold" textLength="818.789" x="1024" y="631">PP</tspan>
 </text>
 </g>
 </svg>
