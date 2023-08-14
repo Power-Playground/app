@@ -8,6 +8,18 @@ import { DTSPanel } from './panels/typescript'
 import { Files, setFiles } from './files'
 import { id } from './index.ts'
 
+type TransformOptions = Parameters<typeof Babel.transform>[1]
+
+declare module '@power-playground/core' {
+  export interface OutputsPluginConfigures {
+    babelTransformOptions?: Exclude<TransformOptions, 'filename'>
+  }
+}
+
+const {
+  babelTransformOptions = {}
+} = getConfigure(id) ?? {}
+
 // TODO More Panel
 //   Errors
 //   AST
@@ -17,7 +29,6 @@ export default defineDevtools({
     defineDevtoolsPanel('outputs.d.ts', '.D.TS', 'react', DTSPanel)
   ],
   load() {
-    console.log('getConfigure(id)', getConfigure(id))
     let prevDisposeFunc: Function
     function addDisposeFunc(func?: Function) {
       const oldDisposeFunc = prevDisposeFunc
@@ -51,8 +62,7 @@ export default defineDevtools({
           try {
             code = Babel.transform(text, {
               presets: ['es2015'],
-              plugins: [
-              ],
+              ...babelTransformOptions,
               filename: name
             })?.code ?? ''
           } catch (e) {

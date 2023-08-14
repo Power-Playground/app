@@ -14,10 +14,9 @@ if (import.meta.hot) {
 }
 
 declare module '@power-playground/core' {
+  export interface OutputsPluginConfigures {}
   interface PluginConfigures {
-    outputs: {
-      foo: string
-    }
+    outputs: OutputsPluginConfigures
   }
 }
 
