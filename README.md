@@ -37,3 +37,7 @@
 * [ ] 更好的插件开发体验
   * [ ] hmr support (50%)
 * [ ] i18n
+
+## Thanks
+
+谢谢 [🔩](https://github.com/losses) 的 icon 设计，在他给我的基础上改了一下，如果大家觉得丑，那一定是我的问题不是他的。
