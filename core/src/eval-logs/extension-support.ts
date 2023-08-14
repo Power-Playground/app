@@ -119,8 +119,14 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
 
   __DEBUG__ && console.debug('DEVTOOLS_PLUGINS', DEVTOOLS_PLUGINS)
 
+  if (DEVTOOLS_PLUGINS.length === 0) {
+    __DEBUG__ && console.debug('no plugins')
+    return
+  }
+
   // eslint-disable-next-line no-unused-labels
   beforeMount: {
+    // TODO collect effect
     DEVTOOLS_PLUGINS
       .forEach(devtools => devtools.then(({ beforeMount }) => beforeMount?.({ devtoolsWindow })))
   }
@@ -145,6 +151,7 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
   }
 
   function registerPlugins(realUI: typeof UI, inspectorView: UI.InspectorView.InspectorView) {
+    // TODO collect effect
     const { tabbedPane, ...inspector } = inspectorView
     const drawerTabbedPane: UI.TabbedPane.TabbedPane =
       // @ts-ignore
@@ -180,6 +187,7 @@ if (Object.getOwnPropertyDescriptor(window, '__OLD_PPD_PLUGINS__')?.get === unde
       const realUI = await devtoolsWindow.simport('ui/legacy/legacy.js')
       const inspectorView = realUI.InspectorView.InspectorView.instance()
 
+      // TODO collect effect
       DEVTOOLS_PLUGINS.forEach(devtools => devtools.then(({ load }) => {
         load?.({ UI: realUI, inspectorView, devtoolsWindow })
       }))
