@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Created with Vectornator (http://vectornator.io/) -->
-<svg height="1024.0px" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 1024 1024" width="1024.0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg height="100%" stroke-miterlimit="10" style="fill-rule:nonzero;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;" version="1.1" viewBox="0 0 1024 1024" width="100%" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
 <linearGradient gradientTransform="matrix(1.68708 0 0 1.68708 -159.532 -348.772)" gradientUnits="userSpaceOnUse" id="LinearGradient" x1="283.263" x2="518.526" y1="401.439" y2="324.466">
 <stop offset="0" stop-color="#3f5dae"/>
@@ -1037,8 +1037,8 @@
 <stop offset="0" stop-color="#3178c6"/>
 <stop offset="1" stop-color="#0041f1"/>
 </linearGradient>
-<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="471.189" id="Filter" width="637" x="456.202" y="-55.0779">
-<feDropShadow dx="6.70169" dy="7.42209" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="25"/>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="396.189" id="Filter" width="562" x="477.038" y="-25.8716">
+<feDropShadow dx="-9.96195" dy="-0.871557" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="10"/>
 </filter>
 <filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="845" id="Filter_2" width="845" x="89.5" y="89.5">
 <feDropShadow dx="0" dy="-0" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="25"/>
@@ -1203,15 +1203,15 @@
 <stop offset="0" stop-color="#3178c6"/>
 <stop offset="1" stop-color="#5c9eff"/>
 </linearGradient>
-<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="658.217" id="Filter_3" width="585.436" x="613.564" y="-40.947">
-<feDropShadow dx="50" dy="-86.6025" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="50"/>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="458.217" id="Filter_3" width="385.436" x="668.564" y="136.995">
+<feDropShadow dx="5" dy="-8.66025" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="10"/>
 </filter>
 <linearGradient gradientTransform="matrix(177.259 221.674 -329.667 416.51 260.244 663.307)" gradientUnits="userSpaceOnUse" id="LinearGradient_299" x1="-1.01906" x2="0.393905" y1="0.137562" y2="0.200659">
 <stop offset="0" stop-color="#7d46d8"/>
 <stop offset="1" stop-color="#f9e06e"/>
 </linearGradient>
-<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="749.274" id="Filter_4" width="590.065" x="-55.7983" y="344.648">
-<feDropShadow dx="6.70169" dy="7.42209" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="25"/>
+<filter color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="674.274" id="Filter_4" width="515.065" x="-15" y="374.726">
+<feDropShadow dx="10" dy="0" flood-color="#000000" flood-opacity="0.5" in="SourceGraphic" result="Shadow" stdDeviation="10"/>
 </filter>
 <linearGradient gradientTransform="matrix(322.415 -322.415 603.398 603.398 -379.306 342.727)" gradientUnits="userSpaceOnUse" id="LinearGradient_300" x1="0" x2="1" y1="0" y2="0">
 <stop offset="0" stop-color="#3178c6"/>
@@ -1785,7 +1785,7 @@
 </clipPath>
 <g clip-path="url(#ArtboardFrame)" id="JB">
 <path d="M512.4 184.834L796.043 5.68434e-14L512 5.68434e-14L0 399.392L0 518.735L512.4 184.834" fill="url(#LinearGradient_257)" fill-rule="evenodd" opacity="1" stroke="none"/>
-<path d="M512 5.68434e-14L800.633 5.68434e-14L1024 170.656L1024 346.189L512 5.68434e-14Z" fill="url(#LinearGradient_258)" fill-rule="evenodd" filter="url(#Filter)" stroke="none"/>
+<path d="M946.825 294.007L512 5.68434e-14L800.633 5.68434e-14L1024 170.656L1024 346.189L946.825 294.007" fill="url(#LinearGradient_258)" fill-rule="evenodd" filter="url(#Filter)" stroke="none"/>
 <g filter="url(#Filter_2)">
 <clipPath clip-rule="evenodd" id="ClipPath_5">
 <path d="M152 152L872 152L872 152L872 872L872 872L152 872L152 872L152 152L152 152Z"/>
