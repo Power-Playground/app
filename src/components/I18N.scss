@@ -1,17 +1,18 @@
 .i18n {
   > .icon {
+    --inner-icon-cr: var(--icon-cr);
     display: flex;
     align-items: center;
     width: 24px;
     > .option-icon {
-      filter: drop-shadow(0 0 0 var(--fr-cr));
+      filter: drop-shadow(0 0 0 var(--inner-icon-cr));
       transition: .3s;
       &:hover {
-        filter: drop-shadow(0 0 8px var(--fr-cr));
+        filter: drop-shadow(0 0 8px var(--inner-icon-cr));
       }
     }
     > .option-icon > path:nth-child(2) {
-      fill: var(--fr-cr);
+      fill: var(--inner-icon-cr);
     }
   }
 }

@@ -16,10 +16,12 @@ body {
   --primary: #365eb4;
   --fr-cr: #000;
   --bg-cr: #efefef;
+  --icon-cr: #ddd;
   html[theme-mode=dark] & {
     --primary: #263c6e;
     --fr-cr: #fff;
     --bg-cr: #242424;
+    --icon-cr: #fff;
   }
 }
 

@@ -29,10 +29,10 @@
       display: flex;
       align-items: center;
       cursor: pointer;
-      filter: drop-shadow(0 0 0 var(--fr-cr));
+      filter: drop-shadow(0 0 0 var(--icon-cr));
       transition: .3s;
       &:hover {
-        filter: drop-shadow(0 0 8px var(--fr-cr));
+        filter: drop-shadow(0 0 8px var(--icon-cr));
       }
     }
   }
