@@ -29,7 +29,7 @@ declare global {
 const __ENABLE_HOT_MODULE_REPLACE__ = true
 
 // @ts-ignore
-window.importInEvalLogs = (path: string) => import(path)
+window.importInEvalLogs = (path: string) => import(/* @vite-ignore */ path)
 
 if (Object.getOwnPropertyDescriptor(window, '__PPD_PLUGINS__')?.get === undefined)
   Object.defineProperty(window, '__PPD_PLUGINS__', { get: () => (window.parent as any).__PPD_PLUGINS__ })
