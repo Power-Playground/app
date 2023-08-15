@@ -1,14 +1,19 @@
-import { useContext, useEffect, useMemo, useRef } from 'react'
+import React, { useContext, useEffect, useMemo, useRef } from 'react'
 
-import { typescriptVersionMeta, useDistTags } from '../../components/editor.typescript.versions.ts'
-import { Popover } from '../../components/Popover.tsx'
-import type { QuickAccess } from '../../components/QuickAccess.tsx'
-import { QuickAccessContext } from '../../components/QuickAccess.tsx'
-import { defineBarItem } from '../../plugins'
+import { typescriptVersionMeta, useDistTags } from '../../components/editor.typescript.versions'
+import { Popover } from '../../components/Popover'
+import type { QuickAccess } from '../../components/QuickAccess'
+import { QuickAccessContext } from '../../components/QuickAccess'
+import type { BarItemProps } from '../../plugins'
 
-import type { TypeScriptPluginX } from './index.tsx'
+import type { TypeScriptPluginX } from './'
 
-export const Versions = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ searchParams, shareState }) => {
+export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = (({ searchParams, shareState }) => {
+  const queryVersion = searchParams.get('typescript')
+    ?? searchParams.get('ts')
+    ?? searchParams.get('tsv')
+    ?? searchParams.get('tsv')
+
   const [value, onChange] = [
     shareState.typescriptVersion ?? searchParams.get('typescript') ?? typescriptVersionMeta.versions[0],
     shareState.changeTypescriptVersion

@@ -1,9 +1,9 @@
 import { Switcher } from '../../components/Switcher'
-import { defineBarItem } from '..'
+import type { BarItemProps } from '..'
 
-import type { TypeScriptPluginX } from './index'
+import type { TypeScriptPluginX } from './index.tsx'
 
-export const Langs = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ shareState }) => {
+export const Langs: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = ({ shareState }) => {
   const { language, changeLanguage } = shareState
   const size = 26
   const transformStyle: React.CSSProperties = {
@@ -31,4 +31,4 @@ export const Langs = defineBarItem<TypeScriptPluginX['ExtShareState']>(({ shareS
     value={language === 'javascript'}
     onChange={checked => changeLanguage?.(checked ? 'javascript' : 'typescript')}
   />
-})
+}
