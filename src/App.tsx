@@ -133,7 +133,6 @@ export function App() {
           />
           <iframe
             src='./eval-logs.html'
-            frameBorder={0}
             className='eval-logs'
           />
         </QuickAccessContext.Provider>
