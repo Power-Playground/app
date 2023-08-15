@@ -6,6 +6,7 @@ import { defineDevtools, defineDevtoolsPanel, elBridgeC, getConfigure } from '@p
 import { JSPanel } from './panels/javascript'
 import { DTSPanel } from './panels/typescript'
 import { Files, setFiles } from './files'
+import { id } from './index'
 
 type TransformOptions = Parameters<typeof Babel.transform>[1]
 
@@ -17,7 +18,7 @@ declare module '@power-playground/core' {
 
 const {
   babelTransformOptions = {}
-} = getConfigure('outputs') ?? {}
+} = getConfigure(id) ?? {}
 
 // TODO More Panel
 //   Errors

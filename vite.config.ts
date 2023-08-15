@@ -1,5 +1,6 @@
 import react from '@vitejs/plugin-react'
 import { configDotenv } from 'dotenv'
+import fs from 'node:fs'
 import path from 'node:path'
 import { defineConfig } from 'vite'
 import { cdn } from 'vite-plugin-cdn2'
@@ -27,7 +28,12 @@ export default defineConfig(async _ => ({
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
-        'eval-logs': path.resolve(__dirname, 'eval-logs.html')
+        'eval-logs': path.resolve(__dirname, 'eval-logs.html'),
+        core: path.resolve(__dirname, 'core/src/index.ts'),
+        ...fs.readdirSync(path.resolve(__dirname, 'core/src/plugins')).reduce((acc, file) => {
+          acc[`plugins/${file.replace(/\.[jt]sx?$/, '')}`] = path.resolve(__dirname, `core/src/plugins/${file}`)
+          return acc
+        }, {} as Record<string, string>)
       }
     }
   },
