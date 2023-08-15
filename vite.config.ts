@@ -23,10 +23,15 @@ const pluginEntries = fg.globSync([
   .reduce((acc, file) => {
     console.log(`Adding plugin: ${file}`)
     acc[
-      `plugins-${file.replace(/\.[jt]sx?$/, '')}`
-        .replace('/', '-')
-        .replace('.', '_')
-    ] = path.resolve(__dirname, `core/src/plugins/${file}`)
+      `plugins/${
+        file
+          .replace(/\.[jt]sx?$/, '')
+          .replace(/^\.\//, '')
+          .replace('core/src/plugins/', 'core/')
+          .replace('src/plugins/', 'inner/')
+          .replace('ppd-plugins/', 'outer/')
+      }`
+    ] = path.resolve(__dirname, file)
     return acc
   }, {} as Record<string, string>)
 
