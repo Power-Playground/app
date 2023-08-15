@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
+import type { Editor } from '@power-playground/core'
 import type * as monacoEditor from 'monaco-editor'
 
-import type { Editor } from '../'
 import { definePlugin } from '../'
 
 import { Langs } from './Langs'
