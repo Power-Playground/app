@@ -11,9 +11,10 @@ module.exports = {
   ],
   overrides: [
     {
-      plugins: ['react', '@typescript-eslint'],
+      plugins: ['react', '@typescript-eslint', 'react-refresh'],
       files: ['*.ts', '*.tsx'],
       rules: {
+        'react-refresh/only-export-components': 'warn',
         'react/react-in-jsx-scope': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-unused-vars': [
