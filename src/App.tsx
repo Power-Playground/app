@@ -30,8 +30,10 @@ const plugins = Object.assign(
       './plugins/*.ts*',
       './plugins/*/index.ts*',
 
-      '../ppd-plugins/*.ts*',
-      '../ppd-plugins/*/index.ts*'
+      '../../ppd-plugins/*.ts*',
+      '../../ppd-plugins/*/index.ts*',
+      '../../ppd-plugins/*.js*',
+      '../../ppd-plugins/*/index.js*'
     ], {
       eager: true, import: 'default'
     })
