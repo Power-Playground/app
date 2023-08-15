@@ -13,7 +13,7 @@ export default defineConfig(async _ => ({
   plugins: [
     react(),
     cdn({
-      url:unpkg,
+      url: unpkg,
       modules:[
         { name: 'sentinel-js', relativeModule: './dist/sentinel.umd.js' },
         { name: '@babel/standalone', relativeModule: './babel.min.js' },
