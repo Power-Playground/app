@@ -5,7 +5,7 @@ import type * as monacoEditor from 'monaco-editor'
 import { definePlugin } from '../'
 
 import { Langs } from './Langs'
-import { use } from './use.tsx'
+import { use } from './use'
 import { Versions } from './Versions'
 
 declare module '@power-playground/core' {
