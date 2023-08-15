@@ -43,7 +43,7 @@ export default definePlugin<TypeScriptPluginX>({
 
         const computeCode = editor?.getValue()
 
-        const hash = computeCode ? '#' + btoa(encodeURIComponent(computeCode)) : ''
+        const hash = computeCode ? '#' + btoa(encodeURIComponent(computeCode)) : location.hash
         history.replaceState(null, '', '?' + searchParams.toString() + hash)
 
         if (isFirstSetTypescriptVersion.current) {
