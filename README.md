@@ -16,7 +16,7 @@
 * [ ] 组件化
 * [ ] 更多的配置: dotenv, props, loader, view, devtools console, ...
   * [ ] typescript compiler options
-  * [ ] babel
+  * [x] babel
   * [ ] init file system
   * [ ] CSS
   * [ ] DevTools

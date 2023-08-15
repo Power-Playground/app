@@ -48,7 +48,7 @@ declare global {
   var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
 }
 
-registerPluginConfigures(configure)
+registerPluginConfigures(configure.plugins)
 if (import.meta.hot) {
   window.__PPD_CONFIGURES__ = configure
   window.__OLD_PPD_PLUGINS__ = window.__PPD_PLUGINS__
