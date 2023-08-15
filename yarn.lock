@@ -2745,10 +2745,10 @@ util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
-vite-plugin-cdn2@^0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/vite-plugin-cdn2/-/vite-plugin-cdn2-0.11.0.tgz#4e2336e01956c7534be8f7d47e366a46971a5f62"
-  integrity sha512-V8PvTxaMTDzaLNVBPJlURNOnnUkqICRflh6X7O8tKNBGwiqLjXPFvTKvuPlif5vCD4VB/BNjbkrkWOThQAey9g==
+vite-plugin-cdn2@^0.11.1:
+  version "0.11.1"
+  resolved "https://registry.npmjs.org/vite-plugin-cdn2/-/vite-plugin-cdn2-0.11.1.tgz#cfd6a2948a097b1f92bd411b8118f7bc4ab1660f"
+  integrity sha512-SDw3TBeTSsvMD8ETduNpR7fX4fxq9vS4Y372/qIOs/NV0/nM+4pTevT/+EZcAYiKbsvKFKBrTfeAWcuRNrpICg==
   dependencies:
     "@babel/core" "^7.22.5"
     "@rollup/pluginutils" "^5.0.2"
