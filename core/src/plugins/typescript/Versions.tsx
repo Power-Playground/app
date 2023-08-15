@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react'
+import { messenger } from '@power-playground/core'
 
 import { typescriptVersionMeta, useDistTags } from '../../components/editor.typescript.versions'
 import { Popover } from '../../components/Popover'
@@ -14,10 +15,12 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
     ?? searchParams.get('tsv')
     ?? searchParams.get('tsv')
 
-  const [value, onChange] = [
-    shareState.typescriptVersion ?? queryVersion ?? typescriptVersionMeta.versions[0],
-    shareState.changeTypescriptVersion
-  ]
+  const queryTag = searchParams.get('tag')
+    ?? searchParams.get('dist-tag')
+    ?? searchParams.get('distTag')
+    ?? searchParams.get('dist_tag')
+    ?? queryVersion
+
   const {
     data, fetching, error
   } = useDistTags()
@@ -36,6 +39,22 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
       ? Object.keys(distTagsMemo)
       : typescriptVersionMeta.distCategory
   }, [distTagsMemo])
+
+  // ?typescript=a.b.c
+  // ?typescript=a.b.c&tag=beta
+  // ?tag=beta
+  // ?typescript=beta
+  const value = useMemo(() => shareState.typescriptVersion
+  ?? (queryVersion !== null && typescriptVersionMeta.suggestedVersions.includes(queryVersion)
+    ? queryVersion
+    : queryTag
+      ? distTagEnumMemo[queryTag]
+      : typescriptVersionMeta.versions[0]
+  ), [
+    distTagEnumMemo, queryTag, queryVersion, shareState.typescriptVersion
+  ])
+  const onChange = shareState.changeTypescriptVersion
+
   const isNeedCheckFetching = useMemo(() => {
     if (value === undefined) return false
 
@@ -70,12 +89,14 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
       + (distTagEnumMemo[version] ? ` (${distTagEnumMemo[version]})` : '')
     return {
       id: version,
+      value: distTagEnumMemo[version] ?? version,
       title: displayVersion
     }
   }), [distTagEnumMemo])
   const taggedVersions = useMemo(() => distCategoryMemo
     .map(version => ({
       id: version,
+      value: distTagEnumMemo[version] ?? version,
       title: `${version} (${distTagEnumMemo[version]})`
     })), [distCategoryMemo, distTagEnumMemo])
   const versionsSelectCommandHandler = useMemo(() => {
@@ -89,12 +110,14 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
         .concat(taggedVersions)
         .filter(({ title }) => !keywords || title.includes(keywords))
     }
-    handler.defaultId = value
+    handler.defaultId = typescriptVersionMeta.suggestedVersions.includes(value)
+      ? value
+      : distTagEnumMemo[value] ?? value
     handler.options = {
       placeholder: 'Select TypeScript Version'
     }
     return handler
-  }, [fetching, suggestedVersions, taggedVersions, value])
+  }, [distTagEnumMemo, fetching, suggestedVersions, taggedVersions, value])
   useEffect(
     () => quickAccess.register('typescript.versions', versionsSelectCommandHandler),
     [quickAccess, versionsSelectCommandHandler]
@@ -112,10 +135,14 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
       try {
         const result = await quickAccess.run('typescript.versions')
         if ('id' in result) {
-          const { id: version } = result
-          onChange?.(isNeedCheckFetching
-            ? distTagEnumMemo?.[version]
-            : version)
+          result.value
+            ? onChange?.(result.value.toString())
+            : messenger.then(m => m.display('error', <>
+              <h3>Invalid TypeScript Version</h3>
+              <p>Version <code>{result.id}</code> is not available.</p>
+              {/* TODO support help jump */}
+              <p>Click <a href='/TODO'>it</a> and find help.</p>
+            </>))
         }
         if ('text' in result) {
           // TODO resolve this case

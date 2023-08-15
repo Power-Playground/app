@@ -61,6 +61,7 @@ export namespace QuickAccess {
   export type Result =
   | {
     id: string
+    value?: unknown
   }
   | {
     text: string
