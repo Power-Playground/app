@@ -16,7 +16,7 @@ import {
 } from '@power-playground/core'
 import commonPlugins from '@power-playground/core/common-plugins'
 
-import PP from '../PP_P.svg'
+import PP from '../resources/PP_P.svg'
 
 import { I18N } from './components/I18N'
 import { ThemeSwitcher } from './components/ThemeSwitcher'
