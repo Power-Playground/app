@@ -100,8 +100,8 @@ if (Object.getOwnPropertyDescriptor(window, '__PPD_CONFIGURES__')?.get === undef
     .filter(
       <T>(entry: [string, {
         devtools?: T | undefined
-      }]): entry is [string, { devtools: T }] => (
-        entry[1].devtools !== undefined
+      }?]): entry is [string, { devtools: T }] => (
+        entry[1]?.devtools !== undefined
       )
     )
     .filter(([id, plugin]) => {
