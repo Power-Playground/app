@@ -2,7 +2,7 @@ import './TopBar.scss'
 
 import { useContext, useMemo } from 'react'
 
-import { ExtensionContext } from './EditorZone.tsx'
+import { ExtensionContext } from '../contextes/Extension'
 
 const prefix = 'ppd-top-bar'
 

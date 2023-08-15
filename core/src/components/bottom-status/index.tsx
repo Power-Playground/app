@@ -2,7 +2,7 @@ import './index.scss'
 
 import React, { useContext, useMemo } from 'react'
 
-import { ExtensionContext } from '../EditorZone.tsx'
+import { ExtensionContext } from '../../contextes/Extension'
 
 import { GoToLC } from './GoToLC.tsx'
 import { Help } from './Help.tsx'

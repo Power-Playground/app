@@ -1,8 +1,8 @@
 import { useContext, useEffect, useRef } from 'react'
 
+import { MonacoScopeContext } from '../../contextes/MonacoScope'
 import { isMacOS } from '../../utils'
 import type { DialogRef } from '../Dialog.tsx'
-import { MonacoScopeContext } from '../EditorZone.tsx'
 import { Popover } from '../Popover.tsx'
 
 import { HistoryDialog } from './HistoryDialog.tsx'

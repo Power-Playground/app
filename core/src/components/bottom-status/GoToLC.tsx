@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { MonacoScopeContext } from '../EditorZone.tsx'
+import { MonacoScopeContext } from '../../contextes/MonacoScope'
 import { Popover } from '../Popover.tsx'
 
 export function GoToLC() {

@@ -1,7 +1,6 @@
 import './EditorZone.scss'
 
 import React, {
-  createContext,
   useEffect,
   useMemo,
   useRef,
@@ -10,32 +9,15 @@ import React, {
 import Editor, { useMonaco } from '@monaco-editor/react'
 import type * as monacoEditor from 'monaco-editor'
 
+import { ExtensionContext } from '../contextes/Extension'
+import { MonacoScopeContext } from '../contextes/MonacoScope'
 import type { Plugin, ShareState } from '../plugins'
-import type { BarItemProps } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
-
-export const ExtensionContext = createContext<BarItemProps<unknown> & { plugins: Plugin[] }>({
-  plugins: [],
-  searchParams: new URLSearchParams(),
-  shareState: {}
-})
-
-interface MonacoScopeContextValue {
-  monaco: typeof monacoEditor | null
-  editorInstance: monacoEditor.editor.IStandaloneCodeEditor | null
-
-  store: {
-    code: [string, React.Dispatch<React.SetStateAction<string>>]
-    theme: [string, React.Dispatch<React.SetStateAction<string>>]
-  }
-}
-
-export const MonacoScopeContext = createContext<MonacoScopeContextValue | null>(null)
 
 const prefix = 'ppd-editor-zone'
 
@@ -50,12 +32,14 @@ export default function EditorZone(props: {
   }
   className?: string
   resizable?: ResizableProps['resizable']
-  plugins?: Record<string, Plugin>
+  plugins?: Record<string, Plugin | undefined>
 }) {
   const searchParams = useRef(new URLSearchParams(location.search))
   const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
-  const plugins = useMemo(() => Object.values(props.plugins ?? {}), [props.plugins])
+  const plugins = useMemo(() => Object
+    .values(props.plugins ?? {})
+    .filter(<T, >(v: T | undefined): v is T => !!v), [props.plugins])
   const shareState = plugins
     .reduce((acc, plugin) => ({
       ...acc,
@@ -87,11 +71,11 @@ export default function EditorZone(props: {
       console.error(e)
     }
 
-    const dispose = plugins.map(plugin => plugin.editor?.preload?.(monaco))
+    const dispose = plugins.map(plugin => plugin?.editor?.preload?.(monaco))
     return () => dispose.forEach(func => func?.())
   }, [monaco, plugins])
   plugins
-    .forEach(plugin => plugin.editor?.useShare?.(shareState, monaco))
+    .forEach(plugin => plugin?.editor?.useShare?.(shareState, monaco))
 
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
