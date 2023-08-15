@@ -6,7 +6,7 @@ import type { QuickAccess } from '../../components/QuickAccess'
 import { QuickAccessContext } from '../../components/QuickAccess'
 import type { BarItemProps } from '../../plugins'
 
-import type { TypeScriptPluginX } from './'
+import type { TypeScriptPluginX } from '.'
 
 export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = (({ searchParams, shareState }) => {
   const queryVersion = searchParams.get('typescript')
@@ -15,7 +15,7 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
     ?? searchParams.get('tsv')
 
   const [value, onChange] = [
-    shareState.typescriptVersion ?? searchParams.get('typescript') ?? typescriptVersionMeta.versions[0],
+    shareState.typescriptVersion ?? queryVersion ?? typescriptVersionMeta.versions[0],
     shareState.changeTypescriptVersion
   ]
   const {

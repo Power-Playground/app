@@ -1,7 +1,7 @@
 import { Switcher } from '../../components/Switcher'
 import type { BarItemProps } from '..'
 
-import type { TypeScriptPluginX } from './index.tsx'
+import type { TypeScriptPluginX } from '.'
 
 export const Langs: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = ({ shareState }) => {
   const { language, changeLanguage } = shareState

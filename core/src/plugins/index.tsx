@@ -152,6 +152,31 @@ export interface BarItemProps<S> {
 
 export const defineBarItem: <S>(Comp: React.ComponentType<BarItemProps<S>>) => typeof Comp = comp => comp
 
+export type Editor<X extends {
+  ExtShareState: unknown
+} = {
+  ExtShareState: unknown
+}> = {
+  /**
+   * use tuple wrap the function which is mean to check by `eslint-plugin-react-hooks`
+   */
+  use?: [UseFunction<X['ExtShareState']>]
+  useShare?: (
+    shareState: ShareState & X['ExtShareState'],
+    monaco: typeof MonacoEditor | null
+  ) => void
+  preload?: (monaco: typeof MonacoEditor) => Dispose | void
+  load?: (
+    editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
+    monaco: typeof MonacoEditor
+  ) => void | Promise<void>
+
+  topbar?: React.ComponentType<BarItemProps<X['ExtShareState']>>[]
+  statusbar?: React.ComponentType<
+    BarItemProps<X['ExtShareState']>
+  >[]
+}
+
 export type Devtools = {
   panels?: Panel[]
   drawerPanels?: Panel[]
@@ -170,26 +195,7 @@ export type Plugin<X extends {
 } = {
   ExtShareState: unknown
 }> = {
-  editor?: {
-    /**
-     * use tuple wrap the function which is mean to check by `eslint-plugin-react-hooks`
-     */
-    use?: [UseFunction<X['ExtShareState']>]
-    useShare?: (
-      shareState: ShareState & X['ExtShareState'],
-      monaco: typeof MonacoEditor | null
-    ) => void
-    preload?: (monaco: typeof MonacoEditor) => Dispose | void
-    load?: (
-      editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
-      monaco: typeof MonacoEditor
-    ) => void | Promise<void>
-
-    topbar?: React.ComponentType<BarItemProps<X['ExtShareState']>>[]
-    statusbar?: React.ComponentType<
-      BarItemProps<X['ExtShareState']>
-    >[]
-  }
+  editor?: Editor<X>
   /**
    * 如果你返回的是一个函数，那么它将会在 Devtools 的 iframe 作用域中被调用，反之则在他的上层作用域中被使用。
    * 你可以在其中使用 `window` 来访问 Devtools 的 iframe 作用域。
@@ -236,11 +242,14 @@ export function definePlugin<
     if (!pluginInit)
       throw new Error('The second argument is required')
 
-    const config = getConfigure(a)
-    if (isExistPlugin(config))
+    const id = a
+    const config = getConfigure(id)
+    console.log(id, config, isExistPlugin(config))
+    if (isExistPlugin(id))
       return configureToPluginCache.get(config)!
     const plugin = pluginInit(config)
-    cachePlugin(config, plugin)
+    console.log(id, plugin)
+    cachePlugin(id, plugin)
     return plugin
   }
 
