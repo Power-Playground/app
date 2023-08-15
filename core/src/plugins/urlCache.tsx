@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { copyToClipboard, definePlugin } from '@power-playground/core'
+import { copyToClipboard, definePlugin, messenger } from '@power-playground/core'
 
 import { setCodeHistory } from '../components/bottom-status/historyStore'
 
@@ -29,6 +29,9 @@ export default definePlugin({
         const code = editor.getValue()
         history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
         copyToClipboard(location.href)
+        messenger.then(m => m.display(
+          'success', 'Saved to clipboard, you can share it to your friends!'
+        ))
         editor.focus()
         setCodeHistory(old => old.concat({ code, time: Date.now() }))
       })

@@ -1,9 +1,13 @@
 // noinspection JSNonASCIINames
 
 import './main.scss'
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import 'react-toastify/dist/ReactToastify.css'
 
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { toast, ToastContainer } from 'react-toastify'
+import { provideMessenger } from '@power-playground/core'
 
 import { App } from './App.tsx'
 
@@ -34,8 +38,19 @@ Object.defineProperty(window, '小黑子', {
   }
 })
 
+provideMessenger({
+  display(type, message, opts) {
+    toast[type](message, {
+      position: opts?.position ?? 'bottom-right',
+      autoClose: opts?.duration ?? 3000,
+      closeButton: opts?.closable ?? true
+    })
+  }
+})
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    <ToastContainer />
     <App />
   </React.StrictMode>
 )
