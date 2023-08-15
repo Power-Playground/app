@@ -12,9 +12,11 @@
     cursor: pointer;
     &--bar {
       position: absolute;
-      height: calc(100% - var(--gap) * 2);
+      width: 1%;
+      height: 3px;
+      margin-top: calc(50% - 3px);
       box-sizing: border-box;
-      border: var(--bor-size) solid color-mix(in srgb, var(--primary), #fff 50%);
+      background-color: color-mix(in srgb, var(--primary), #0f0 50%);
       transition: .3s;
     }
   }
