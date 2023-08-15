@@ -207,18 +207,32 @@ export type Plugin<X extends {
 
 export * from './configure'
 
-const configureToPluginCache = new Map<unknown, Plugin>()
+const idAndConfigureToPluginCache = [] as (
+  [string, unknown, () => Plugin, Plugin]
+)[]
 
-function cachePlugin(configure: unknown, plugin: Plugin) {
-  configureToPluginCache.set(configure, plugin)
+function cachePlugin(
+  id: string,
+  configure: unknown,
+  pluginInit: () => Plugin,
+  plugin?: Plugin | undefined
+): Plugin | undefined {
+  if (!plugin)
+    return idAndConfigureToPluginCache
+      .find(([id_, configure_]) => id_ === id && configure_ === configure)
+      ?.[3]
+
+  idAndConfigureToPluginCache.push([id, configure, pluginInit, plugin])
 }
 
-function isExistPlugin(configure: unknown) {
-  return configureToPluginCache.has(configure)
+function isExistPlugin(id: string, configure: unknown, pluginInit: () => Plugin) {
+  return idAndConfigureToPluginCache.some(([id_, configure_, pluginInit_]) => {
+    return id_ === id && configure_ === configure && pluginInit_ === pluginInit
+  })
 }
 
 export function clearPluginCache() {
-  configureToPluginCache.clear()
+  idAndConfigureToPluginCache.splice(0)
 }
 
 export function definePlugin<
@@ -244,12 +258,11 @@ export function definePlugin<
 
     const id = a
     const config = getConfigure(id)
-    console.log(id, config, isExistPlugin(config))
-    if (isExistPlugin(id))
-      return configureToPluginCache.get(config)!
+    if (isExistPlugin(id, config, pluginInit))
+      return cachePlugin(id, config, pluginInit)
+
     const plugin = pluginInit(config)
-    console.log(id, plugin)
-    cachePlugin(id, plugin)
+    cachePlugin(id, config, pluginInit, plugin)
     return plugin
   }
 
