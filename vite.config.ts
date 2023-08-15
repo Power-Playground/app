@@ -15,10 +15,10 @@ export default defineConfig(async _ => ({
     cdn({
       url:unpkg,
       modules:[
-        { name:'sentinel-js', relativeModule:'./dist/sentinel.umd.js' },
-        { name:'@babel/standalone', relativeModule:'./babel.min.js' },
-        { name: 'react', relativeModule:'./umd/react.production.min.js' },
-        { name:'react-dom', relativeModule:'./umd/react-dom.production.min.js' }
+        { name: 'sentinel-js', relativeModule: './dist/sentinel.umd.js' },
+        { name: '@babel/standalone', relativeModule: './babel.min.js' },
+        { name: 'react', relativeModule: './umd/react.production.min.js' },
+        { name: 'react-dom', relativeModule: './umd/react-dom.production.min.js' }
       ]
     })
   ],
