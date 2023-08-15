@@ -8,7 +8,7 @@ import { unpkg } from 'vite-plugin-cdn2/url.js'
 configDotenv()
 
 // https://vitejs.dev/config/
-export default defineConfig(async _=> ({
+export default defineConfig(async _ => ({
   base: `/${process.env.BASE_URL || 'app'}/`,
   plugins: [
     react(),
