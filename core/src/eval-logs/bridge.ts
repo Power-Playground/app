@@ -7,9 +7,15 @@ export type EvalLogsIframeParentEvent =
 | {
   type: 'compile-completed'
   data: {
-    name: string
-    text: string
-  }[]
+    [name: string]: {
+      originalText: string
+      outputFiles: {
+        name: string
+        writeByteOrderMark: boolean
+        text: string
+      }[]
+    }
+  }
 }
 | {
   type: 'update:localStorage'
