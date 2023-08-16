@@ -2,6 +2,8 @@
 
 import './App.scss'
 
+import './init'
+
 import { useEffect, useMemo, useState } from 'react'
 import type { Plugin } from '@power-playground/core'
 import {
@@ -45,7 +47,6 @@ declare global {
 if (import.meta.hot) {
   window.__OLD_PPD_PLUGINS__ = window.__PPD_PLUGINS__
   window.__PPD_PLUGINS__ = plugins
-  import('./init')
   import.meta.hot.accept(() => {
     console.debug('plugins updated')
     elBridgeP.send('hmr:plugins-update')

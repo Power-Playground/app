@@ -4,8 +4,6 @@ import './main.scss'
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import 'react-toastify/dist/ReactToastify.css'
 
-import './init'
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { toast, ToastContainer } from 'react-toastify'
