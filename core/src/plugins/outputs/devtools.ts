@@ -55,27 +55,35 @@ export default defineDevtools({
 
     // TODO resolve babel plugins management
     const disposeCompileWatch = elBridgeC.on('compile-completed', files => {
-      setFiles(files.map(({ name, text }) => {
-        let code = text
-        if (name.endsWith('.js')) {
-          name = name.slice(7)
-          try {
-            code = Babel.transform(text, {
-              presets: ['es2015'],
-              ...babelTransformOptions,
-              filename: name
-            })?.code ?? ''
-          } catch (e) {
-            return {
-              name: `${name} (compile error)`,
-              originalText: text,
-              // @ts-ignore
-              text: e!.message!
+      const filesEntries = Object.entries(files)
+      const newFilesState = filesEntries
+        .reduce((acc, [_path, { originalText, outputFiles }]) => acc.concat(outputFiles.map(({ name, text }) => {
+          if (name.endsWith('.js')) {
+            name = name.slice(7)
+            try {
+              return {
+                name,
+                text: Babel.transform(text, {
+                  presets: ['es2015'],
+                  ...babelTransformOptions,
+                  filename: name
+                })?.code ?? '',
+                editorText: originalText
+              }
+            } catch (e) {
+              return {
+                name: `${name} (compile error)`,
+                originalText: text,
+                // @ts-ignore
+                text: e!.message!,
+                editorText: originalText
+              }
             }
           }
-        }
-        return { name, originalText: text, text: code ?? '' }
-      }))
+          return { name, text, editorText: originalText }
+        })),
+        [] as typeof Files)
+      setFiles(newFilesState)
     })
     return () => {
       disposeRun?.()
