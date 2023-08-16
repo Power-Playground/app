@@ -1,6 +1,5 @@
-<div align="center" style="margin-bottom: -30px">
-  <img src="./resources/PP_cover.svg" alt="Power Playground Icon" width="100%">
-</div>
+![Power Playground Icon-Light](./resources/PP_cover_light.svg#gh-light-mode-only)
+![Power Playground Icon-Dark](./resources/PP_cover_dark.svg#gh-dark-mode-only)
 
 # Power Playground
 
