@@ -23,10 +23,10 @@ Object.defineProperty(window, '小黑子', {
     }
     // debug 模式启动
     console.log(`小黑子模式${__DEBUG__ ? '启动' : '关闭'}`)
-    const decoded = unescape(encodeURIComponent(import.meta.glob('../PP_小黑子.svg', {
+    const decoded = unescape(encodeURIComponent(import.meta.glob('../resources/PP_小黑子.svg', {
       eager: true,
       as: 'raw'
-    })['../PP_小黑子.svg']))
+    })['../resources/PP_小黑子.svg']))
     const base64 = btoa(decoded)
     const imgSource = `data:image/svg+xml;base64,${base64}`
 
