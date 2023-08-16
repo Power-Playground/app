@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from 'react'
 import type { Editor } from '@power-playground/core'
+import { atom, getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
-import { mergeDeepLeft } from 'ramda'
+import { mergeAll } from 'ramda'
 
 import { definePlugin } from '../'
 
@@ -25,12 +26,17 @@ const extraModules = Object
     filePath,
     content
   }), [] as { content: string, filePath: string }[])
-let compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
+
+const store = getDefaultStore()
+
+export const compilerOptionsAtom = atom<
+  monacoEditor.languages.typescript.CompilerOptions
+>({
   target: 4,
   moduleResolution: 2,
   declaration: true,
   lib: ['esnext', 'dom', 'esnext.disposable']
-}
+})
 
 export interface TypeScriptPluginX {
   ExtShareState: {
@@ -46,6 +52,7 @@ const editor: Editor<TypeScriptPluginX> = {
   useShare({
     curFilePath, language, typescriptVersion
   }, monaco) {
+    const [compilerOptions] = useAtom(compilerOptionsAtom)
     const defaults = useMemo(() => {
       if (!monaco || !typescriptVersion) return
 
@@ -64,7 +71,7 @@ const editor: Editor<TypeScriptPluginX> = {
       console.log('typescript.version', monaco.languages.typescript.typescriptVersion)
       console.log('typescript.CompilerOptions', monaco.languages.typescript.typescriptDefaults.getCompilerOptions())
       console.groupEnd()
-    }, [defaults, monaco])
+    }, [compilerOptions, defaults, monaco])
     useEffect(() => {
       if (!defaults || !monaco) return
 
@@ -89,7 +96,10 @@ const editor: Editor<TypeScriptPluginX> = {
 
 export default definePlugin<'typescript', TypeScriptPluginX>('typescript', conf => {
   if (conf?.compilerOptions) {
-    compilerOptions = mergeDeepLeft(conf.compilerOptions, compilerOptions) as typeof compilerOptions
+    store.set(compilerOptionsAtom, mergeAll([
+      compilerOptionsAtom.init,
+      conf.compilerOptions
+    ]))
   }
 
   return { editor }
