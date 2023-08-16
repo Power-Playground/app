@@ -27,7 +27,8 @@ const extraModules = Object
 let compilerOptions: monacoEditor.languages.typescript.CompilerOptions = {
   target: 4,
   moduleResolution: 2,
-  declaration: true
+  declaration: true,
+  lib: ['esnext', 'dom', 'esnext.disposable']
 }
 
 export interface TypeScriptPluginX {
