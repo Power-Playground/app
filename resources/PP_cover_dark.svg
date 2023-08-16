@@ -327,13 +327,13 @@
 </g>
 <path d="M242.427 596.375L226.713 632L184.718 607.399L133.427 513.579L133.427 485.686L242.427 596.375Z" fill="url(#LinearGradient_56)" fill-rule="evenodd" filter="url(#Filter_5)" stroke="none" vectornator:layerName="rect 4" vectornator:shadowAngle="0" vectornator:shadowColor="#535353" vectornator:shadowOffset="10" vectornator:shadowOpacity="0.5" vectornator:shadowRadius="20"/>
 </g>
-<text fill="#e2e2e2" font-family="HackNerdFontComplete-Bold" font-size="72" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 425.97 392)" vectornator:layerName="Text 2" vectornator:width="436.477" x="0" y="0">
-<tspan font-weight="bold" textLength="216.738" x="0" y="67">Power
+<text fill="#e2e2e2" font-family="TrebuchetMS-Bold" font-size="72" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 425.97 392)" vectornator:layerName="Text 2" vectornator:width="377.766" x="0" y="0">
+<tspan font-weight="bold" textLength="211.57" x="0" y="68">Power
 </tspan>
-<tspan font-weight="bold" textLength="433.477" x="0" y="151">Playground</tspan>
+<tspan font-weight="bold" textLength="374.766" x="0" y="152">Playground</tspan>
 </text>
-<text fill="#e2e2e2" font-family="HackNerdFontComplete-Bold" font-size="24" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 425.97 579.801)" vectornator:layerName="Text 3" vectornator:width="528.569" x="0" y="0">
-<tspan font-weight="bold" textLength="274.535" x="0" y="22">Code. Share. Enjoy.
+<text fill="#e2e2e2" font-family="TrebuchetMS-Bold" font-size="24" opacity="1" stroke="none" text-anchor="start" transform="matrix(1 0 0 1 425.97 579.801)" vectornator:layerName="Text 3" vectornator:width="528.569" x="0" y="0">
+<tspan font-weight="bold" textLength="223.23" x="0" y="23">Code. Share. Enjoy.
 </tspan>
 </text>
 </g>
