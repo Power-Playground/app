@@ -1,8 +1,7 @@
-export interface PluginConfigures {
-  [id: string]: unknown
+export interface PluginConfigures extends Record<string, unknown> {
 }
 
-export type PluginConfigureIds = keyof PluginConfigures | (string & {})
+export type PluginConfigureIds = keyof PluginConfigures
 
 const configures = new Map<string, unknown>()
 
@@ -10,9 +9,23 @@ export function getConfigure<T extends PluginConfigureIds & string>(id: T) {
   return configures.get(id) as PluginConfigures[T] | undefined
 }
 
-export function setConfigure<T extends PluginConfigureIds>(id: T, value: PluginConfigures[T]) {
-  // @ts-ignore
+const configureUpdateListeners = new Map<string, Set<(value: PluginConfigures[string]) => void>>()
+
+export function setConfigure<T extends PluginConfigureIds & string>(id: T, value: PluginConfigures[T]) {
   configures.set(id, value)
+  configureUpdateListeners.get(id)?.forEach(listener => listener(value))
+}
+
+export function onConfigureUpdate<T extends PluginConfigureIds & string>(id: T, listener: (value: PluginConfigures[T]) => void) {
+  const listeners = configureUpdateListeners.get(id)
+  if (!listeners) {
+    configureUpdateListeners.set(id, new Set([listener]))
+  } else {
+    listeners.add(listener)
+  }
+  return () => {
+    listeners?.delete(listener)
+  }
 }
 
 export function definePluginConfigures(configures: Partial<PluginConfigures>) {

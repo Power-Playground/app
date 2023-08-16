@@ -9,7 +9,7 @@ import type { Plugin } from '@power-playground/core'
 import {
   createQuickAccessInstance,
   EditorZone,
-  elBridgeP, messenger,
+  elBridgeP, isConfigureUpdateWatchablePlugin, messenger, onConfigureUpdateSymbol,
   QuickAccess,
   QuickAccessContext
 } from '@power-playground/core'
@@ -44,6 +44,20 @@ declare global {
   var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
 }
 
+Object.entries(plugins)
+  .forEach(([id, plugin]) => {
+    if (isConfigureUpdateWatchablePlugin(plugin)) {
+      console.debug(`plugin ${id} is watchable`)
+      const dispose = plugin[onConfigureUpdateSymbol](function onConfigureUpdate(newPlugin) {
+        console.debug(`plugin ${id} updated`)
+        plugins[id] = newPlugin
+        newPlugin[onConfigureUpdateSymbol](onConfigureUpdate)
+
+        elBridgeP.send('hmr:plugins-update')
+        dispose()
+      })
+    }
+  })
 if (import.meta.hot) {
   window.__OLD_PPD_PLUGINS__ = window.__PPD_PLUGINS__
   window.__PPD_PLUGINS__ = plugins
@@ -51,8 +65,9 @@ if (import.meta.hot) {
     console.debug('plugins updated')
     elBridgeP.send('hmr:plugins-update')
   })
+} else {
+  window.__PPD_PLUGINS__ = plugins
 }
-window.__PPD_PLUGINS__ = plugins
 
 export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {

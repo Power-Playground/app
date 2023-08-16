@@ -8,7 +8,7 @@ import type * as MonacoEditor from 'monaco-editor'
 import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
 import type { PluginConfigureIds, PluginConfigures } from './configure'
-import { getConfigure } from './configure'
+import { getConfigure, onConfigureUpdate } from './configure'
 
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 
@@ -235,6 +235,20 @@ export function clearPluginCache() {
   idAndConfigureToPluginCache.splice(0)
 }
 
+export const onConfigureUpdateSymbol = Symbol('configure-update')
+
+export interface ConfigureUpdateWatchablePlugin<
+  X extends { ExtShareState: unknown } = { ExtShareState: unknown }
+> {
+  [onConfigureUpdateSymbol]: (lis: (newPlugin: Plugin<X> & ConfigureUpdateWatchablePlugin<X>) => void) => Dispose
+}
+
+export function isConfigureUpdateWatchablePlugin(
+  plugin: unknown
+): plugin is ConfigureUpdateWatchablePlugin {
+  return typeof plugin === 'object' && plugin !== null && onConfigureUpdateSymbol in plugin
+}
+
 export function definePlugin<
   X extends { ExtShareState: unknown } = { ExtShareState: unknown }
 >(plugin: Plugin<X>): Plugin<X>
@@ -252,6 +266,19 @@ export function definePlugin<
   a: ID | Plugin<X>,
   pluginInit?: (conf?: PluginConfigures[ID]) => Plugin<X>
 ) {
+  let lis: ((newPlugin: Plugin<X> & ConfigureUpdateWatchablePlugin<X>) => void) | undefined
+  function generatePlugin(id: string, config: PluginConfigures[ID]) {
+    if (!pluginInit) throw new Error('The second argument is required')
+
+    const plugin = pluginInit?.(config) as Plugin<X> & ConfigureUpdateWatchablePlugin
+    plugin[onConfigureUpdateSymbol] = lis_ => {
+      lis = lis_
+      return () => lis = undefined
+    }
+    cachePlugin(id, config, pluginInit, plugin)
+    return plugin
+  }
+
   if (typeof a === 'string') {
     if (!pluginInit)
       throw new Error('The second argument is required')
@@ -261,9 +288,13 @@ export function definePlugin<
     if (isExistPlugin(id, config, pluginInit))
       return cachePlugin(id, config, pluginInit)
 
-    const plugin = pluginInit(config)
-    cachePlugin(id, config, pluginInit, plugin)
-    return plugin
+    // TODO export off function, and run it when plugin is unmounted
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const off = onConfigureUpdate(id, newConfig => {
+      lis?.(generatePlugin(id, newConfig))
+    })
+
+    return generatePlugin(id, config)
   }
 
   return a
