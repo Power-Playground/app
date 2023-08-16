@@ -111,6 +111,7 @@ module.exports = {
       VariableDeclarator: 'first',
       // ignore jsx node, template literal expression
       ignoredNodes: ['JSXElement *', 'TemplateLiteral *']
-    }]
+    }],
+    "space-infix-ops": 1
   }
 }
