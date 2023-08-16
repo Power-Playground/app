@@ -4,6 +4,7 @@ import type { ReactElement } from 'react'
 import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import type * as MonacoEditor from 'monaco-editor'
+import { equals } from 'ramda'
 
 import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
@@ -267,10 +268,12 @@ export function definePlugin<
   pluginInit?: (conf?: PluginConfigures[ID]) => Plugin<X>
 ) {
   let lis: ((newPlugin: Plugin<X> & ConfigureUpdateWatchablePlugin<X>) => void) | undefined
+  let usedConfig: PluginConfigures[ID] | undefined
   function generatePlugin(id: string, config: PluginConfigures[ID]) {
     if (!pluginInit) throw new Error('The second argument is required')
 
     const plugin = pluginInit?.(config) as Plugin<X> & ConfigureUpdateWatchablePlugin
+    usedConfig = config
     plugin[onConfigureUpdateSymbol] = lis_ => {
       lis = lis_
       return () => lis = undefined
@@ -291,6 +294,11 @@ export function definePlugin<
     // TODO export off function, and run it when plugin is unmounted
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const off = onConfigureUpdate(id, newConfig => {
+      // 懒得写英语了
+      // 当 hmr 或者后面要做的插件配置编辑导致配置更新时，对配置文件进行深度比较，如果相同则不更新
+      // 防止字面量未变，引用改变导致的全量更新
+      if (equals(usedConfig, newConfig)) return
+
       lis?.(generatePlugin(id, newConfig))
     })
 
