@@ -6,6 +6,9 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 import { cdn } from 'vite-plugin-cdn2'
 import { unpkg } from 'vite-plugin-cdn2/url.js'
+import inspect from 'vite-plugin-inspect'
+
+import replacer from './vite-plugins/replacer'
 
 configDotenv()
 
@@ -37,9 +40,21 @@ const pluginEntries = fg.globSync([
   }, {} as Record<string, string>)
 
 // https://vitejs.dev/config/
-export default defineConfig(async _ => ({
+export default defineConfig(async env => ({
   base: `/${process.env.BASE_URL || 'app'}/`,
   plugins: [
+    replacer({
+      define: {
+        __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify([
+          './plugins/*.ts*',
+          './plugins/*/index.ts*',
+          '../../ppd-plugins/*.ts*',
+          '../../ppd-plugins/*/index.ts*',
+          '../../ppd-plugins/*.js*',
+          '../../ppd-plugins/*/index.js*'
+        ])
+      }
+    }),
     react(),
     cdn({
       url: unpkg,
@@ -50,7 +65,9 @@ export default defineConfig(async _ => ({
         { name: 'react-dom', relativeModule: './umd/react-dom.production.min.js' },
         { name: 'jotai', relativeModule: './umd/index.production.js' }
       ]
-    })
+    }),
+    env.mode === 'production' ? visualizer() : undefined,
+    process.env.ENABLE_INJECT_ANALYTICS === 'true' ? inspect() : undefined
   ],
   publicDir: './core/public',
   build: {
@@ -60,8 +77,7 @@ export default defineConfig(async _ => ({
         'eval-logs': path.resolve(__dirname, 'eval-logs.html'),
         core: path.resolve(__dirname, 'core/src/index.ts'),
         ...pluginEntries
-      },
-      plugins: [visualizer()]
+      }
     }
   },
   define: {
