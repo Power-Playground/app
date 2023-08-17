@@ -3,8 +3,11 @@ import type { EvalLogsIframeParentEvent } from '@power-playground/core'
 import { elBridgeC } from '@power-playground/core'
 
 export let Files: (
-  & Extract<EvalLogsIframeParentEvent, { type: 'compile-completed' }>['data'][number]
-  & { originalText: string }
+  & Omit<
+    Extract<EvalLogsIframeParentEvent, { type: 'compile-completed' }>['data'][string]['outputFiles'][number],
+    'writeByteOrderMark'
+  >
+  & { editorText: string }
 )[] = []
 
 export function setFiles(files: typeof Files) {

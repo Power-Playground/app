@@ -2,14 +2,16 @@
 
 import './App.scss'
 
+import './init'
+
 import { useEffect, useMemo, useState } from 'react'
 import type { Plugin } from '@power-playground/core'
 import {
   createQuickAccessInstance,
   EditorZone,
-  elBridgeP, messenger,
+  elBridgeP, isConfigureUpdateWatchablePlugin, messenger, onConfigureUpdateSymbol,
   QuickAccess,
-  QuickAccessContext, registerPluginConfigures
+  QuickAccessContext
 } from '@power-playground/core'
 import commonPlugins from '@power-playground/core/common-plugins'
 
@@ -17,7 +19,6 @@ import PP from '../resources/PP_P.svg'
 
 import { I18N } from './components/I18N'
 import { ThemeSwitcher } from './components/ThemeSwitcher'
-import configure from './configure'
 
 const plugins = Object.assign(
   {},
@@ -38,25 +39,35 @@ const plugins = Object.assign(
 
 declare global {
   // eslint-disable-next-line no-var
-  var __PPD_CONFIGURES__: typeof configure
-  // eslint-disable-next-line no-var
   var __PPD_PLUGINS__: Record<string, Plugin> | null
   // eslint-disable-next-line no-var
   var __OLD_PPD_PLUGINS__: Record<string, Plugin> | null
 }
 
-registerPluginConfigures(configure.plugins)
+Object.entries(plugins)
+  .forEach(([id, plugin]) => {
+    if (isConfigureUpdateWatchablePlugin(plugin)) {
+      console.debug(`plugin ${id} is watchable`)
+      const dispose = plugin[onConfigureUpdateSymbol](function onConfigureUpdate(newPlugin) {
+        console.debug(`plugin ${id} updated`)
+        plugins[id] = newPlugin
+        newPlugin[onConfigureUpdateSymbol](onConfigureUpdate)
+
+        elBridgeP.send('hmr:plugins-update')
+        dispose()
+      })
+    }
+  })
 if (import.meta.hot) {
-  window.__PPD_CONFIGURES__ = configure
   window.__OLD_PPD_PLUGINS__ = window.__PPD_PLUGINS__
   window.__PPD_PLUGINS__ = plugins
   import.meta.hot.accept(() => {
     console.debug('plugins updated')
     elBridgeP.send('hmr:plugins-update')
   })
+} else {
+  window.__PPD_PLUGINS__ = plugins
 }
-window.__PPD_PLUGINS__ = plugins
-window.__PPD_CONFIGURES__ = configure
 
 export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {
