@@ -12,17 +12,21 @@ import replacer from './vite-plugins/replacer'
 
 configDotenv()
 
-const pluginEntries = fg.globSync([
-  './core/src/plugins/*.ts*',
-  './core/src/plugins/*/index.ts*',
-  '!./core/src/plugins/**/index.tsx',
-  '!./core/src/plugins/**/configure.ts',
+const __PPD_PLUGINS_GLOB_PATHS__ = [
   './src/plugins/*.ts*',
   './src/plugins/*/index.ts*',
   '../ppd-plugins/*.ts*',
   '../ppd-plugins/*/index.ts*',
   '../ppd-plugins/*.js*',
   '../ppd-plugins/*/index.js*'
+].map(p => path.resolve(__dirname, p))
+
+const pluginEntries = fg.globSync([
+  './core/src/plugins/*.ts*',
+  './core/src/plugins/*/index.ts*',
+  '!./core/src/plugins/**/index.tsx',
+  '!./core/src/plugins/**/configure.ts',
+  ...__PPD_PLUGINS_GLOB_PATHS__
 ])
   .reduce((acc, file) => {
     console.log(`Adding plugin: ${file}`)
@@ -45,14 +49,7 @@ export default defineConfig(async env => ({
   plugins: [
     replacer({
       define: {
-        __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify([
-          './plugins/*.ts*',
-          './plugins/*/index.ts*',
-          '../../ppd-plugins/*.ts*',
-          '../../ppd-plugins/*/index.ts*',
-          '../../ppd-plugins/*.js*',
-          '../../ppd-plugins/*/index.js*'
-        ])
+        __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify(__PPD_PLUGINS_GLOB_PATHS__)
       }
     }),
     react(),
