@@ -2,6 +2,7 @@ import react from '@vitejs/plugin-react'
 import { configDotenv } from 'dotenv'
 import fg from 'fast-glob'
 import path from 'node:path'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 import { cdn } from 'vite-plugin-cdn2'
 import { unpkg } from 'vite-plugin-cdn2/url.js'
@@ -59,7 +60,8 @@ export default defineConfig(async _ => ({
         'eval-logs': path.resolve(__dirname, 'eval-logs.html'),
         core: path.resolve(__dirname, 'core/src/index.ts'),
         ...pluginEntries
-      }
+      },
+      plugins: [visualizer()]
     }
   },
   define: {
