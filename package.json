@@ -41,13 +41,12 @@
     "sentinel-js": "^0.0.7",
     "typescript": "^5.1.6",
     "vite": "^4.4.0",
-    "vite-plugin-cdn2": "^0.11.1"
+    "vite-plugin-cdn2": "^0.11.3"
   },
   "engines": {
     "node": ">=18.16.0"
   },
   "resolutions": {
-    "vite-plugin-cdn2/happy-dom": "^7",
     "array-buffer-byte-length": "npm:@nolyfill/array-buffer-byte-length@latest",
     "array-includes": "npm:@nolyfill/array-includes@latest",
     "array.from": "npm:@nolyfill/array.from@latest",
