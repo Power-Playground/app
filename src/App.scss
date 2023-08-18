@@ -13,16 +13,16 @@
   background-color: var(--primary);
   color: #fff;
   transition: .1s;
+  a {
+    display: flex;
+    align-items: center;
+    color: var(--pr-fr-cr);
+    text-decoration: none;
+    font-weight: normal;
+  }
   > h1 {
     margin: 0;
     line-height: 32px;
-    > a {
-      display: flex;
-      align-items: center;
-      color: var(--pr-fr-cr);
-      text-decoration: none;
-      font-weight: normal;
-    }
   }
   > .opts {
     display: flex;
@@ -35,7 +35,7 @@
       filter: drop-shadow(0 0 0 #0000);
       transition: .3s;
       &:hover {
-        filter: drop-shadow(0 0 8px var(--icon-cr));
+        filter: drop-shadow(0 0 4px var(--icon-cr));
       }
       > svg path {
         fill: var(--icon-cr);

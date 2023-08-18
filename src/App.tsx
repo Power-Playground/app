@@ -76,7 +76,7 @@ export function App() {
     <>
       <header style={{ display: displayHeader ? 'flex' : 'none' }}>
         <h1>
-          <a href='https://github.com/power-playground/app'
+          <a href='https://github.com/Power-Playground/app#power-playground'
              target='_blank'
              rel='noreferrer'
           >
@@ -94,7 +94,10 @@ export function App() {
           </a>
         </h1>
         <div className='opts'>
-          <div
+          <a
+            href='https://github.com/Power-Playground/app'
+            target='_blank'
+            rel='noreferrer'
             className='svg-icon github'
             dangerouslySetInnerHTML={{
               __html:
