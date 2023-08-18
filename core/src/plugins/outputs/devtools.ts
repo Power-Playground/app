@@ -1,7 +1,7 @@
 import './devtools-init'
 
 import * as Babel from '@babel/standalone'
-import { defineDevtools, defineDevtoolsPanel, elBridgeC, getConfigure } from '@power-playground/core'
+import { defineDevtools, defineDevtoolsPanel, elBridgeC, getPluginConfigure } from '@power-playground/core'
 
 import { JSPanel } from './panels/javascript'
 import { DTSPanel } from './panels/typescript'
@@ -18,7 +18,7 @@ declare module '@power-playground/core' {
 
 const {
   babelTransformOptions = {}
-} = getConfigure(id) ?? {}
+} = getPluginConfigure(id) ?? {}
 
 // TODO More Panel
 //   Errors

@@ -9,7 +9,7 @@ import { equals } from 'ramda'
 import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
 import type { PluginConfigureIds, PluginConfigures } from './configure'
-import { getConfigure, onConfigureUpdate } from './configure'
+import { getPluginConfigure, onPluginConfigureUpdate } from './configure'
 
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 
@@ -287,13 +287,13 @@ export function definePlugin<
       throw new Error('The second argument is required')
 
     const id = a
-    const config = getConfigure(id)
+    const config = getPluginConfigure(id)
     if (isExistPlugin(id, config, pluginInit))
       return cachePlugin(id, config, pluginInit)
 
     // TODO export off function, and run it when plugin is unmounted
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const off = onConfigureUpdate(id, newConfig => {
+    const off = onPluginConfigureUpdate(id, newConfig => {
       // 懒得写英语了
       // 当 hmr 或者后面要做的插件配置编辑导致配置更新时，对配置文件进行深度比较，如果相同则不更新
       // 防止字面量未变，引用改变导致的全量更新

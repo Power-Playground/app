@@ -3,23 +3,23 @@ export interface PluginConfigures extends Record<string, unknown> {
 
 export type PluginConfigureIds = keyof PluginConfigures
 
-const configures = new Map<string, unknown>()
+const pluginConfigures = new Map<string, unknown>()
 
-export function getConfigure<T extends PluginConfigureIds & string>(id: T) {
-  return configures.get(id) as PluginConfigures[T] | undefined
+export function getPluginConfigure<T extends PluginConfigureIds & string>(id: T) {
+  return pluginConfigures.get(id) as PluginConfigures[T] | undefined
 }
 
-const configureUpdateListeners = new Map<string, Set<(value: PluginConfigures[string]) => void>>()
+const pluginConfigureUpdateListeners = new Map<string, Set<(value: PluginConfigures[string]) => void>>()
 
-export function setConfigure<T extends PluginConfigureIds & string>(id: T, value: PluginConfigures[T]) {
-  configures.set(id, value)
-  configureUpdateListeners.get(id)?.forEach(listener => listener(value))
+export function setPluginConfigure<T extends PluginConfigureIds & string>(id: T, value: PluginConfigures[T]) {
+  pluginConfigures.set(id, value)
+  pluginConfigureUpdateListeners.get(id)?.forEach(listener => listener(value))
 }
 
-export function onConfigureUpdate<T extends PluginConfigureIds & string>(id: T, listener: (value: PluginConfigures[T]) => void) {
-  const listeners = configureUpdateListeners.get(id)
+export function onPluginConfigureUpdate<T extends PluginConfigureIds & string>(id: T, listener: (value: PluginConfigures[T]) => void) {
+  const listeners = pluginConfigureUpdateListeners.get(id)
   if (!listeners) {
-    configureUpdateListeners.set(id, new Set([listener]))
+    pluginConfigureUpdateListeners.set(id, new Set([listener]))
   } else {
     listeners.add(listener)
   }
@@ -34,7 +34,7 @@ export function definePluginConfigures(configures: Partial<PluginConfigures>) {
 
 export function registerPluginConfigures(configures: Partial<PluginConfigures>) {
   for (const id in configures) {
-    setConfigure(id, configures[id])
+    setPluginConfigure(id, configures[id])
   }
 }
 
