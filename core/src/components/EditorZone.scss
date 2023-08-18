@@ -145,6 +145,9 @@ dialog {
     cursor: pointer;
     user-select: none;
     transition: .1s;
+    &:hover {
+      background-color: #fff5 !important;
+    }
     &.is-active {
       top: 5px;
       left: 5px;
