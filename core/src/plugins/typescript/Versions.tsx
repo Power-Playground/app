@@ -1,10 +1,8 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react'
-import { messenger } from '@power-playground/core'
+import type { BarItemProps, QuickAccess } from '@power-playground/core'
+import { messenger, QuickAccessContext } from '@power-playground/core'
 
 import { Popover } from '../../components/Popover'
-import type { QuickAccess } from '../../components/QuickAccess'
-import { QuickAccessContext } from '../../components/QuickAccess'
-import type { BarItemProps } from '../../plugins'
 
 import type { TypeScriptPluginX } from '.'
 import { typescriptVersionMeta, useDistTags } from './editor.typescript.versions'
