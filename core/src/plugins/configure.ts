@@ -39,7 +39,7 @@ export function registerPluginConfigures(configures: Partial<PluginConfigures>) 
 }
 
 export interface Configure {
-  plugins?: PluginConfigures
+  plugins?: Partial<PluginConfigures>
 }
 
 export function defineConfigure(configure?: Configure) {

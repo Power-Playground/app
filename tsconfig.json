@@ -28,6 +28,7 @@
   "include": [
     "src",
     "core",
+    "mock/.ppd.client.configure.ts",
     "vite.config.ts"
   ]
 }
