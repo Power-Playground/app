@@ -130,11 +130,14 @@ dialog {
 
 .ppd-editor-zone {
   display: flex;
-  flex-direction: column;
-  position: relative;
-  max-width: 70vw;
-  > section {
+  &__container {
     flex-grow: 1;
-    height: 0 !important;
+    display: flex;
+    flex-direction: column;
+    width: 0;
+    > section {
+      flex-grow: 1;
+      height: 0 !important;
+    }
   }
 }

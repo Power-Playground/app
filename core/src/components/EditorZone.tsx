@@ -7,6 +7,9 @@ import React, {
   useState
 } from 'react'
 import Editor, { useMonaco } from '@monaco-editor/react'
+import { displayLeftBarAtom } from '@power-playground/core/components/EditorZoneShareAtoms.ts'
+import { LeftBar } from '@power-playground/core/components/LeftBar.tsx'
+import { useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 
 import { ExtensionContext } from '../contextes/Extension'
@@ -80,6 +83,8 @@ export default function EditorZone(props: {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
+  const [displayLeftBar] = useAtom(displayLeftBarAtom)
+
   return <ExtensionContext.Provider value={{
     searchParams: searchParams.current,
     plugins, shareState
@@ -105,30 +110,34 @@ export default function EditorZone(props: {
         }}
         resizable={props.resizable ?? { right: true }}
       >
-        <TopBar />
-        {loadingNode ?? <Editor
-          language={language}
-          options={{
-            automaticLayout: true,
-            scrollbar: {
-              vertical: 'hidden',
-              verticalSliderSize: 0,
-              verticalScrollbarSize: 0
-            }
-          }}
-          theme={theme === 'light' ? 'vs' : 'vs-dark'}
-          loading={loadingNode}
-          path={`file://${curFilePath}`}
-          value={code}
-          onChange={code => setCode(code ?? '')}
-          onMount={(editor, monaco) => {
-            plugins
-              .forEach(plugin => plugin.editor?.load?.(editor, monaco))
-            setEditor(editor)
-            editor.focus()
-          }}
-        />}
-        <BottomStatus />
+        {/* TODO support display animation */}
+        {displayLeftBar && <LeftBar />}
+        <div className={`${prefix}__container`}>
+          <TopBar />
+          {loadingNode ?? <Editor
+            language={language}
+            options={{
+              automaticLayout: true,
+              scrollbar: {
+                vertical: 'hidden',
+                verticalSliderSize: 0,
+                verticalScrollbarSize: 0
+              }
+            }}
+            theme={theme === 'light' ? 'vs' : 'vs-dark'}
+            loading={loadingNode}
+            path={`file://${curFilePath}`}
+            value={code}
+            onChange={code => setCode(code ?? '')}
+            onMount={(editor, monaco) => {
+              plugins
+                .forEach(plugin => plugin.editor?.load?.(editor, monaco))
+              setEditor(editor)
+              editor.focus()
+            }}
+          />}
+          <BottomStatus />
+        </div>
       </Resizable>
     </MonacoScopeContext.Provider>
   </ExtensionContext.Provider>
