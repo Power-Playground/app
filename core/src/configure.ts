@@ -1,7 +1,7 @@
 import type { PluginConfigures } from './plugins'
 
 export interface Configure {
-  headerTitle?: React.ReactNode
+  HeaderTitle?: string | (() => JSX.Element)
   headerTitleJumpLink?: string
   githubUrl?: string
   plugins?: Partial<PluginConfigures>

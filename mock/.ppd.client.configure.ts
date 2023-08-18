@@ -1,6 +1,7 @@
 import { defineConfigure } from '@power-playground/core'
 
 import babelVar2const from './babel-plugins/var2const'
+import { HeaderTitle } from '../src/components/HeaderTitle'
 
 const aTestInitPackage = Object.entries(import.meta.glob([
   './a-test-init-package/**/*'
@@ -10,6 +11,7 @@ const aTestInitPackage = Object.entries(import.meta.glob([
 }))
 
 export default defineConfigure({
+  HeaderTitle: HeaderTitle,
   plugins: {
     outputs: {
       babelTransformOptions: {

@@ -16,8 +16,6 @@ import {
 } from '@power-playground/core'
 import commonPlugins from '@power-playground/core/common-plugins'
 
-import PP from '../resources/PP_P.svg'
-
 import { I18N } from './components/I18N'
 import { ThemeSwitcher } from './components/ThemeSwitcher'
 
@@ -61,6 +59,7 @@ if (import.meta.hot) {
 }
 
 const {
+  HeaderTitle,
   headerTitleJumpLink,
   githubUrl
 } = __PPD_CONFIGURES__
@@ -77,23 +76,19 @@ export function App() {
   }), [dockTo])
 
   const [displayHeader, setDisplayHeader] = useState(true)
+  const headerTitle = useMemo(() => {
+    if (!HeaderTitle) return null
+
+    if (typeof HeaderTitle === 'string') return HeaderTitle
+    return <HeaderTitle />
+  }, [])
   return (
     <>
       <header style={{ display: displayHeader ? 'flex' : 'none' }}>
         <h1>
-          <a target='_blank' rel='noreferrer' href={headerTitleJumpLink}>
-            <img src={PP} width='24px' alt='Power Playground Icon' />
-            &nbsp;
-            <span style={{
-              color: 'color-mix(in srgb, var(--primary), #fff 80%)',
-              fontWeight: 'bolder'
-            }}>P</span>ower
-            &nbsp;
-            <span style={{
-              color: 'color-mix(in srgb, var(--primary), #fff 80%)',
-              fontWeight: 'bolder'
-            }}>P</span>layground
-          </a>
+          {headerTitleJumpLink
+            ? <a target='_blank' rel='noreferrer' href={headerTitleJumpLink}>{headerTitle}</a>
+            : headerTitle}
         </h1>
         <div className='opts'>
           <a
