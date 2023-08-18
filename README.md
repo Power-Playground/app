@@ -1,7 +1,7 @@
+# Power Playground
+
 ![Power Playground Icon-Light](./resources/PP_cover_light.svg#gh-light-mode-only)
 ![Power Playground Icon-Dark](./resources/PP_cover_dark.svg#gh-dark-mode-only)
-
-# Power Playground
 
 |[zh-Hans](./resources/README.zh-Hans.md)
 |en-US
