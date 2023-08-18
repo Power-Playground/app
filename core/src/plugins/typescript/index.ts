@@ -10,22 +10,20 @@ import { Langs } from './Langs'
 import { use } from './use'
 import { Versions } from './Versions'
 
+export interface ExtraFile {
+  content: string
+  filePath: string
+}
+
 declare module '@power-playground/core' {
   export interface PluginConfigures {
     typescript: {
       compilerOptions?: monacoEditor.languages.typescript.CompilerOptions
+      extraFiles?: ExtraFile[]
+      extraModules?: ExtraFile[]
     }
   }
 }
-
-const extraModules = Object
-  .entries(Object.assign(
-    {} as Record<string, string>, {}
-  ))
-  .reduce((acc, [filePath, content]) => acc.concat({
-    filePath,
-    content
-  }), [] as { content: string, filePath: string }[])
 
 const store = getDefaultStore()
 
@@ -37,6 +35,9 @@ export const compilerOptionsAtom = atom<
   declaration: true,
   lib: ['esnext', 'dom', 'esnext.disposable']
 })
+
+export const extraFilesAtom = atom<ExtraFile[]>([])
+export const extraModulesAtom = atom<ExtraFile[]>([])
 
 export interface TypeScriptPluginX {
   ExtShareState: {
@@ -72,14 +73,24 @@ const editor: Editor<TypeScriptPluginX> = {
       console.log('typescript.CompilerOptions', monaco.languages.typescript.typescriptDefaults.getCompilerOptions())
       console.groupEnd()
     }, [compilerOptions, defaults, monaco])
+
+    const [extraFiles] = useAtom(extraFilesAtom)
+    const [extraModules] = useAtom(extraModulesAtom)
     useEffect(() => {
       if (!defaults || !monaco) return
 
-      extraModules.forEach(({ content, filePath }) => {
+      extraFiles.forEach(({ content, filePath }) => {
         monaco.editor.createModel(
           content,
           language === 'javascript' ? 'javascript' : 'typescript',
           monaco.Uri.parse(filePath)
+        )
+      })
+      extraModules.forEach(({ content, filePath }) => {
+        monaco.editor.createModel(
+          content,
+          language === 'javascript' ? 'javascript' : 'typescript',
+          monaco.Uri.parse(`file:///node_modules/${filePath}`)
         )
       })
 
@@ -88,7 +99,7 @@ const editor: Editor<TypeScriptPluginX> = {
           if (model.uri.path !== curFilePath) model.dispose()
         })
       }
-    }, [monaco, curFilePath, language, defaults])
+    }, [monaco, curFilePath, language, defaults, extraFiles, extraModules])
   },
   topbar: [Langs],
   statusbar: [Versions]
@@ -100,6 +111,12 @@ export default definePlugin<'typescript', TypeScriptPluginX>('typescript', conf 
       compilerOptionsAtom.init,
       conf.compilerOptions
     ]))
+  }
+  if (conf?.extraFiles) {
+    store.set(extraFilesAtom, conf.extraFiles)
+  }
+  if (conf?.extraModules) {
+    store.set(extraModulesAtom, conf.extraModules)
   }
 
   return { editor }

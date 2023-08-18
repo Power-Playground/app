@@ -1,0 +1,5 @@
+{
+  "name": "a-test-init-package",
+  "main": "./src/index.ts",
+  "module": "./src/index.ts"
+}
