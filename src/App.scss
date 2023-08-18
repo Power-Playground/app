@@ -19,20 +19,26 @@
     > a {
       display: flex;
       align-items: center;
+      color: var(--pr-fr-cr);
+      text-decoration: none;
+      font-weight: normal;
     }
   }
   > .opts {
     display: flex;
     align-items: center;
     gap: 10px;
-    > .hide-topbar {
+    > .svg-icon  {
       display: flex;
       align-items: center;
       cursor: pointer;
-      filter: drop-shadow(0 0 0 var(--icon-cr));
+      filter: drop-shadow(0 0 0 #0000);
       transition: .3s;
       &:hover {
         filter: drop-shadow(0 0 8px var(--icon-cr));
+      }
+      > svg path {
+        fill: var(--icon-cr);
       }
     }
   }
