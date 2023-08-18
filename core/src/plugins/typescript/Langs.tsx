@@ -1,4 +1,4 @@
-import { Switcher } from '../../components/Switcher'
+import { Switcher } from '../../components/base/Switcher'
 import type { BarItemProps } from '..'
 
 import type { TypeScriptPluginX } from '.'
