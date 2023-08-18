@@ -11,6 +11,19 @@ import inspect from 'vite-plugin-inspect'
 import replacer from './vite-plugins/replacer'
 
 configDotenv()
+configDotenv({
+  path: path.resolve(process.cwd(), '.env.local')
+})
+const { NODE_ENV } = process.env
+if (NODE_ENV === undefined) {
+  console.warn('NODE_ENV not set, use "development" as default.')
+  process.env.NODE_ENV = 'development'
+}
+configDotenv({
+  path: path.resolve(process.cwd(), `.env.${
+    NODE_ENV === 'development' ? 'dev' : 'pro'
+  }`)
+})
 
 function relative(prev: '__DONT_USE_DIRNAME_AS_YOUR_DIRECTORY_NAME__' | (string & {}), p: string) {
   const np = path.relative(

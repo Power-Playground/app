@@ -2,7 +2,7 @@
 stats.html
 
 # Envrioment
-.env
+.env.local
 
 # Logs
 logs
