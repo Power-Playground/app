@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useMemo, useRef } from 'react'
 import { messenger } from '@power-playground/core'
 
-import { typescriptVersionMeta, useDistTags } from '../../components/editor.typescript.versions'
 import { Popover } from '../../components/Popover'
 import type { QuickAccess } from '../../components/QuickAccess'
 import { QuickAccessContext } from '../../components/QuickAccess'
 import type { BarItemProps } from '../../plugins'
 
 import type { TypeScriptPluginX } from '.'
+import { typescriptVersionMeta, useDistTags } from './editor.typescript.versions'
 
 export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = (({ searchParams, shareState }) => {
   const queryVersion = searchParams.get('typescript')
