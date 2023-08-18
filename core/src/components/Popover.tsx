@@ -65,8 +65,7 @@ export function Popover(props: PopoverProps) {
   useEffect(() => {
     if (visible) {
       popper.current?.update()
-      const placement = popper.current?.state?.placement ?? 'top'
-      setArrowPlacement(placement)
+      setArrowPlacement(popper.current?.state?.placement ?? 'top')
     }
   }, [visible])
   const classname = `${prefix}-reference ${prefix}-${trigger}`
