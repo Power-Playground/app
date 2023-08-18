@@ -44,7 +44,7 @@ export default defineDevtools({
         // TODO support fileSystem
         try {
           prevDisposeFunc?.()
-          addDisposeFunc(eval(
+          addDisposeFunc((0, eval)(
             `(function () { const module = { exports: {} }; const exports = module.exports; ${code}; return module.exports; })()`
           ).dispose)
         } catch (e) {

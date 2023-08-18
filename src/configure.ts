@@ -12,7 +12,7 @@ if (import.meta.env.VITE_PPD_DEV === 'true') {
   extConfigures = import.meta.glob('../../.ppd_configure.ts', {
     eager: true
   })
-    ?.['../../ppd_configure.ts']
+    ?.['../../.ppd_configure.ts']
     // @ts-ignore
     ?.default as ReturnType<typeof definePluginConfigures>
 }

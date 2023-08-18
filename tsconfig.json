@@ -25,5 +25,5 @@
       "//chii/*": ["./external/chrome-devtools/front_end/*"],
     }
   },
-  "include": ["src", "core", "vite.config.ts", "configure.ts"]
+  "include": ["src", "core", "vite-plugins/*/**", "vite.config.ts", "configure.ts"]
 }

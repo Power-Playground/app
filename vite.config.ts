@@ -2,23 +2,31 @@ import react from '@vitejs/plugin-react'
 import { configDotenv } from 'dotenv'
 import fg from 'fast-glob'
 import path from 'node:path'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 import { cdn } from 'vite-plugin-cdn2'
 import { unpkg } from 'vite-plugin-cdn2/url.js'
+import inspect from 'vite-plugin-inspect'
+
+import replacer from './vite-plugins/replacer'
 
 configDotenv()
 
-const pluginEntries = fg.globSync([
-  './core/src/plugins/*.ts*',
-  './core/src/plugins/*/index.ts*',
-  '!./core/src/plugins/**/index.tsx',
-  '!./core/src/plugins/**/configure.ts',
+const __PPD_PLUGINS_GLOB_PATHS__ = [
   './src/plugins/*.ts*',
   './src/plugins/*/index.ts*',
   '../ppd-plugins/*.ts*',
   '../ppd-plugins/*/index.ts*',
   '../ppd-plugins/*.js*',
   '../ppd-plugins/*/index.js*'
+].map(p => path.resolve(__dirname, p))
+
+const pluginEntries = fg.globSync([
+  './core/src/plugins/*.ts*',
+  './core/src/plugins/*/index.ts*',
+  '!./core/src/plugins/**/index.tsx',
+  '!./core/src/plugins/**/configure.ts',
+  ...__PPD_PLUGINS_GLOB_PATHS__
 ])
   .reduce((acc, file) => {
     console.log(`Adding plugin: ${file}`)
@@ -36,9 +44,14 @@ const pluginEntries = fg.globSync([
   }, {} as Record<string, string>)
 
 // https://vitejs.dev/config/
-export default defineConfig(async _ => ({
+export default defineConfig(async env => ({
   base: `/${process.env.BASE_URL || 'app'}/`,
   plugins: [
+    replacer({
+      define: {
+        __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify(__PPD_PLUGINS_GLOB_PATHS__)
+      }
+    }),
     react(),
     cdn({
       url: unpkg,
@@ -49,7 +62,9 @@ export default defineConfig(async _ => ({
         { name: 'react-dom', relativeModule: './umd/react-dom.production.min.js' },
         { name: 'jotai', relativeModule: './umd/index.production.js' }
       ]
-    })
+    }),
+    env.mode === 'production' ? visualizer() : undefined,
+    process.env.ENABLE_INJECT_ANALYTICS === 'true' ? inspect() : undefined
   ],
   publicDir: './core/public',
   build: {

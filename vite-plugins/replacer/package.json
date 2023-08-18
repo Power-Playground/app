@@ -1,0 +1,45 @@
+{
+  "name": "vite-plugin-replacer",
+  "version": "0.1.1",
+  "description": "A vite plugin to replace string in files",
+  "license": "MIT",
+  "author": "YiJie<yijie4188y@gmail.com>",
+  "homepage": "https://github.com/Power-Playground/app/tree/main/vite-plugins/replacer",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://github.com/Power-Playground/app.git",
+    "directory": "vite-plugins/replacer",
+    "branch": "main"
+  },
+  "module": "index.ts",
+  "exports": {
+    ".": {
+      "import": "./index.ts"
+    }
+  },
+  "publishConfig": {
+    "module": "index.js",
+    "types": "index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./index.d.ts",
+        "import": "./index.js"
+      }
+    }
+  },
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "index.d.ts.map",
+    "README.md",
+    "README.zh-Hans.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "esbuild --bundle --platform=node --target=node12 --outfile=index.js index.ts && tsc --emitDeclarationOnly --declaration --declarationMap --outDir .",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.18.17"
+  }
+}

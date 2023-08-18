@@ -1,3 +1,4 @@
+// @replacer.use.define.__PPD_PLUGINS_GLOB_PATHS__
 // noinspection ES6ConvertVarToLetConst
 
 import './App.scss'
@@ -24,17 +25,7 @@ const plugins = Object.assign(
   {},
   commonPlugins,
   import.meta
-    .glob([
-      './plugins/*.ts*',
-      './plugins/*/index.ts*',
-
-      '../../ppd-plugins/*.ts*',
-      '../../ppd-plugins/*/index.ts*',
-      '../../ppd-plugins/*.js*',
-      '../../ppd-plugins/*/index.js*'
-    ], {
-      eager: true, import: 'default'
-    })
+    .glob(__PPD_PLUGINS_GLOB_PATHS__, { eager: true, import: 'default' })
 ) as Record<string, Plugin>
 
 declare global {
