@@ -2,10 +2,10 @@ import { useContext, useEffect, useRef } from 'react'
 
 import { MonacoScopeContext } from '../../contextes/MonacoScope'
 import { isMacOS } from '../../utils'
-import type { DialogRef } from '../Dialog.tsx'
-import { Popover } from '../Popover.tsx'
+import { Popover } from '../base/Popover'
+import type { DialogRef } from '../Dialog'
 
-import { HistoryDialog } from './HistoryDialog.tsx'
+import { HistoryDialog } from './HistoryDialog'
 
 export function History() {
   const historyDialogRef = useRef<DialogRef>(null)

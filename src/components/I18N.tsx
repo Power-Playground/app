@@ -1,7 +1,7 @@
 import './I18N.scss'
 
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { Popover } from '@power-playground/core/components/Popover.tsx'
+import { Popover } from '@power-playground/core/components/base/Popover.tsx'
 
 export function I18N() {
   return <Popover

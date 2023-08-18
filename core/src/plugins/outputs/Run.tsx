@@ -1,4 +1,4 @@
-import { Popover } from '../../components/Popover'
+import { Popover } from '../../components/base/Popover'
 import { elBridgeP } from '../../eval-logs/bridge'
 import { isMacOS } from '../../utils'
 import { defineBarItem } from '..'

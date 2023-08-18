@@ -1,10 +1,10 @@
 import { useRef } from 'react'
 
 import { isMacOS } from '../../utils'
-import type { DialogRef } from '../Dialog.tsx'
-import { Popover } from '../Popover.tsx'
+import { Popover } from '../base/Popover'
+import type { DialogRef } from '../Dialog'
 
-import { HelpDialog } from './HelpDialog.tsx'
+import { HelpDialog } from './HelpDialog'
 
 export function Help() {
   const helpDialogRef = useRef<DialogRef>(null)
