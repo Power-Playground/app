@@ -14,24 +14,6 @@ div.ppd-top-bar {
 
   color: #fff;
   transition: .1s;
-  &.display-menu {
-    padding-left: 26px;
-    > .menu-switch {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      left: 0;
-      width: 26px;
-      transform: rotate(90deg);
-      cursor: pointer;
-      user-select: none;
-      transition: .1s;
-      &.is-active {
-        transform: rotate(0);
-      }
-    }
-  }
   button {
     display: flex;
     align-items: center;

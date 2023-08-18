@@ -129,12 +129,44 @@ dialog {
 }
 
 .ppd-editor-zone {
+  position: relative;
   display: flex;
+  > .ppd-editor-zone__menu-switch {
+    z-index: 10;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 0;
+    width: 26px;
+    height: 26px;
+    transform: rotate(90deg);
+    cursor: pointer;
+    user-select: none;
+    transition: .1s;
+    &.is-active {
+      top: 5px;
+      left: 5px;
+      width: 36px;
+      height: 36px;
+      box-sizing: border-box;
+      transform: rotate(0);
+      background-color: #fff3;
+      border-radius: 4px;
+      border: 2px solid color-mix(in srgb, var(--primary), var(--bg-cr) 40%);
+    }
+  }
   &__container {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
     width: 0;
+    > .pdd-top-bar {
+      &.display-menu {
+        padding-left: 26px;
+      }
+    }
     > section {
       flex-grow: 1;
       height: 0 !important;

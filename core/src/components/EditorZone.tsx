@@ -7,7 +7,6 @@ import React, {
   useState
 } from 'react'
 import Editor, { useMonaco } from '@monaco-editor/react'
-import { displayLeftBarAtom } from '@power-playground/core/components/EditorZoneShareAtoms.ts'
 import { LeftBar } from '@power-playground/core/components/LeftBar.tsx'
 import { useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
@@ -18,6 +17,7 @@ import type { Plugin, ShareState } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
+import { displayLeftBarAtom } from './EditorZoneShareAtoms.ts'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
@@ -36,7 +36,11 @@ export default function EditorZone(props: {
   className?: string
   resizable?: ResizableProps['resizable']
   plugins?: Record<string, Plugin | undefined>
+  enableMenuSwitch?: boolean
 }) {
+  const {
+    enableMenuSwitch = true
+  } = props
   const searchParams = useRef(new URLSearchParams(location.search))
   const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
@@ -83,7 +87,7 @@ export default function EditorZone(props: {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
-  const [displayLeftBar] = useAtom(displayLeftBarAtom)
+  const [displayLeftBar, setDisplayLeftBar] = useAtom(displayLeftBarAtom)
 
   return <ExtensionContext.Provider value={{
     searchParams: searchParams.current,
@@ -110,10 +114,21 @@ export default function EditorZone(props: {
         }}
         resizable={props.resizable ?? { right: true }}
       >
+        {enableMenuSwitch && <div
+          className={classnames(`${prefix}__menu-switch`, {
+            'is-active': displayLeftBar
+          })}
+          title='display left zone.'
+          onClick={() => setDisplayLeftBar(!displayLeftBar)}
+        >
+          <div className='cldr codicon codicon-menu' />
+        </div>}
         {/* TODO support display animation */}
         {displayLeftBar && <LeftBar />}
         <div className={`${prefix}__container`}>
-          <TopBar />
+          <TopBar
+            className={enableMenuSwitch && displayLeftBar ? 'is-active' : undefined}
+          />
           {loadingNode ?? <Editor
             language={language}
             options={{
