@@ -37,3 +37,11 @@ export function registerPluginConfigures(configures: Partial<PluginConfigures>) 
     setConfigure(id, configures[id])
   }
 }
+
+export interface Configure {
+  plugins?: PluginConfigures
+}
+
+export function defineConfigure(configure?: Configure) {
+  return configure
+}

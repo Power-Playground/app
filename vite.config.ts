@@ -35,6 +35,17 @@ const __PPD_PLUGINS_GLOB_PATHS__ = [
   '../ppd-plugins/*/index.js*'
 ].map(p => path.resolve(__dirname, p))
 
+if (!process.env.PPD_CONFIGURE_PATH) {
+  console.warn('PPD_CONFIGURE_PATH not set, use default configure path ".ppd.client.configure.ts".')
+  console.warn(
+    'If you are developing Power Playground, ' +
+    'you can set PPD_CONFIGURE_PATH to "mock/.ppd.client.configure.ts" in `.env` file.'
+  )
+}
+const __CLIENT_CONFIGURE_PATH__ = path.resolve(
+  process.cwd(), process.env.PPD_CONFIGURE_PATH ?? '.ppd.client.configure.ts'
+)
+
 const pluginEntries = fg.globSync([
   './core/src/plugins/*.ts*',
   './core/src/plugins/*/index.ts*',
@@ -63,7 +74,8 @@ export default defineConfig(async env => ({
   plugins: [
     replacer({
       define: {
-        __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify(__PPD_PLUGINS_GLOB_PATHS__)
+        __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify(__PPD_PLUGINS_GLOB_PATHS__.map(relativeSrc)),
+        __CLIENT_CONFIGURE_PATH__: JSON.stringify(relativeSrc(__CLIENT_CONFIGURE_PATH__))
       }
     }),
     react(),

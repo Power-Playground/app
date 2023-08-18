@@ -6,6 +6,8 @@ declare global {
   export var __DEBUG__: boolean
   // eslint-disable-next-line no-var
   export var __PPD_PLUGINS_GLOB_PATHS__: string[]
+  // eslint-disable-next-line no-var
+  export var __CLIENT_CONFIGURE_PATH__: string
 }
 
 export {}
