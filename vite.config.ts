@@ -12,6 +12,20 @@ import replacer from './vite-plugins/replacer'
 
 configDotenv()
 
+function relative(prev: '__DONT_USE_DIRNAME_AS_YOUR_DIRECTORY_NAME__' | (string & {}), p: string) {
+  const np = path.relative(
+    prev === '__DONT_USE_DIRNAME_AS_YOUR_DIRECTORY_NAME__'
+      ? __dirname
+      : path.resolve(__dirname, prev), p
+  )
+  if (np.startsWith('../')) {
+    return np
+  }
+  return `./${np}`
+}
+const relativeSrc = relative.bind(null, './src')
+const relativeDir = relative.bind(null, '__DONT_USE_DIRNAME_AS_YOUR_DIRECTORY_NAME__')
+
 const __PPD_PLUGINS_GLOB_PATHS__ = [
   './src/plugins/*.ts*',
   './src/plugins/*/index.ts*',
@@ -26,7 +40,7 @@ const pluginEntries = fg.globSync([
   './core/src/plugins/*/index.ts*',
   '!./core/src/plugins/**/index.tsx',
   '!./core/src/plugins/**/configure.ts',
-  ...__PPD_PLUGINS_GLOB_PATHS__
+  ...__PPD_PLUGINS_GLOB_PATHS__.map(relativeDir)
 ])
   .reduce((acc, file) => {
     console.log(`Adding plugin: ${file}`)
