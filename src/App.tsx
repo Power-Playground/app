@@ -60,6 +60,11 @@ if (import.meta.hot) {
   window.__PPD_PLUGINS__ = plugins
 }
 
+const {
+  headerTitleJumpLink,
+  githubUrl
+} = __PPD_CONFIGURES__
+
 export function App() {
   useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {
     light: 'default', dark: 'dark'
@@ -76,10 +81,7 @@ export function App() {
     <>
       <header style={{ display: displayHeader ? 'flex' : 'none' }}>
         <h1>
-          <a href='https://github.com/Power-Playground/app#power-playground'
-             target='_blank'
-             rel='noreferrer'
-          >
+          <a target='_blank' rel='noreferrer' href={headerTitleJumpLink}>
             <img src={PP} width='24px' alt='Power Playground Icon' />
             &nbsp;
             <span style={{
@@ -95,9 +97,9 @@ export function App() {
         </h1>
         <div className='opts'>
           <a
-            href='https://github.com/Power-Playground/app'
             target='_blank'
             rel='noreferrer'
+            href={githubUrl}
             className='svg-icon github'
             dangerouslySetInnerHTML={{
               __html:

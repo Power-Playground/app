@@ -87,6 +87,9 @@ export default defineConfig(async env => ({
   plugins: [
     replacer({
       define: {
+        PPD_HEADER_TITLE_JUMP_LINK: JSON.stringify(process.env.PPD_HEADER_TITLE_JUMP_LINK),
+        PPD_GITHUB_URL: JSON.stringify(process.env.PPD_GITHUB_URL),
+
         __PPD_PLUGINS_GLOB_PATHS__: JSON.stringify(__PPD_PLUGINS_GLOB_PATHS__.map(relativeSrc)),
         __CLIENT_CONFIGURE_PATH__: JSON.stringify(relativeSrc(__CLIENT_CONFIGURE_PATH__))
       }
