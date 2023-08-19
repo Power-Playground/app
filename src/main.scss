@@ -32,3 +32,59 @@ body {
   margin: 0;
   padding: 0;
 }
+
+// toastify styles
+
+.Toastify__toast {
+    border-radius: 2px;
+    box-shadow: 1px 2px 5px #00000047;
+}
+
+.Toastify__close-button{
+    color: var(--fr-cr);
+    opacity: 1;
+}
+
+body {
+    --toastify-color-light: var(--bg-cr);
+    --toastify-color-dark: var(--bg-cr);
+    --toastify-color-info: #3498db;
+    --toastify-color-success: #07bc0c;
+    --toastify-color-warning: #f1c40f;
+    --toastify-color-error: #e74c3c;
+    --toastify-color-transparent: rgba(255, 255, 255, .7);
+    --toastify-icon-color-info: var(--toastify-color-info);
+    --toastify-icon-color-success: var(--toastify-color-success);
+    --toastify-icon-color-warning: var(--toastify-color-warning);
+    --toastify-icon-color-error: var(--toastify-color-error);
+    --toastify-toast-width: 450px;
+    --toastify-toast-background: var(--bg-cr);
+    --toastify-toast-min-height: 44px;
+    --toastify-toast-max-height: 800px;
+    --toastify-font-family: sans-serif;
+    --toastify-z-index: 9999;
+    --toastify-text-color-light: var(--fr-cr);
+    --toastify-text-color-dark: var(--fr-cr);
+    --toastify-text-color-info: var(--fr-cr);
+    --toastify-text-color-success: var(--fr-cr);
+    --toastify-text-color-warning: var(--fr-cr);
+    --toastify-text-color-error: var(--fr-cr);
+    --toastify-spinner-color: #616161;
+    --toastify-spinner-color-empty-area: #e0e0e0;
+    --toastify-color-progress-light: var(--primary);
+    --toastify-color-progress-dark: var(--primary);
+    --toastify-color-progress-info: var(--toastify-color-info);
+    --toastify-color-progress-success: var(--toastify-color-success);
+    --toastify-color-progress-warning: var(--toastify-color-warning);
+    --toastify-color-progress-error: var(--toastify-color-error);
+}
+
+.Toastify__progress-bar {
+    height: 3px;
+}
+
+button.Toastify__close-button {
+    margin-top: 10px;
+    margin-right: 9px;
+}
+
