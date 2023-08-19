@@ -3,6 +3,7 @@ import { defineConfigure } from '@power-playground/core'
 import babelVar2const from './babel-plugins/var2const'
 import { HeaderTitle } from '../src/components/HeaderTitle'
 import coverLight from '../resources/PP_cover_light.svg'
+import coverDark from '../resources/PP_cover_dark.svg'
 
 const aTestInitPackage = Object.entries(import.meta.glob([
   './a-test-init-package/**/*'
@@ -11,8 +12,12 @@ const aTestInitPackage = Object.entries(import.meta.glob([
   eager: true
 }))
 
+// TODO make picture select by web app inner theme variable
 const aboutMDContent = `
-<img src="${coverLight}" width="100%" style="margin: -4px" />
+<picture>
+  <source media='(prefers-color-scheme: dark)' srcset='${coverDark}'>
+  <img alt='Preview Power Playground cover' src='${coverLight}' style='margin: -4px'>
+</picture>
 
 ## 这是什么？
 
