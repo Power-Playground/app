@@ -1,61 +1,50 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
-import { createPortal } from 'react-dom'
+import './HelpDialog.scss'
+
+import { forwardRef } from 'react'
 import { isMacOS } from '@power-playground/core'
 
-import type { DialogRef } from '../Dialog.tsx'
+import type { DialogRef } from '../base/Dialog'
+import { Dialog } from '../base/Dialog'
 
 export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
-  const [open, setOpen] = useState(false)
-  useImperativeHandle(ref, () => ({
-    open: () => setOpen(true),
-    hide: () => setOpen(false)
-  }), [])
-
   const cmdOrCtrl = isMacOS ? '⌘' : 'Ctrl'
   const ctrl = isMacOS ? '⌃' : 'Ctrl'
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === '/' && (e.metaKey || e.ctrlKey)) {
-        setOpen(true)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
-  useEffect(() => {
-    if (open) {
-      const handleKeyUp = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') setOpen(false)
-      }
-      document.addEventListener('keyup', handleKeyUp)
-      return () => document.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [open])
-  return createPortal(<dialog
-    className='help'
-    autoFocus
-    open={open}
+  const keymap = [
+    [cmdOrCtrl, 'S', '保存并复制链接'],
+    [cmdOrCtrl, 'E', '执行代码'],
+    [cmdOrCtrl, 'H', <>历史代码（<span className='keymap__key' style={{ userSelect: 'none' }}>
+      <kbd>{cmdOrCtrl}</kbd> <kbd>S</kbd>
+    </span>保存下来的代码）</>],
+    [ctrl, '/', '查看帮助']
+  ]
+  return <Dialog
+    ref={ref}
+    binding={e => e.key === '/' && (e.metaKey || e.ctrlKey)}
+    title='Help'
+    className='ppd-help-dialog'
+    style={{
+      '--width': '40vw',
+      '--max-height': '80vh'
+    }}
     >
-    <div className='dialog__container'>
-      <div className='dialog__title'>
-        <h1>帮助</h1>
-        <button className='dialog__close' onClick={() => setOpen(false)}>×</button>
+    <div className='ppd-tabs-wrapper'>
+      <div className='ppd-tabs'>
+        <div className='ppd-tabs__item ppd-tabs__item--active'>快捷键</div>
+        <div className='ppd-tabs__item'>支持的语言</div>
       </div>
-      <div className='dialog__content'>
-        <h2>快捷键</h2>
-        <ul>
-          <li><code>{cmdOrCtrl} + S</code>: 保存并复制链接</li>
-          <li><code>{cmdOrCtrl} + E</code>: 执行代码</li>
-          <li><code>{cmdOrCtrl} + H</code>: 历史代码（{cmdOrCtrl} + S 保存下来的代码）</li>
-          <li><code>{ctrl} + /</code>: 查看帮助</li>
-        </ul>
-        <h2>支持的语言</h2>
-        <ul>
-          <li><code>JavaScript</code></li>
-          <li><code>TypeScript</code></li>
-        </ul>
+      <div className='ppd-tab-content'>
+        <div className='ppd-list'>
+          {keymap.map(([key, key2, desc], i) => <div key={i} className='ppd-list__item'>
+            <div className='description'>
+              {desc}
+            </div>
+            <span className='keymap__key' style={{ userSelect: 'none' }}>
+              <kbd>{key}</kbd> <kbd>{key2}</kbd>
+            </span>
+          </div>)}
+        </div>
       </div>
     </div>
-  </dialog>, document.body, 'help-dialog')
+  </Dialog>
 })

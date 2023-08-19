@@ -1,0 +1,71 @@
+dialog.ppd-help-dialog {
+  .ppd-list {
+    display: flex;
+    flex-direction: column;
+    &__item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5px 4px 5px 15px;
+      border-bottom: 1px solid #0002;
+      &:hover {
+        background-color: #0001;
+      }
+    }
+  }
+  .ppd-tabs-wrapper {
+    flex-grow: 1;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    > .ppd-tabs {
+      width: 100px;
+      border-right: 1px solid #0002;
+      > .ppd-tabs__item {
+        padding: 5px 10px;
+        &:hover {
+          background-color: #0001;
+        }
+        &.ppd-tabs__item--active {
+          border-right: 3px solid var(--primary);
+        }
+      }
+    }
+    > .ppd-tab-content {
+      flex-grow: 1;
+      width: 0;
+      overflow: overlay;
+    }
+  }
+  .ppd-dialog__content {
+    display: flex;
+    flex-direction: column;
+  }
+  kbd {
+    --inner-comp-bg-cr: #fff8;
+    html[theme-mode=dark] & {
+      --inner-comp-bg-cr: #5558;
+    }
+
+    position: relative;
+    display: inline-block;
+    padding: 0 4px;
+    margin-top: 4px;
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 24px;
+
+    font-size: 14px;
+    text-align: center;
+    background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 80%);
+    border-radius: 4px;
+    transition: .1s;
+    &:hover {
+      background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 60%);
+      &::after {
+        top: 0;
+        left: 0;
+      }
+    }
+  }
+}

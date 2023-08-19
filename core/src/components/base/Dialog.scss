@@ -1,0 +1,69 @@
+dialog.ppd-dialog {
+  --width: 50vw;
+  --max-height: 80vh;
+  --min-height: 40vh;
+
+  z-index: 114514;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0008;
+  outline: none;
+  border: none;
+  > .ppd-dialog__container {
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: var(--width);
+    max-height: var(--max-height);
+    min-height: var(--min-height);
+    color: var(--fr-cr);
+    background-color: var(--bg-cr);
+    box-shadow: 0 30px 128px #2224;
+    border-radius: 4px;
+    overflow: overlay;
+    transition: .1s;
+    > .ppd-dialog__title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 36px;
+      box-shadow: 0 0 48px #ccc;
+      html[theme-mode=dark] & {
+        box-shadow: 0 0 32px #1119;
+      }
+      > h1 {
+        flex-grow: 1;
+        margin: 0;
+        padding-left: 15px;
+        font-size: 1.5em;
+      }
+      > .ppd-dialog__close {
+        width: 36px;
+        height: 36px;
+        color: var(--fr-cr);
+        background-color: #0000;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        font-size: 2em;
+        font-weight: bold;
+        transition: .1s;
+        &:hover {
+          color: #fe5450;
+        }
+      }
+    }
+    > .ppd-dialog__content {
+      flex-grow: 1;
+      padding: 10px 15px;
+    }
+  }
+}
