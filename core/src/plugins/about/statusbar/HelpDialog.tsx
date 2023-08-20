@@ -7,6 +7,7 @@ import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
 
 export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
+  // TODO support a keymap register system, and display them by the help dialog
   const cmdOrCtrl = isMacOS ? '⌘' : 'Ctrl'
   const ctrl = isMacOS ? '⌃' : 'Ctrl'
 
