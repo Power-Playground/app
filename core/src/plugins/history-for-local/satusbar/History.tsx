@@ -1,26 +1,20 @@
-import { useContext, useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
+import type { BarItemProps } from '@power-playground/core'
 import { isMacOS } from '@power-playground/core'
 
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Popover } from '../../../components/base/Popover'
-import { MonacoScopeContext } from '../../../contextes/MonacoScope'
 
 import { HistoryDialog } from './HistoryDialog'
 
-export function History() {
+export const History: React.ComponentType<BarItemProps> = ({ shareState }) => {
+  const {
+    setCode
+  } = shareState
   const historyDialogRef = useRef<DialogRef>(null)
 
-  const { editorInstance, store } = useContext(MonacoScopeContext) ?? {}
-  const [, setCode] = store?.code ?? []
-  const [theme] = store?.theme ?? ['light']
-  useEffect(() => {
-    if (!editorInstance) return
-
-    editorInstance.onDidChangeConfiguration(console.log)
-  }, [editorInstance])
   return <>
     <HistoryDialog
-      theme={theme}
       ref={historyDialogRef}
       onChange={ch => setCode?.(ch.code)}
     />

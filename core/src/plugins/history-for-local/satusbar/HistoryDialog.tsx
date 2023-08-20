@@ -1,6 +1,6 @@
 import './HistoryDialog.scss'
 
-import { createRef, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
+import { createRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import Editor from '@monaco-editor/react'
 
 import type { DialogRef } from '../../../components/base/Dialog'
@@ -10,7 +10,6 @@ import type { CodeHistoryItem } from './historyStore'
 import { useCodeHistory } from './historyStore'
 
 export interface HistoryDialogProps {
-  theme: string
   onChange?: (codeHistory: CodeHistoryItem) => void
 }
 
@@ -19,7 +18,10 @@ export interface HistoryDialogProps {
 // TODO configure max history length
 // TODO save and load lang
 // TODO set code history item name
-export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function HistoryDialog({ theme, onChange }, ref) {
+export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function HistoryDialog({ onChange }, ref) {
+  const [theme, setTheme] = useState<string>('light')
+  useEffect(() => onThemeChange(setTheme), [])
+
   const dialogRef = createRef<DialogRef>()
   const [historyList, dispatch] = useCodeHistory()
   const [selected, setSelected] = useState(0)
