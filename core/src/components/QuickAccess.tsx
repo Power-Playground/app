@@ -41,14 +41,17 @@ class Feature<T> {
 function useDocumentEventListener<K extends keyof DocumentEventMap>(
   type: K,
   listener: (this: Document, ev: DocumentEventMap[K]) => any,
+  active?: boolean,
   options?: boolean | AddEventListenerOptions
 ) {
   useEffect(() => {
+    if (active === false) return
+
     document.addEventListener(type, listener, options)
     return () => {
       document.removeEventListener(type, listener, options)
     }
-  }, [type, listener, options])
+  }, [type, listener, options, active])
 }
 
 export interface QuickAccessProps {
@@ -174,6 +177,14 @@ export function QuickAccess(props: QuickAccessProps) {
 
   const quickAccess = useContext(QuickAccessContext)
 
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [visible, setVisible] = useState(false)
+  useLayoutEffect(() => quickAccess.onActiveCommandChange(() => {
+    setVisible(true)
+
+    setTimeout(() => inputRef.current?.focus(), 100)
+  }), [quickAccess])
+
   const results = useActiveHandlerResults(keyword)
   const [activeIndex, setActiveIndex] = useState(0)
   const changeActiveIndex = useCallback<typeof setActiveIndex>((arg0) => {
@@ -228,7 +239,7 @@ export function QuickAccess(props: QuickAccessProps) {
         return next >= results.length ? 0 : next
       })
     }
-  }, [changeActiveIndex, results]))
+  }, [changeActiveIndex, results]), visible)
   useDocumentEventListener('keydown', useCallback(e => {
     if (e.key === 'Escape') {
       quickAccess.asyncFeature.fail(new Error('canceled'))
@@ -240,15 +251,7 @@ export function QuickAccess(props: QuickAccessProps) {
       })
       setVisible(false)
     }
-  }, [quickAccess.asyncFeature]))
-
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [visible, setVisible] = useState(false)
-  useLayoutEffect(() => quickAccess.onActiveCommandChange(() => {
-    setVisible(true)
-
-    setTimeout(() => inputRef.current?.focus(), 100)
-  }), [quickAccess])
+  }, [quickAccess.asyncFeature]), visible)
   return createPortal(
     <div className={
       `monaco-editor ${prefix}`
