@@ -146,7 +146,7 @@ export type UseFunction<T = unknown> = (props: {
   searchParams: URLSearchParams
 }) => Partial<ShareState & T> | void
 
-export interface BarItemProps<S> {
+export interface BarItemProps<S = {}> {
   searchParams: URLSearchParams
   shareState: Partial<ShareState & S>
 }
