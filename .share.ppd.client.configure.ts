@@ -4,12 +4,8 @@ import { HeaderTitle } from './src/components/HeaderTitle'
 import coverLight from './resources/PP_cover_light.svg'
 import coverDark from './resources/PP_cover_dark.svg'
 
-// TODO make picture select by web app inner theme variable
 const aboutMDContent = `
-<picture>
-  <source media='(prefers-color-scheme: dark)' srcset='${coverDark}'>
-  <img alt='Preview Power Playground cover' src='${coverLight}' style='margin: -4px'>
-</picture>
+<img alt='Preview Power Playground cover' src='${coverLight}' style='--d-src: url(${coverDark}); margin: -4px'>
 
 ## 这是什么？
 
