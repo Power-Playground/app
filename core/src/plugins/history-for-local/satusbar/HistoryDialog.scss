@@ -191,6 +191,10 @@
           display: inline-block;
           padding: 0 4px;
           width: 24px;
+          color: #111;
+          html[theme-mode=dark] & {
+            color: #fff;
+          }
           font-size: 14px;
           text-align: center;
           background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 80%);
@@ -202,9 +206,14 @@
           }
         }
         div.delete kbd {
-          background-color: color-mix(in srgb, var(--primary), #f00 30%);
+          color: white;
+          background-color: color-mix(in srgb, var(--primary),
+            color-mix(in srgb, var(--bg-cr), #f00 50%) 80%
+          );
           &:hover {
-            background-color: color-mix(in srgb, var(--primary), #f00 50%);
+            background-color: color-mix(in srgb, var(--primary),
+              color-mix(in srgb, var(--bg-cr), #f00 50%) 30%
+            );
           }
         }
       }
