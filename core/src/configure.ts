@@ -7,6 +7,6 @@ export interface Configure {
   plugins?: Partial<PluginConfigures>
 }
 
-export function defineConfigure(configure?: Configure) {
-  return configure
+export function defineConfigure<T extends Configure>(configure?: T): T {
+  return (configure ?? {}) as T
 }
