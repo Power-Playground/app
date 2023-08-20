@@ -2,6 +2,7 @@ import './HistoryDialog.scss'
 
 import { createRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
 import Editor from '@monaco-editor/react'
+import { messenger } from '@power-playground/core'
 
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
@@ -58,6 +59,10 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
         onChange?.(history)
         dialog?.hide?.()
       }
+      if (e.key === 'Backspace') {
+        // TODO remove history item
+        messenger.then(m => m.display('warning', 'Not implemented yet'))
+      }
     }}
     >
     <Resizable
@@ -109,7 +114,14 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
           >
             <pre className='history__item__code'>{item.code}</pre>
             <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
-            <div className='history__item__enter-tooltip'><kbd>↵</kbd>&nbsp;&nbsp;to use</div>
+            <div className='history__item__tooltip'>
+              <div className='enter'>
+                use by <kbd>↵</kbd>
+              </div>
+              <div className='delete'>
+                delete by <kbd>⌫</kbd>
+              </div>
+            </div>
           </div>
         ))}
       </div>
