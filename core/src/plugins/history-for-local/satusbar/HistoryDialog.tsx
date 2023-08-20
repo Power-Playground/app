@@ -5,6 +5,7 @@ import Editor from '@monaco-editor/react'
 
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
+import { Resizable } from '../../../components/Resizable'
 
 import type { CodeHistoryItem } from './historyStore'
 import { useCodeHistory } from './historyStore'
@@ -36,7 +37,10 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   }), [dialogRef])
 
   const [input, setInput] = useState('')
-  const filteredHistoryList = useMemo(() => historyList.filter(item => item.code.includes(input)), [historyList, input])
+  const [dateRange, setDateRange] = useState<[number, number]>([0, Date.now()])
+  const filteredHistoryList = useMemo(() => historyList.filter(item => {
+    return item.code.includes(input) && item.time >= dateRange[0] && item.time <= dateRange[1]
+  }), [dateRange, historyList, input])
   return <Dialog
     ref={dialogRef}
     className='history'
@@ -56,8 +60,17 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
       }
     }}
     >
-    <div className='history__list'>
-      <div className='ppd-search-box'>
+    <Resizable
+      className='history__list'
+      style={{
+        width: '45%',
+        minWidth: '40%',
+        maxWidth: '80%',
+        '--inner-border-width': '1px'
+      }}
+      resizable={{ right: true }}
+    >
+      <div className='ppd-search-box' onKeyUp={e => e.stopPropagation()}>
         <span className='opts'>
           <button onClickCapture={up}><kbd>↑</kbd></button>
           <button onClickCapture={dn}><kbd>↓</kbd></button>
@@ -68,25 +81,39 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
           value={input}
           onChange={e => setInput(e.target.value)}
         />
+        <span className='opts'>
+          <input
+            type='date'
+            value={new Date(dateRange[0]).toISOString().slice(0, 10)}
+            onChange={e => setDateRange([new Date(e.target.value).getTime(), dateRange[1]])}
+          />
+          <input
+            type='date'
+            value={new Date(dateRange[1]).toISOString().slice(0, 10)}
+            onChange={e => setDateRange([dateRange[0], new Date(e.target.value).getTime()])}
+          />
+        </span>
       </div>
-      {/* TODO Refactor by virtual list */}
-      {filteredHistoryList.map((item, index) => (
-        <div
-          key={item.time}
-          className={'history__item'
-            + (index === selected ? ' history__item--selected' : '')}
-          onClick={() => setSelected(index)}
-          onDoubleClick={() => {
-            onChange?.(item)
-            dialogRef.current?.hide()
-          }}
-        >
-          <pre className='history__item__code'>{item.code}</pre>
-          <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
-          <div className='history__item__enter-tooltip'><kbd>↵</kbd>&nbsp;&nbsp;to use</div>
-        </div>
-      ))}
-    </div>
+      <div className='history__list-items'>
+        {/* TODO Refactor by virtual list */}
+        {filteredHistoryList.map((item, index) => (
+          <div
+            key={item.time}
+            className={'history__item'
+              + (index === selected ? ' history__item--selected' : '')}
+            onClick={() => setSelected(index)}
+            onDoubleClick={() => {
+              onChange?.(item)
+              dialogRef.current?.hide()
+            }}
+          >
+            <pre className='history__item__code'>{item.code}</pre>
+            <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
+            <div className='history__item__enter-tooltip'><kbd>↵</kbd>&nbsp;&nbsp;to use</div>
+          </div>
+        ))}
+      </div>
+    </Resizable>
     <div className='preview'>
       <Editor
         height='100%'
