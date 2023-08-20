@@ -2,7 +2,7 @@ import { atom, getDefaultStore } from 'jotai'
 
 import { defineDevtoolsPanel, definePlugin } from '..'
 
-import { About } from './drawerPanels/about'
+import { About } from './drawerPanels/About.tsx'
 
 declare module '@power-playground/core' {
   interface PluginConfigures {
