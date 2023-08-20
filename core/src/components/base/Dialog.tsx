@@ -77,6 +77,6 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
       </div>
     </div>
   </dialog>, document.body, `dialog-${
-    Math.random().toString(36).slice(2)
+    useState(() => Math.random().toString(36).slice(2))[0]
   }`)
 })
