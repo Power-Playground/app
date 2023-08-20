@@ -13,6 +13,7 @@ export interface DialogProps {
   children?: React.ReactNode
   binding?: (e: KeyboardEvent) => boolean
   handleKeyUpOnOpen?: (e: KeyboardEvent, ref?: DialogRef) => void
+  handleKeyDownOnOpen?: (e: KeyboardEvent, ref?: DialogRef) => void
 
   className?: string
   style?: React.CSSProperties & {
@@ -28,6 +29,7 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
   children,
   binding,
   handleKeyUpOnOpen,
+  handleKeyDownOnOpen,
   className,
   style
 }, ref) {
@@ -55,10 +57,20 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
           hide: () => setOpen(false)
         })
       }
+      const handleKeyDown = (e: KeyboardEvent) => {
+        handleKeyDownOnOpen?.(e, {
+          open: () => setOpen(true),
+          hide: () => setOpen(false)
+        })
+      }
       document.addEventListener('keyup', handleKeyUp)
-      return () => document.removeEventListener('keyup', handleKeyUp)
+      document.addEventListener('keydown', handleKeyDown)
+      return () => {
+        document.removeEventListener('keyup', handleKeyUp)
+        document.removeEventListener('keydown', handleKeyDown)
+      }
     }
-  }, [handleKeyUpOnOpen, open])
+  }, [handleKeyDownOnOpen, handleKeyUpOnOpen, open])
   return createPortal(<dialog
     autoFocus
     open={open}
