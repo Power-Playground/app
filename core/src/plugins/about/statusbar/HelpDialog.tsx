@@ -3,8 +3,8 @@ import './HelpDialog.scss'
 import { forwardRef } from 'react'
 import { isMacOS } from '@power-playground/core'
 
-import type { DialogRef } from '../base/Dialog'
-import { Dialog } from '../base/Dialog'
+import type { DialogRef } from '../../../components/base/Dialog'
+import { Dialog } from '../../../components/base/Dialog'
 
 export const HelpDialog = forwardRef<DialogRef>(function HelpDialog({ }, ref) {
   const cmdOrCtrl = isMacOS ? '⌘' : 'Ctrl'

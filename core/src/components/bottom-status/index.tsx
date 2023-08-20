@@ -4,9 +4,8 @@ import React, { useContext, useMemo } from 'react'
 
 import { ExtensionContext } from '../../contextes/Extension'
 
-import { GoToLC } from './GoToLC.tsx'
-import { Help } from './Help.tsx'
-import { History } from './History.tsx'
+import { GoToLC } from './GoToLC'
+import { History } from './History'
 
 const prefix = 'ppd-bottom-status'
 
@@ -16,10 +15,10 @@ export function BottomStatus() {
     .filter(plugin => plugin.editor?.statusbar)
     .flatMap(plugin => plugin.editor?.statusbar ?? []), [plugins])
 
+  console.log(statusBarItems)
   return <div className={`monaco-editor ${prefix}`}>
-    <Help />
+    {statusBarItems.map((Item, i) => <Item key={i} {...rest} />)}
     <History />
     <GoToLC />
-    {statusBarItems.map((Item, i) => <Item key={i} {...rest} />)}
   </div>
 }

@@ -2,7 +2,8 @@ import { atom, getDefaultStore } from 'jotai'
 
 import { defineDevtoolsPanel, definePlugin } from '..'
 
-import { About } from './drawerPanels/About.tsx'
+import { About } from './drawerPanels/About'
+import { Help } from './statusbar/Help'
 
 declare module '@power-playground/core' {
   interface PluginConfigures {
@@ -21,6 +22,9 @@ export default definePlugin('about', conf => {
     store.set(mdContentAtom, conf.mdContent)
   }
   return {
+    editor: {
+      statusbar: [Help]
+    },
     devtools: { drawerPanels: [
       defineDevtoolsPanel('ppd.about', 'About', 'react', About)
     ] }

@@ -1,8 +1,8 @@
 import { useRef } from 'react'
 
-import { isMacOS } from '../../utils'
-import { Popover } from '../base/Popover'
-import type { DialogRef } from '../Dialog'
+import type { DialogRef } from '../../../components/base/Dialog'
+import { Popover } from '../../../components/base/Popover'
+import { isMacOS } from '../../../utils/isMacOS'
 
 import { HelpDialog } from './HelpDialog'
 
