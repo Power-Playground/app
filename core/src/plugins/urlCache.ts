@@ -31,8 +31,9 @@ export default definePlugin({
           'success', 'Saved to clipboard, you can share it to your friends!'
         ))
         editor.focus()
-        // refactor as executeCommand
+        // TODO refactor as executeCommand
         // setCodeHistory(old => old.concat({ code, time: Date.now() }))
+        messenger.then(m => m.display('warning', 'Code history is building, save to history is not available now.'))
       })
     }
   }
