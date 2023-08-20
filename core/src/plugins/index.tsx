@@ -153,6 +153,27 @@ export interface BarItemProps<S> {
 
 export const defineBarItem: <S>(Comp: React.ComponentType<BarItemProps<S>>) => typeof Comp = comp => comp
 
+export interface StandaloneKeybindingService {
+  // from: https://github.com/microsoft/vscode/blob/df6d78a/src/vs/editor/standalone/browser/simpleServices.ts#L337
+  // Passing undefined with `-` prefixing the commandId, will unset the existing keybinding.
+  // e.g. `addDynamicKeybinding('-fooCommand', undefined, () => {})`
+  // this is technically not defined in the source types, but still works. We can't pass `0`
+  // because then the underlying method exits early.
+  // See: https://github.com/microsoft/vscode/blob/df6d78a/src/vs/base/common/keyCodes.ts#L414
+  /**
+   * If your monaco editor version is up more than 0.22.3, you can use this method to add dynamic keybinding.
+   */
+  addDynamicKeybinding(
+    commandId: string,
+    keybinding: number | undefined,
+    handler: MonacoEditor.editor.ICommandHandler,
+    when?: string,
+  ): MonacoEditor.IDisposable
+}
+export interface IStandaloneCodeEditor extends MonacoEditor.editor.IStandaloneCodeEditor {
+  _standaloneKeybindingService: StandaloneKeybindingService
+}
+
 export type Editor<X extends {
   ExtShareState: unknown
 } = {
@@ -168,7 +189,7 @@ export type Editor<X extends {
   ) => void
   preload?: (monaco: typeof MonacoEditor) => Dispose | void
   load?: (
-    editorInstance: MonacoEditor.editor.IStandaloneCodeEditor,
+    editorInstance: IStandaloneCodeEditor,
     monaco: typeof MonacoEditor
   ) => void | Promise<void>
 
