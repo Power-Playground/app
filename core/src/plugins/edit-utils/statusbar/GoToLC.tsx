@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 
-import { MonacoScopeContext } from '../../contextes/MonacoScope'
-import { Popover } from '../base/Popover'
+import { Popover } from '../../../components/base/Popover'
+import { MonacoScopeContext } from '../../../contextes/MonacoScope'
 
 export function GoToLC() {
   const { editorInstance } = useContext(MonacoScopeContext) ?? {}
