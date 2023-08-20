@@ -13,7 +13,7 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { ExtensionContext } from '../contextes/Extension'
 import { MonacoScopeContext } from '../contextes/MonacoScope'
-import type { Plugin, ShareState } from '../plugins'
+import type { IStandaloneCodeEditor, Plugin, ShareState } from '../plugins'
 import { classnames } from '../utils'
 
 import { BottomStatus } from './bottom-status'
@@ -146,7 +146,10 @@ export default function EditorZone(props: {
             onChange={code => setCode(code ?? '')}
             onMount={(editor, monaco) => {
               plugins
-                .forEach(plugin => plugin.editor?.load?.(editor, monaco))
+                .forEach(plugin => plugin.editor?.load?.(
+                  editor as IStandaloneCodeEditor,
+                  monaco
+                ))
               setEditor(editor)
               editor.focus()
             }}
