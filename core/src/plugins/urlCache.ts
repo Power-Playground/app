@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { copyToClipboard, definePlugin, messenger } from '@power-playground/core'
 
-import { setCodeHistory } from '../components/bottom-status/historyStore'
-
 export default definePlugin({
   editor: {
     use: [() => {
@@ -33,7 +31,8 @@ export default definePlugin({
           'success', 'Saved to clipboard, you can share it to your friends!'
         ))
         editor.focus()
-        setCodeHistory(old => old.concat({ code, time: Date.now() }))
+        // refactor as executeCommand
+        // setCodeHistory(old => old.concat({ code, time: Date.now() }))
       })
     }
   }

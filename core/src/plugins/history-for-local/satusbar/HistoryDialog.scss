@@ -1,0 +1,99 @@
+.history {
+  &.ppd-dialog {
+    > .ppd-dialog__container {
+      display: flex;
+      flex-direction: column;
+      height: 80vh;
+    }
+    > .ppd-dialog__container > .ppd-dialog__content {
+      flex-grow: 1;
+      height: 0;
+      padding: 0;
+
+      display: flex;
+    }
+  }
+  .history__list {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 25vw;
+    max-width: 25vw;
+    overflow: overlay;
+    > .history__item {
+      position: relative;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #0002;
+      cursor: pointer;
+      transition: .1s;
+      &:hover {
+        background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 80%);
+      }
+      &--selected {
+        background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 60%);
+      }
+      &:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+      }
+      > .history__item__code {
+        margin: 0;
+        padding: 0 10px;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        // limit 4 line
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+      }
+      > .history__item__time {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding-left: 10px;
+        height: 23px;
+        font-size: 12px;
+        color: color-mix(in srgb, var(--fr-cr) 40%, transparent);
+      }
+      > .history__item__enter-tooltip {
+        position: absolute;
+        right: 15px;
+        bottom: 5px;
+        visibility: hidden;
+        opacity: 0;
+        user-select: none;
+        transition: .1s;
+        kbd {
+          --inner-comp-bg-cr: #fff8;
+          html[theme-mode=dark] & {
+            --inner-comp-bg-cr: #5558;
+          }
+          position: relative;
+          display: inline-block;
+          padding: 0 4px;
+          width: 24px;
+          font-size: 14px;
+          text-align: center;
+          background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 80%);
+          border: 1px solid var(--primary);
+          border-radius: 4px;
+          transition: .1s;
+          &:hover {
+            background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 60%);
+          }
+        }
+      }
+      &--selected {
+        > .history__item__enter-tooltip {
+          visibility: visible;
+          opacity: 1;
+        }
+      }
+    }
+  }
+  .preview {
+    flex-grow: 1;
+  }
+}

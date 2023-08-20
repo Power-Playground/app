@@ -12,6 +12,7 @@ export interface DialogProps {
   title?: React.ReactNode
   children?: React.ReactNode
   binding?: (e: KeyboardEvent) => boolean
+  handleKeyUpOnOpen?: (e: KeyboardEvent, ref?: DialogRef) => void
 
   className?: string
   style?: React.CSSProperties & {
@@ -26,6 +27,7 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
   title,
   children,
   binding,
+  handleKeyUpOnOpen,
   className,
   style
 }, ref) {
@@ -47,11 +49,16 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
     if (open) {
       const handleKeyUp = (e: KeyboardEvent) => {
         if (e.key === 'Escape') setOpen(false)
+
+        handleKeyUpOnOpen?.(e, {
+          open: () => setOpen(true),
+          hide: () => setOpen(false)
+        })
       }
       document.addEventListener('keyup', handleKeyUp)
       return () => document.removeEventListener('keyup', handleKeyUp)
     }
-  }, [open])
+  }, [handleKeyUpOnOpen, open])
   return createPortal(<dialog
     autoFocus
     open={open}
@@ -69,5 +76,7 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
         {open && <>{children}</>}
       </div>
     </div>
-  </dialog>, document.body, 'help-dialog')
+  </dialog>, document.body, `dialog-${
+    Math.random().toString(36).slice(2)
+  }`)
 })

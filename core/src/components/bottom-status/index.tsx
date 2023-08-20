@@ -4,8 +4,6 @@ import React, { useContext, useMemo } from 'react'
 
 import { ExtensionContext } from '../../contextes/Extension'
 
-import { History } from './History'
-
 const prefix = 'ppd-bottom-status'
 
 export function BottomStatus() {
@@ -16,6 +14,5 @@ export function BottomStatus() {
 
   return <div className={`monaco-editor ${prefix}`}>
     {statusBarItems.map((Item, i) => <Item key={i} {...rest} />)}
-    <History />
   </div>
 }

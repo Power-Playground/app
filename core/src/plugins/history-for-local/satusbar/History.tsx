@@ -1,9 +1,9 @@
 import { useContext, useEffect, useRef } from 'react'
+import { isMacOS } from '@power-playground/core'
 
-import { MonacoScopeContext } from '../../contextes/MonacoScope'
-import { isMacOS } from '../../utils'
-import { Popover } from '../base/Popover'
-import type { DialogRef } from '../Dialog'
+import type { DialogRef } from '../../../components/base/Dialog'
+import { Popover } from '../../../components/base/Popover'
+import { MonacoScopeContext } from '../../../contextes/MonacoScope'
 
 import { HistoryDialog } from './HistoryDialog'
 
