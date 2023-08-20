@@ -24,8 +24,9 @@ export function GoToLC() {
     onClick={() => {
       if (!editorInstance) return
 
+      // From https://stackoverflow.com/a/64891945/15375383
       editorInstance.focus()
-      editorInstance.trigger('editor', 'editor.action.quickCommand', {})
+      editorInstance.trigger('whatever', 'editor.action.gotoLine', {})
     }}
     >
     <div className='line-and-column'>{line}:{column}</div>
