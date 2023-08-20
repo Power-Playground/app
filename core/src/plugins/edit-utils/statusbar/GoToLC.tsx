@@ -4,6 +4,7 @@ import { Popover } from '../../../components/base/Popover'
 import { MonacoScopeContext } from '../../../contextes/MonacoScope'
 
 export function GoToLC() {
+  // TODO remove MonacoScopeContext use
   const { editorInstance } = useContext(MonacoScopeContext) ?? {}
 
   const [[line, column], setLineAndColumn] = useState<[number, number]>([0, 0])
