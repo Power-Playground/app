@@ -1,6 +1,10 @@
 import { defineConfigure } from '@power-playground/core'
-import { HeaderTitle } from './src/components/HeaderTitle'
+import { mergeAll } from 'ramda'
 
-export default defineConfigure({
-  HeaderTitle: HeaderTitle
-})
+import sharePpdClientConfigure from './.share.ppd.client.configure.ts'
+
+export default mergeAll([
+  defineConfigure({
+  }),
+  sharePpdClientConfigure
+])
