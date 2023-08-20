@@ -5,6 +5,9 @@
       flex-direction: column;
       height: 80vh;
     }
+    > .ppd-dialog__container > .ppd-dialog__title {
+      z-index: 1000;
+    }
     > .ppd-dialog__container > .ppd-dialog__content {
       flex-grow: 1;
       height: 0;
@@ -14,12 +17,78 @@
     }
   }
   .history__list {
+    position: relative;
     display: flex;
     flex-direction: column;
 
     min-width: 25vw;
     max-width: 25vw;
     overflow: overlay;
+    > .ppd-search-box {
+      z-index: 100;
+      display: flex;
+      align-items: center;
+
+      position: sticky;
+      top: 0;
+      min-height: 36px;
+      max-height: 36px;
+      background-color: var(--bg-cr);
+      border-bottom: 1px solid #0002;
+      box-shadow: 0 0 8px #0002;
+      > .opts {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        > button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 48px;
+          height: 100%;
+          border: none;
+          outline: none;
+          background-color: transparent;
+          cursor: pointer;
+          font-size: 18px;
+          font-weight: bold;
+          transition: .1s;
+          &:hover {
+            background-color: #0001;
+          }
+          &:active {
+            background-color: #0002;
+          }
+          html[theme-mode=dark] & {
+            &:hover {
+              background-color: #fff1;
+            }
+            &:active {
+              background-color: #fff2;
+            }
+          }
+        }
+      }
+      > input {
+        flex-grow: 1;
+        padding: 0 10px;
+        height: 100%;
+        font-size: 14px;
+        background-color: transparent;
+        border: none;
+        outline: none;
+        transition: .1s;
+        &:focus {
+          background-color: #0001;
+        }
+        html[theme-mode=dark] & {
+          &:focus {
+            background-color: #fff1;
+          }
+        }
+      }
+    }
     > .history__item {
       position: relative;
       justify-content: space-between;
@@ -68,7 +137,7 @@
         position: absolute;
         top: 0;
         right: 0;
-        padding-left: 50px;
+        padding-left: 100px;
         width: 100px;
         height: 100%;
         visibility: hidden;

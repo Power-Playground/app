@@ -1,6 +1,6 @@
 import './HistoryDialog.scss'
 
-import { createRef, forwardRef, useImperativeHandle, useMemo, useState } from 'react'
+import { createRef, forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react'
 import Editor from '@monaco-editor/react'
 
 import type { DialogRef } from '../../../components/base/Dialog'
@@ -23,11 +23,18 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   const dialogRef = createRef<DialogRef>()
   const [historyList, dispatch] = useCodeHistory()
   const [selected, setSelected] = useState(0)
+  const [up, dn] = [
+    useCallback(() => setSelected(selected => (selected + historyList.length - 1) % historyList.length), [historyList]),
+    useCallback(() => setSelected(selected => (selected + 1) % historyList.length), [historyList])
+  ]
   const history = useMemo(() => historyList[selected], [historyList, selected])
   useImperativeHandle(ref, () => ({
     open: () => dialogRef.current?.open(),
     hide: () => dialogRef.current?.hide()
   }), [dialogRef])
+
+  const [input, setInput] = useState('')
+  const filteredHistoryList = useMemo(() => historyList.filter(item => item.code.includes(input)), [historyList, input])
   return <Dialog
     ref={dialogRef}
     className='history'
@@ -36,20 +43,11 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
     }}
     title={<>
       History
-      &nbsp;&nbsp;
-      <span><code>↑/↓</code>(选择)</span>
     </>}
     binding={e => e.key === 'h' && (e.metaKey || e.ctrlKey)}
     handleKeyUpOnOpen={(e, dialog) => {
-      // up
-      if (e.key === 'ArrowUp') {
-        setSelected(selected => (selected + historyList.length - 1) % historyList.length)
-      }
-      // down
-      if (e.key === 'ArrowDown') {
-        setSelected(selected => (selected + 1) % historyList.length)
-      }
-      // enter
+      if (e.key === 'ArrowUp') up()
+      if (e.key === 'ArrowDown') dn()
       if (e.key === 'Enter') {
         onChange?.(history)
         dialog?.hide?.()
@@ -57,8 +55,20 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
     }}
     >
     <div className='history__list'>
+      <div className='ppd-search-box'>
+        <span className='opts'>
+          <button onClickCapture={up}><kbd>↑</kbd></button>
+          <button onClickCapture={dn}><kbd>↓</kbd></button>
+        </span>
+        <input
+          type='text'
+          placeholder='Search by code content'
+          value={input}
+          onChange={e => setInput(e.target.value)}
+        />
+      </div>
       {/* TODO Refactor by virtual list */}
-      {historyList.map((item, index) => (
+      {filteredHistoryList.map((item, index) => (
         <div
           key={item.time}
           className={'history__item'
