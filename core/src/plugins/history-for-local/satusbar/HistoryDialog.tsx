@@ -7,6 +7,7 @@ import { messenger } from '@power-playground/core'
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
 import { Resizable } from '../../../components/Resizable'
+import { scrollIntoViewIfNeeded } from '../../../utils/scrollIntoViewIfNeeded.ts'
 
 import type { CodeHistoryItem } from './historyStore'
 import { useCodeHistory } from './historyStore'
@@ -37,32 +38,6 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   const dialogRef = createRef<DialogRef>()
   const [selected, setSelected] = useState(0)
   const changeSelected = useCallback<typeof setSelected>(arg0 => {
-    function scrollIntoViewIfNeeded(el?: HTMLElement | null) {
-      if (!el) return
-
-      const parent = el.parentElement!
-
-      if (el.offsetTop < parent.scrollTop) {
-        parent.scrollTo({
-          top: el.offsetTop - parent.offsetTop,
-          behavior: 'smooth'
-        })
-      }
-
-      const { top, bottom } = el.getBoundingClientRect()
-      const { top: parentTop, bottom: parentBottom } = parent.getBoundingClientRect()
-      if (top < parentTop) {
-        parent.scrollTo({
-          top: el.offsetTop - parent.offsetTop,
-          behavior: 'smooth'
-        })
-      } else if (bottom > parentBottom) {
-        parent.scrollTo({
-          top: el.offsetTop - parent.offsetTop + bottom - parentBottom,
-          behavior: 'smooth'
-        })
-      }
-    }
     const scope = 1
     setSelected(prevIndex => {
       const nextIndex = typeof arg0 === 'function' ? arg0(prevIndex) : arg0
