@@ -1,6 +1,6 @@
 import './HistoryDialog.scss'
 
-import { createRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react'
+import { createRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
 import { messenger } from '@power-playground/core'
 
@@ -24,24 +24,69 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
+  const [_historyList, dispatch] = useCodeHistory()
+
+  const [input, setInput] = useState('')
+  const [dateRange, setDateRange] = useState<[number, number]>([0, Date.now()])
+  const historyList = useMemo(() => _historyList.filter(item => {
+    return item.code.includes(input) && item.time >= dateRange[0] && item.time <= dateRange[1]
+  }), [dateRange, _historyList, input])
+
+  const focusItemsRef = useRef<(HTMLDivElement | null)[]>([])
+
   const dialogRef = createRef<DialogRef>()
-  const [historyList, dispatch] = useCodeHistory()
   const [selected, setSelected] = useState(0)
+  const changeSelected = useCallback<typeof setSelected>(arg0 => {
+    function scrollIntoViewIfNeeded(el?: HTMLElement | null) {
+      if (!el) return
+
+      const parent = el.parentElement!
+
+      if (el.offsetTop < parent.scrollTop) {
+        parent.scrollTo({
+          top: el.offsetTop - parent.offsetTop,
+          behavior: 'smooth'
+        })
+      }
+
+      const { top, bottom } = el.getBoundingClientRect()
+      const { top: parentTop, bottom: parentBottom } = parent.getBoundingClientRect()
+      if (top < parentTop) {
+        parent.scrollTo({
+          top: el.offsetTop - parent.offsetTop,
+          behavior: 'smooth'
+        })
+      } else if (bottom > parentBottom) {
+        parent.scrollTo({
+          top: el.offsetTop - parent.offsetTop + bottom - parentBottom,
+          behavior: 'smooth'
+        })
+      }
+    }
+    const scope = 1
+    setSelected(prevIndex => {
+      const nextIndex = typeof arg0 === 'function' ? arg0(prevIndex) : arg0
+      scrollIntoViewIfNeeded(focusItemsRef.current[
+        nextIndex > prevIndex
+          ? Math.min(nextIndex + scope, historyList.length - 1)
+          : Math.max(nextIndex - scope, 0)
+      ])
+      return nextIndex
+    })
+  }, [historyList.length])
   const [up, dn] = [
-    useCallback(() => setSelected(selected => (selected + historyList.length - 1) % historyList.length), [historyList]),
-    useCallback(() => setSelected(selected => (selected + 1) % historyList.length), [historyList])
+    useCallback(() => {
+      changeSelected(selected => (selected + historyList.length - 1) % historyList.length)
+    }, [changeSelected, historyList]),
+    useCallback(() => {
+      changeSelected(selected => (selected + 1) % historyList.length)
+    }, [changeSelected, historyList])
   ]
   const history = useMemo(() => historyList[selected], [historyList, selected])
   useImperativeHandle(ref, () => ({
     open: () => dialogRef.current?.open(),
     hide: () => dialogRef.current?.hide()
   }), [dialogRef])
-
-  const [input, setInput] = useState('')
-  const [dateRange, setDateRange] = useState<[number, number]>([0, Date.now()])
-  const filteredHistoryList = useMemo(() => historyList.filter(item => {
-    return item.code.includes(input) && item.time >= dateRange[0] && item.time <= dateRange[1]
-  }), [dateRange, historyList, input])
   return <Dialog
     ref={dialogRef}
     className='history'
@@ -53,8 +98,6 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
     </>}
     binding={e => e.key === 'h' && (e.metaKey || e.ctrlKey)}
     handleKeyUpOnOpen={(e, dialog) => {
-      if (e.key === 'ArrowUp') up()
-      if (e.key === 'ArrowDown') dn()
       if (e.key === 'Enter') {
         onChange?.(history)
         dialog?.hide?.()
@@ -63,6 +106,10 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
         // TODO remove history item
         messenger.then(m => m.display('warning', 'Not implemented yet'))
       }
+    }}
+    handleKeyDownOnOpen={e => {
+      if (e.key === 'ArrowUp') up()
+      if (e.key === 'ArrowDown') dn()
     }}
     >
     <Resizable
@@ -77,8 +124,14 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
     >
       <div className='ppd-search-box' onKeyUp={e => e.stopPropagation()}>
         <span className='opts'>
-          <button onClickCapture={up}><kbd>↑</kbd></button>
-          <button onClickCapture={dn}><kbd>↓</kbd></button>
+          <button onClick={up}
+                  onDoubleClick={() => changeSelected(0)}>
+            <kbd>↑</kbd>
+          </button>
+          <button onClick={dn}
+                  onDoubleClick={() => changeSelected(historyList.length - 1)}>
+            <kbd>↓</kbd>
+          </button>
         </span>
         <input
           type='text'
@@ -101,12 +154,13 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
       </div>
       <div className='history__list-items'>
         {/* TODO Refactor by virtual list */}
-        {filteredHistoryList.map((item, index) => (
+        {historyList.map((item, index) => (
           <div
+            ref={el => focusItemsRef.current[index] = el}
             key={item.time}
             className={'history__item'
               + (index === selected ? ' history__item--selected' : '')}
-            onClick={() => setSelected(index)}
+            onClick={() => changeSelected(index)}
             onDoubleClick={() => {
               onChange?.(item)
               dialogRef.current?.hide()
