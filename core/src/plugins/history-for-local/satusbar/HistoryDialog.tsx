@@ -66,6 +66,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
           onClick={() => setSelected(index)}
           onDoubleClick={() => {
             onChange?.(item)
+            dialogRef.current?.hide()
           }}
         >
           <pre className='history__item__code'>{item.code}</pre>
