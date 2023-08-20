@@ -73,6 +73,14 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
     </>}
     binding={e => e.key === 'h' && (e.metaKey || e.ctrlKey)}
     handleKeyUpOnOpen={(e, dialog) => {
+      // alt + up
+      if (e.key === 'ArrowUp' && e.ctrlKey) {
+        changeSelected(0)
+      }
+      // alt + down
+      if (e.key === 'ArrowDown' && e.ctrlKey) {
+        changeSelected(historyList.length - 1)
+      }
       if (e.key === 'Enter') {
         onChange?.(history)
         dialog?.hide?.()
