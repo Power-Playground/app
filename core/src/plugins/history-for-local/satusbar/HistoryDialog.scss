@@ -117,8 +117,11 @@
     flex-direction: column;
 
     min-width: 25vw;
-    overflow: overlay;
+    overflow-y: overlay;
+    overflow-x: hidden;
     > .history__item {
+      display: flex;
+      flex-direction: column;
       position: relative;
       justify-content: space-between;
       padding: 5px 0;
@@ -131,12 +134,16 @@
       &--selected {
         padding: 15px 0;
         background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 60%);
+        &:hover {
+          background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
+        }
       }
       &:last-child {
         border-bottom: none;
         margin-bottom: 0;
       }
       > .history__item__code {
+        flex-grow: 1;
         margin: 0;
         padding: 0 10px;
         font-size: 12px;
@@ -169,7 +176,7 @@
         gap: 5px;
         position: absolute;
         top: 0;
-        right: 0;
+        right: -20px;
         padding-left: 100px;
         padding-right: 15px;
         width: 100px;
@@ -217,10 +224,11 @@
           }
         }
       }
-      &--selected {
+      &--selected, &--swiped {
         > .history__item__tooltip {
           visibility: visible;
           opacity: 1;
+          right: 0;
         }
       }
     }

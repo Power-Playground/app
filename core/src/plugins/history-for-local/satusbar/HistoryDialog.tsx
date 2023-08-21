@@ -2,7 +2,7 @@ import './HistoryDialog.scss'
 
 import { createRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import Editor from '@monaco-editor/react'
-import { messenger } from '@power-playground/core'
+import { classnames, messenger } from '@power-playground/core'
 
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
@@ -62,6 +62,9 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
     open: () => dialogRef.current?.open(),
     hide: () => dialogRef.current?.hide()
   }), [dialogRef])
+
+  const [swipedItems, setSwipedItems] = useState<number[]>([])
+
   return <Dialog
     ref={dialogRef}
     className='history'
@@ -141,29 +144,53 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
           <div
             ref={el => focusItemsRef.current[index] = el}
             key={item.time}
-            className={'history__item'
-              + (index === selected ? ' history__item--selected' : '')}
+            className={classnames(
+              'history__item',
+              index === selected && 'history__item--selected',
+              swipedItems.includes(index) && 'history__item--swiped'
+            )}
             onClick={() => changeSelected(index)}
             onDoubleClick={() => {
               onChange?.(item)
               dialogRef.current?.hide()
+            }}
+            onWheel={e => {
+              const delta = Math.abs(e.deltaX) < 5 ? 0 : e.deltaX
+              focusItemsRef.current[index]!.style.transform = `translateX(${
+                -Math.floor(delta / 3)
+              }px)`
+              console.log(delta)
+              if (delta > 20) {
+                setSwipedItems(prev => [...prev, index])
+              }
+              if (delta < -20) {
+                setSwipedItems(prev => prev.filter(i => i !== index))
+              }
             }}
           >
             <pre className='history__item__code'>{item.code}</pre>
             <div className='history__item__time'>{new Date(item.time).toLocaleString()}</div>
             <div className='history__item__tooltip'>
               <div className='enter'>
-                use by <kbd>↵</kbd>
+                use by
+                <kbd onClick={() => {
+                  onChange?.(item)
+                  dialogRef.current?.hide()
+                }}>↵</kbd>
               </div>
               <div className='delete'>
-                delete by <kbd>⌫</kbd>
+                delete by
+                <kbd onClick={() => {
+                  // TODO remove history item
+                  messenger.then(m => m.display('warning', 'Not implemented yet'))
+                }}>⌫</kbd>
               </div>
             </div>
           </div>
         ))}
       </div>
     </Resizable>
-    <div className='preview'>
+    <div className='preview' onKeyUp={e => e.stopPropagation()}>
       <Editor
         height='100%'
         width='100%'
