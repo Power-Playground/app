@@ -3,6 +3,8 @@ import './QuickAccess.scss'
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import { scrollIntoViewIfNeeded } from '../utils/scrollIntoViewIfNeeded.ts'
+
 class Feature<T> {
   static create<T>() {
     return new Feature<T>()
@@ -189,27 +191,6 @@ export function QuickAccess(props: QuickAccessProps) {
   const results = useActiveHandlerResults(keyword)
   const [activeIndex, setActiveIndex] = useState(0)
   const changeActiveIndex = useCallback<typeof setActiveIndex>((arg0) => {
-    function scrollIntoViewIfNeeded(el: HTMLElement) {
-      if (!el) return
-
-      const rect = el.getBoundingClientRect()
-      const { top, bottom } = rect
-      const parent = el.parentElement!
-      const { top: parentTop, bottom: parentBottom } = parent.getBoundingClientRect()
-      if (top < parentTop) {
-        el.scrollIntoView({
-          block: 'start',
-          inline: 'nearest',
-          behavior: 'smooth'
-        })
-      } else if (bottom > parentBottom) {
-        el.scrollIntoView({
-          block: 'end',
-          inline: 'nearest',
-          behavior: 'smooth'
-        })
-      }
-    }
     if (typeof arg0 === 'function') {
       setActiveIndex(i => {
         const index = arg0(i)
