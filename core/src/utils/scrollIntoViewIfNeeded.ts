@@ -19,7 +19,7 @@ export function scrollIntoViewIfNeeded(el?: HTMLElement | null) {
     })
   } else if (bottom > parentBottom) {
     parent.scrollTo({
-      top: el.offsetTop - parent.offsetTop + bottom - parentBottom,
+      top: el.offsetTop - parent.offsetTop - parent.clientHeight + el.clientHeight,
       behavior: 'smooth'
     })
   }
