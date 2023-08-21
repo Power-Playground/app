@@ -159,7 +159,6 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
               focusItemsRef.current[index]!.style.transform = `translateX(${
                 -Math.floor(delta / 3)
               }px)`
-              console.log(delta)
               if (delta > 20) {
                 setSwipedItems(prev => [...prev, index])
               }
