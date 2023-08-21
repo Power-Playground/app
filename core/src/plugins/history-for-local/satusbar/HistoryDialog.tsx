@@ -163,41 +163,41 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
             }}
             onWheel={e => {
               if (index === selected) return
+              const unit = 100
 
-              let delta = Math.floor((e.deltaX > 40 ? 40 : e.deltaX) / 2)
+              const delta = e.deltaX
 
               const _item = focusItemsRef.current[index]!
               const item = _item as typeof _item & {
-                isCleared?: boolean
-                clearSwipingTimer?: NodeJS.Timeout
+                moveX?: number
+                clearSwipingTimer?: number
               }
-
-              console.log(delta)
-              if (item.classList.contains('history__item--swiped')) {
-                delta = Math.min(delta, 0)
-              }
-              if (item.isCleared) return
-
-              item.style.setProperty('--swipe-delta-x', `${delta}px`)
-
-              // 滑动时设置样式为 swiping ，当 100ms 后没有滑动时，移除 swiping 样式
               item.clearSwipingTimer && clearTimeout(item.clearSwipingTimer)
+              if (item.moveX === undefined) {
+                item.moveX = 0
+              }
+              item.moveX += delta
+              if (item.moveX > 0) item.moveX = 0
+              if (item.moveX < -unit) item.moveX = -unit
+              item.style.setProperty('--swipe-start-offset-x', `${item.moveX}px`)
+
+
+              if (item.moveX === 0) {
+                setSwipedItems(prev => [...prev, index])
+
+                item.classList.remove('history__item--swiping')
+                return
+              }
+              if (item.moveX === -unit) {
+                setSwipedItems(prev => prev.filter(i => i !== index))
+
+                item.classList.remove('history__item--swiping')
+                return
+              }
+              item.classList.add('history__item--swiping')
               item.clearSwipingTimer = setTimeout(() => {
                 item.classList.remove('history__item--swiping')
-              }, 10)
-              item.classList.add('history__item--swiping')
-
-              // 当滑动距离为 20 时，设置元素为 swiped 状态
-              if (delta === 20) {
-                setSwipedItems(prev => [...new Set([...prev, index])])
-              }
-              if (delta < -10) {
-                setSwipedItems(prev => prev.filter(i => i !== index))
-                item.isCleared = true
-                item.clearSwipingTimer && clearTimeout(item.clearSwipingTimer)
-                item.classList.remove('history__item--swiping')
-                setTimeout(() => item.isCleared = false, 100)
-              }
+              }, 100) as unknown as number
             }}
           >
             <pre className='history__item__code'>{item.code}</pre>
