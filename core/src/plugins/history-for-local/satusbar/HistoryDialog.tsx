@@ -142,7 +142,12 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
         {/* TODO Refactor by virtual list */}
         {historyList.map((item, index) => (
           <div
-            ref={el => focusItemsRef.current[index] = el}
+            ref={el => {
+              focusItemsRef.current[index] = el
+              if (el) {
+                el.addEventListener('wheel', e => e.preventDefault(), { passive: false })
+              }
+            }}
             key={item.time}
             className={classnames(
               'history__item',
