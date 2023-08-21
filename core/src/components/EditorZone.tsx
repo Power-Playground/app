@@ -69,6 +69,13 @@ export default function EditorZone(props: {
   useEffect(() => {
     if (!monaco) return
 
+    const dispose = plugins.map(plugin => plugin?.editor?.preload?.(monaco))
+    return () => dispose.forEach(func => func?.())
+  }, [monaco, plugins])
+  useEffect(() => {
+    if (!monaco || !editor) return
+
+    const _editor = editor as IStandaloneCodeEditor
     try {
       monaco.editor.addKeybindingRule({
         keybinding: monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
@@ -76,11 +83,23 @@ export default function EditorZone(props: {
       })
     } catch (e) {
       console.error(e)
+      // support lower version monaco editor
+      // TODO refactor as special version polyfill
+      const keybindings = _editor._standaloneKeybindingService.getKeybindings()
+      // remove old keybinding
+      const index = keybindings.findIndex(kb => kb.command === 'editor.action.quickCommand')
+      if (index !== -1) {
+        keybindings.splice(index, 1)
+      }
+      _editor._standaloneKeybindingService.addDynamicKeybinding(
+        'editor.action.quickCommand',
+        monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.KeyP,
+        () => {
+          editor.trigger('whatever', 'editor.action.quickCommand', {})
+        }
+      )
     }
-
-    const dispose = plugins.map(plugin => plugin?.editor?.preload?.(monaco))
-    return () => dispose.forEach(func => func?.())
-  }, [monaco, plugins])
+  }, [editor, monaco])
   plugins
     .forEach(plugin => plugin?.editor?.useShare?.(shareState, monaco))
 

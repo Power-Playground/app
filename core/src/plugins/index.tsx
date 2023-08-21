@@ -169,6 +169,7 @@ export interface StandaloneKeybindingService {
     handler: MonacoEditor.editor.ICommandHandler,
     when?: string,
   ): MonacoEditor.IDisposable
+  getKeybindings(): MonacoEditor.editor.IKeybindingRule[]
 }
 export interface IStandaloneCodeEditor extends MonacoEditor.editor.IStandaloneCodeEditor {
   _standaloneKeybindingService: StandaloneKeybindingService
