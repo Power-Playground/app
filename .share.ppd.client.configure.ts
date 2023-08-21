@@ -1,8 +1,9 @@
 import { defineConfigure } from '@power-playground/core'
 
-import { HeaderTitle } from './src/components/HeaderTitle'
-import coverLight from './resources/PP_cover_light.svg'
 import coverDark from './resources/PP_cover_dark.svg'
+import coverLight from './resources/PP_cover_light.svg'
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { HeaderTitle } from './src/components/HeaderTitle'
 
 const aboutMDContent = `
 <img alt='Preview Power Playground cover' src='${coverLight}' style='--d-src: url(${coverDark}); margin: -4px'>
