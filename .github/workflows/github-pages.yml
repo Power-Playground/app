@@ -42,14 +42,13 @@ jobs:
           BASE_URL: app
         run: |
           yarn build
+          tar -czvf dist.tar.gz dist vercel.json
 
       - name: upload dist and vercel.json
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: |
-            dist
-            vercel.json
+          path: dist.tar.gz
 
 
   deploy-to-github:
@@ -65,6 +64,8 @@ jobs:
           name: dist
           path: .
 
+      - name: Unzip dist
+        run: tar -xzvf dist.tar.gz
       - name: Deploy to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v3
         with:
@@ -89,6 +90,8 @@ jobs:
           name: dist
           path: .
 
+      - name: Unzip dist
+        run: tar -xzvf dist.tar.gz
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
