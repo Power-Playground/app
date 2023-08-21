@@ -3,7 +3,7 @@ import { configDotenv } from 'dotenv'
 import fg from 'fast-glob'
 import path from 'node:path'
 import { visualizer } from 'rollup-plugin-visualizer'
-import { defineConfig } from 'vite'
+import { defineConfig, normalizePath } from 'vite'
 import { cdn } from 'vite-plugin-cdn2'
 import { unpkg } from 'vite-plugin-cdn2/url.js'
 import inspect from 'vite-plugin-inspect'
@@ -77,7 +77,7 @@ const pluginEntries = fg.globSync([
           .replace('src/plugins/', 'inner/')
           .replace('ppd-plugins/', 'outer/')
       }`
-    ] = path.resolve(__dirname, file)
+    ] = normalizePath(path.resolve(__dirname, file))
     return acc
   }, {} as Record<string, string>)
 
