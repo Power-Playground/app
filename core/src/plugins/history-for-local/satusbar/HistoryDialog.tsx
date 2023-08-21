@@ -173,6 +173,12 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
                 moveX?: number
                 clearSwipingTimer?: number
               }
+              if (Math.abs(e.deltaX) < 5 && (
+                !item.classList.contains('history__item--swiping')
+                || !item.classList.contains('history__item--swiped')
+              )) {
+                return
+              }
               item.clearSwipingTimer && clearTimeout(item.clearSwipingTimer)
               if (item.moveX === undefined) {
                 item.moveX = 0
