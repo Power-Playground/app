@@ -145,7 +145,9 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
             ref={el => {
               focusItemsRef.current[index] = el
               if (el) {
-                el.addEventListener('wheel', e => e.preventDefault(), { passive: false })
+                el.addEventListener('wheel', e => {
+                  if (e.deltaX !== 0) e.preventDefault()
+                }, { passive: false })
               }
             }}
             key={item.time}
@@ -160,15 +162,41 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
               dialogRef.current?.hide()
             }}
             onWheel={e => {
-              const delta = Math.abs(e.deltaX) < 5 ? 0 : e.deltaX
-              focusItemsRef.current[index]!.style.transform = `translateX(${
-                -Math.floor(delta / 3)
-              }px)`
-              if (delta > 20) {
-                setSwipedItems(prev => [...prev, index])
+              if (index === selected) return
+
+              let delta = Math.floor((e.deltaX > 40 ? 40 : e.deltaX) / 2)
+
+              const _item = focusItemsRef.current[index]!
+              const item = _item as typeof _item & {
+                isCleared?: boolean
+                clearSwipingTimer?: NodeJS.Timeout
               }
-              if (delta < -20) {
+
+              console.log(delta)
+              if (item.classList.contains('history__item--swiped')) {
+                delta = Math.min(delta, 0)
+              }
+              if (item.isCleared) return
+
+              item.style.setProperty('--swipe-delta-x', `${delta}px`)
+
+              // 滑动时设置样式为 swiping ，当 100ms 后没有滑动时，移除 swiping 样式
+              item.clearSwipingTimer && clearTimeout(item.clearSwipingTimer)
+              item.clearSwipingTimer = setTimeout(() => {
+                item.classList.remove('history__item--swiping')
+              }, 10)
+              item.classList.add('history__item--swiping')
+
+              // 当滑动距离为 20 时，设置元素为 swiped 状态
+              if (delta === 20) {
+                setSwipedItems(prev => [...new Set([...prev, index])])
+              }
+              if (delta < -10) {
                 setSwipedItems(prev => prev.filter(i => i !== index))
+                item.isCleared = true
+                item.clearSwipingTimer && clearTimeout(item.clearSwipingTimer)
+                item.classList.remove('history__item--swiping')
+                setTimeout(() => item.isCleared = false, 100)
               }
             }}
           >
@@ -177,6 +205,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
             <div className='history__item__tooltip'>
               <div className='enter'>
                 use by
+                &nbsp;
                 <kbd onClick={() => {
                   onChange?.(item)
                   dialogRef.current?.hide()
@@ -184,6 +213,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
               </div>
               <div className='delete'>
                 delete by
+                &nbsp;
                 <kbd onClick={() => {
                   // TODO remove history item
                   messenger.then(m => m.display('warning', 'Not implemented yet'))

@@ -120,6 +120,8 @@
     overflow-y: overlay;
     overflow-x: hidden;
     > .history__item {
+      --swipe-delta-x: 0;
+
       display: flex;
       flex-direction: column;
       position: relative;
@@ -224,10 +226,17 @@
           }
         }
       }
-      &--selected, &--swiped {
+      &--selected, &--swiped, &--swiping {
         > .history__item__tooltip {
           visibility: visible;
           opacity: 1;
+        }
+      }
+      &--swiping > .history__item__tooltip {
+        right: calc(-20px + var(--swipe-delta-x));
+      }
+      &--selected, &--swiped {
+        > .history__item__tooltip {
           right: 0;
         }
       }
