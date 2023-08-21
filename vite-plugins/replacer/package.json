@@ -36,7 +36,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "esbuild --bundle --platform=node --target=node12 --outfile=index.js index.ts && tsc --emitDeclarationOnly --declaration --declarationMap --outDir .",
+    "build": "esbuild --bundle --platform=node --target=node12 --external:vite --outfile=index.js index.ts && tsc --emitDeclarationOnly --declaration --declarationMap --outDir .",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
