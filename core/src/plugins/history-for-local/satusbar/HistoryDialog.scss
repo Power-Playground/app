@@ -137,7 +137,7 @@
         --swipe-start-offset-x: 0;
       }
       &--selected {
-        --swipe-start-offset-x: 0;
+        --swipe-start-offset-x: 0 !important;
         padding: 15px 0;
         background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 60%);
         &:hover {

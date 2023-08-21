@@ -163,6 +163,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
             }}
             onWheel={e => {
               if (index === selected) return
+              if (Math.abs(e.deltaY) > 5) return
               const unit = 100
 
               const delta = e.deltaX
