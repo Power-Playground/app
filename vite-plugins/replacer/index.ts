@@ -1,4 +1,5 @@
-import type { PluginOption } from 'vite'
+import type { FilterPattern, PluginOption } from 'vite'
+import { createFilter } from 'vite'
 
 export interface ReplacerOptions {
   /**
@@ -8,11 +9,11 @@ export interface ReplacerOptions {
   /**
    * @default [/node_modules/, /\.(png|jpe?g|gif|svg|ico)$/i]
    */
-  exclude?: (string | RegExp)[]
+  exclude?: FilterPattern
   /**
    * @default []
    */
-  include?: (string | RegExp)[]
+  include?: FilterPattern
   /**
    * require declaration in the first line of code, like:
    * ```ts
@@ -38,14 +39,12 @@ export function replacer(options?: ReplacerOptions): PluginOption {
     include = [],
     requireDeclaration = true
   } = options ?? {}
+  const filter = createFilter(include, exclude)
   return {
     name: 'replacer',
     enforce: 'pre',
     transform(code, id) {
-      if (exclude.some(pattern => pattern instanceof RegExp ? pattern.test(id) : pattern === id))
-        return
-      if (include.length > 0 && !include.some(pattern => pattern instanceof RegExp ? pattern.test(id) : pattern === id))
-        return
+      if (!filter(id)) return
       if (code.startsWith('// @replacer.disable'))
         return
 
