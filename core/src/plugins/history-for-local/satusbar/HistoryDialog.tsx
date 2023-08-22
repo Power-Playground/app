@@ -75,7 +75,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   const commonEditorProps = useMemo<
     DiffEditorProps & EditorProps
   >(() => ({
-    height: '100%',
+    height: 'calc(100% - 37px)',
     width: '100%',
     theme: theme === 'light' ? 'vs' : 'vs-dark',
     language: 'typescript',
