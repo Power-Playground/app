@@ -1,6 +1,6 @@
 import './Popover.scss'
 
-import { useEffect, useRef, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Placement } from '@popperjs/core'
 import { createPopper } from '@popperjs/core'
@@ -22,9 +22,14 @@ export interface PopoverProps {
   onClick?: () => void
 }
 
+export interface PopoverRef {
+  open: () => void
+  hide: () => void
+}
+
 const prefix = 'ppd-popover'
 
-export function Popover(props: PopoverProps) {
+export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(props, ref) {
   const {
     children,
     content,
@@ -84,6 +89,11 @@ export function Popover(props: PopoverProps) {
 
   const [popoverId] = useState(Math.random().toString(36).slice(2))
   const isFocus = useRef(false)
+
+  useImperativeHandle(ref, () => ({
+    open: () => setVisible(true),
+    hide: () => setVisible(false)
+  }), [])
   return <>
     <div
       ref={setReferenceElement}
@@ -179,4 +189,4 @@ export function Popover(props: PopoverProps) {
       />
     </div>, document.body, `popover-${popoverId}`)}
   </>
-}
+})
