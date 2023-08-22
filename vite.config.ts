@@ -111,9 +111,7 @@ export default defineConfig(async env => ({
               if (node.url?.size) {
                 const normal = Array.from( node.url.values())[0]
                 node.url = new Set()
-                node.extra.spare.forEach((el:string) => {
-                  node.url?.add(new URL(`${node.extra.name}@${node.extra.version}/${el}`, unpkg).href)
-                })
+                node.extra.spare.forEach((el:string) => node.url?.add(new URL(`${node.extra.name}@${node.extra.version}/${el}`, unpkg).href))
                 node.url.add(normal)
               }
             }
