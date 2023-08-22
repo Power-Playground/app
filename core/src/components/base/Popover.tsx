@@ -1,6 +1,6 @@
 import './Popover.scss'
 
-import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Placement } from '@popperjs/core'
 import { createPopper } from '@popperjs/core'
@@ -20,6 +20,8 @@ export interface PopoverProps {
   contentStyle?: React.CSSProperties
 
   onClick?: () => void
+  onVisibleChange?: (visible: boolean) => void
+  onKeydown?: (event: React.KeyboardEvent) => void
 }
 
 export interface PopoverRef {
@@ -63,21 +65,25 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
   }, [arrowElement, offset, placement])
 
   const [visible, setVisible] = useState(false)
+  const changeVisible = useCallback((visible: boolean) => {
+    setVisible(visible)
+    props.onVisibleChange?.(visible)
+  }, [props])
   function clickOther(event: MouseEvent) {
     if (event.target instanceof HTMLElement) {
       if (!event.target.closest(
         `.${prefix}, .${prefix}-reference`
       )) {
-        setVisible(false)
+        changeVisible(false)
         removeEventListener('click', clickOther)
       }
     }
   }
   useEffect(() => {
     if (trigger === 'always') {
-      setVisible(true)
+      changeVisible(true)
     }
-  }, [trigger])
+  }, [changeVisible, trigger])
   useEffect(() => {
     if (visible) {
       popper.current?.update()
@@ -91,9 +97,9 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
   const isFocus = useRef(false)
 
   useImperativeHandle(ref, () => ({
-    open: () => setVisible(true),
-    hide: () => setVisible(false)
-  }), [])
+    open: () => changeVisible(true),
+    hide: () => changeVisible(false)
+  }), [changeVisible])
   return <>
     <div
       ref={setReferenceElement}
@@ -109,18 +115,18 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
           if (!visible && props.tabIndex !== undefined) {
             addEventListener('click', clickOther)
           }
-          setVisible(!visible)
+          changeVisible(!visible)
         }
         onClick?.()
       }}
       onMouseOver={() => {
         if (trigger === 'hover') {
-          setVisible(true)
+          changeVisible(true)
         }
       }}
       onMouseOut={() => {
         if (trigger === 'hover') {
-          setVisible(false)
+          changeVisible(false)
         }
       }}
       onFocus={() => {
@@ -129,7 +135,7 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
             addEventListener('click', clickOther)
           }
           isFocus.current = true
-          setVisible(true)
+          changeVisible(true)
         }
       }}
       onBlur={event => {
@@ -139,18 +145,18 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
               `.${prefix}, .${prefix}-reference`
             )) return
           }
-          setVisible(false)
+          changeVisible(false)
         }
       }}
       onKeyDown={event => {
         if (event.key === 'Enter') {
           if (trigger === 'click') {
-            setVisible(!visible)
+            changeVisible(!visible)
           }
           onClick?.()
         }
         if (event.key === 'Escape') {
-          setVisible(false)
+          changeVisible(false)
           event.stopPropagation()
         }
       }}
@@ -166,17 +172,18 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
       data-show={visible}
       onMouseOver={() => {
         if (trigger === 'hover') {
-          setVisible(true)
+          changeVisible(true)
         }
       }}
       onMouseOut={() => {
         if (trigger === 'hover') {
-          setVisible(false)
+          changeVisible(false)
         }
       }}
       onKeyDown={event => {
+        props.onKeydown?.(event)
         if (event.key === 'Escape') {
-          setVisible(false)
+          changeVisible(false)
           event.stopPropagation()
         }
       }}
