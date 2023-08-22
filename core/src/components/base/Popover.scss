@@ -23,17 +23,20 @@
       position: absolute;
       width: 0;
       height: 0;
+      left: -6px;
       border: 6px solid transparent;
+    }
+    &[data-position^=top] {
+      bottom: 0;
     }
     &[data-position^=top]::before {
       border-top-color: var(--vscode-dropdown-background);
-      left: -6px;
-      bottom: -16px;
+    }
+    &[data-position^=bottom] {
+      top: -12px;
     }
     &[data-position^=bottom]::before {
       border-bottom-color: var(--vscode-dropdown-background);
-      left: -6px;
-      top: -34px;
     }
   }
 }
