@@ -9,16 +9,14 @@ import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
 import { Menu } from '../../../components/base/Menu'
 import { Resizable } from '../../../components/Resizable'
-
-import type { CodeHistoryItem } from './historyStore'
-import { useCodeHistory } from './historyStore'
+import type { EditState } from '../store'
+import { useLocalEditStateHistory } from '../store'
 
 export interface HistoryDialogProps {
   code?: string
-  onChange?: (codeHistory: CodeHistoryItem) => void
+  onChange?: (codeHistory: EditState) => void
 }
 
-// TODO auto scroll
 // TODO remove history item
 // TODO configure max history length
 // TODO save and load lang
@@ -27,13 +25,22 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
-  const [_historyList, dispatch] = useCodeHistory()
+  const {
+    history: _history,
+    removeEditState
+  } = useLocalEditStateHistory()
+  function removeEditStateByTime(time: number) {
+    const index = _history.findIndex(i => i.time === time)
+    if (index !== -1) {
+      removeEditState(index)
+    }
+  }
 
   const [input, setInput] = useState('')
   const [dateRange, setDateRange] = useState<[number, number]>([0, Date.now()])
-  const historyList = useMemo(() => _historyList.filter(item => {
+  const historyList = useMemo(() => _history.filter(item => {
     return item.code.includes(input) && item.time >= dateRange[0] && item.time <= dateRange[1]
-  }), [dateRange, _historyList, input])
+  }), [dateRange, _history, input])
 
   const focusItemsRef = useRef<(HTMLDivElement | null)[]>([])
 
@@ -242,8 +249,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
                 delete by
                 &nbsp;
                 <kbd onClick={() => {
-                  // TODO remove history item
-                  messenger.then(m => m.display('warning', 'Not implemented yet'))
+                  removeEditStateByTime(item.time)
                 }}>⌫</kbd>
               </div>
             </div>
