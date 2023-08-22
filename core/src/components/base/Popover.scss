@@ -1,7 +1,8 @@
 .ppd-popover {
+  z-index: 114514;
   background-color: var(--vscode-dropdown-background) !important;
   border: 1px solid var(--vscode-dropdown-border);
-  box-shadow: 0 0 4px var(--vscode-dropdown-border);
+  box-shadow: 0 0 4px var(--vscode-widget-shadow);
   border-radius: 4px;
   padding: 4px 8px;
 
@@ -32,7 +33,7 @@
     &[data-position^=bottom]::before {
       border-bottom-color: var(--vscode-dropdown-background);
       left: -6px;
-      top: -40px;
+      top: -34px;
     }
   }
 }
