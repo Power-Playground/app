@@ -102,8 +102,22 @@ export default defineConfig(async env => ({
         { name: '@babel/standalone', relativeModule: './babel.min.js' },
         { name: 'react', relativeModule: './umd/react.production.min.js' },
         { name: 'react-dom', relativeModule: './umd/react-dom.production.min.js' },
-        { name: 'jotai', relativeModule: './umd/index.production.js' }
-      ]
+        { name: 'jotai', relativeModule: './umd/index.production.js', spare: ['umd/vanilla.production.js', 'umd/react.production.js'] }
+      ],
+      transform() {
+        return {
+          script(node) {
+            if (node.name === 'jotai') {
+              if (node.url?.size) {
+                const normal = Array.from( node.url.values())[0]
+                node.url = new Set()
+                node.extra.spare.forEach((el:string) => node.url?.add(new URL(`${node.extra.name}@${node.extra.version}/${el}`, unpkg).href))
+                node.url.add(normal)
+              }
+            }
+          }
+        }
+      }
     }),
     env.mode === 'production' ? visualizer() : undefined,
     process.env.ENABLE_INJECT_ANALYTICS === 'true' ? inspect() : undefined
