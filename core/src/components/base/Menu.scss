@@ -11,11 +11,11 @@
     cursor: pointer;
     transition: .1s;
     &__active {
-      border-left: 3px solid color-mix(in srgb, var(--primary), #fff 20%);
+      border-left: 3px solid color-mix(in srgb, var(--primary), var(--bg-cr) 20%);
     }
     &:focus, &:hover {
-      border-left: 3px solid color-mix(in srgb, var(--primary), #fff 50%);
-      background-color: color-mix(in srgb, var(--primary), #fff 95%);
+      border-left: 3px solid color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
+      background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 95%);
     }
     &:focus-visible {
       outline: none;
