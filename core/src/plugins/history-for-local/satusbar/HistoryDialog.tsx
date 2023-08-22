@@ -37,9 +37,15 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
   }
 
   const [input, setInput] = useState('')
-  const [dateRange, setDateRange] = useState<[number, number]>([0, Date.now()])
+  const [dateRange, setDateRange] = useState<[number?, number?]>([
+    undefined, undefined
+  ])
   const historyList = useMemo(() => _history.filter(item => {
-    return item.code.includes(input) && item.time >= dateRange[0] && item.time <= dateRange[1]
+    return item.code.includes(input) && (
+      dateRange[0] === undefined ? true : item.time >= dateRange[0]
+    ) && (
+      dateRange[1] === undefined ? true : item.time <= dateRange[1]
+    )
   }), [dateRange, _history, input])
 
   const focusItemsRef = useRef<(HTMLDivElement | null)[]>([])
@@ -155,12 +161,12 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
         <span className='opts'>
           <input
             type='date'
-            value={new Date(dateRange[0]).toISOString().slice(0, 10)}
+            value={dateRange[0] ? new Date(dateRange[0]).toISOString().slice(0, 10) : 0}
             onChange={e => setDateRange([new Date(e.target.value).getTime(), dateRange[1]])}
           />
           <input
             type='date'
-            value={new Date(dateRange[1]).toISOString().slice(0, 10)}
+            value={dateRange[1] ? new Date(dateRange[1]).toISOString().slice(0, 10) : 0}
             onChange={e => setDateRange([dateRange[0], new Date(e.target.value).getTime()])}
           />
         </span>
