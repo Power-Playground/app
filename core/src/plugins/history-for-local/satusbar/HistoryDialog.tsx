@@ -1,18 +1,20 @@
 import './HistoryDialog.scss'
 
 import { createRef, forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
-import Editor from '@monaco-editor/react'
-import { classnames, messenger } from '@power-playground/core'
+import type { DiffEditorProps, EditorProps } from '@monaco-editor/react'
+import { DiffEditor, Editor } from '@monaco-editor/react'
+import { classnames, messenger, scrollIntoViewIfNeeded } from '@power-playground/core'
 
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
+import { Menu } from '../../../components/base/Menu'
 import { Resizable } from '../../../components/Resizable'
-import { scrollIntoViewIfNeeded } from '../../../utils/scrollIntoViewIfNeeded.ts'
 
 import type { CodeHistoryItem } from './historyStore'
 import { useCodeHistory } from './historyStore'
 
 export interface HistoryDialogProps {
+  code?: string
   onChange?: (codeHistory: CodeHistoryItem) => void
 }
 
@@ -21,7 +23,7 @@ export interface HistoryDialogProps {
 // TODO configure max history length
 // TODO save and load lang
 // TODO set code history item name
-export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function HistoryDialog({ onChange }, ref) {
+export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function HistoryDialog({ code, onChange }, ref) {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
@@ -65,6 +67,24 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
 
   const [swipedItems, setSwipedItems] = useState<number[]>([])
 
+  type EditorDisplayMode =
+    | 'only-code'
+    | 'diff-code'
+    | (string & {})
+  const [editorDisplayMode, setEditorDisplayMode] = useState<EditorDisplayMode>('only-code')
+  const commonEditorProps = useMemo<
+    DiffEditorProps & EditorProps
+  >(() => ({
+    height: '100%',
+    width: '100%',
+    theme: theme === 'light' ? 'vs' : 'vs-dark',
+    language: 'typescript',
+    options: {
+      readOnly: true,
+      minimap: { enabled: false },
+      scrollbar: { vertical: 'hidden' }
+    }
+  }), [theme])
   return <Dialog
     ref={dialogRef}
     className='history'
@@ -232,18 +252,33 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
       </div>
     </Resizable>
     <div className='preview' onKeyUp={e => e.stopPropagation()}>
-      <Editor
-        height='100%'
-        width='100%'
-        theme={theme === 'light' ? 'vs' : 'vs-dark'}
-        language='javascript'
+      <div className='toolbar'>
+        <Menu
+          className='view-mode-menu button'
+          items={[
+            {
+              id: 'only-code',
+              title: 'Only display code'
+            },
+            {
+              id: 'diff-code',
+              title: 'Display code diff with current code'
+            }
+          ]}
+          onSelect={({ id }) => setEditorDisplayMode(id as any)}
+          >
+          👀 Change View Mode
+        </Menu>
+      </div>
+      {editorDisplayMode === 'only-code' && <Editor
         value={history?.code ?? ''}
-        options={{
-          readOnly: true,
-          minimap: { enabled: false },
-          scrollbar: { vertical: 'hidden' }
-        }}
-      />
+        {...commonEditorProps}
+      />}
+      {editorDisplayMode === 'diff-code' && <DiffEditor
+        modified={code ?? ''}
+        original={history?.code ?? ''}
+        {...commonEditorProps}
+      />}
     </div>
   </Dialog>
 })

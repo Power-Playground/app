@@ -9,18 +9,19 @@ import { HistoryDialog } from './HistoryDialog'
 
 export const History: React.ComponentType<BarItemProps> = ({ shareState }) => {
   const {
-    setCode
+    code, setCode
   } = shareState
   const historyDialogRef = useRef<DialogRef>(null)
 
   return <>
     <HistoryDialog
       ref={historyDialogRef}
+      code={code}
       onChange={ch => setCode?.(ch.code)}
     />
     <Popover
       style={{ cursor: 'pointer' }}
-      offset={[0, 3]}
+      offset={[0, 2]}
       content={<>
         Show History(<code>
           {isMacOS ? '⌘' : 'Ctrl'}

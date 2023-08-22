@@ -37,7 +37,7 @@
       max-height: 36px;
       background-color: var(--bg-cr);
       border-bottom: 1px solid #0002;
-      box-shadow: 0 0 8px #0002;
+      box-shadow: 0 20px 18px #3332;
       > .opts {
         display: flex;
         align-items: center;
@@ -59,7 +59,7 @@
           &:hover {
             background-color: #0001;
           }
-          &:active {
+          &:focus, &:active {
             background-color: #0002;
           }
           html[theme-mode=dark] & {
@@ -241,5 +241,40 @@
   .preview {
     flex-grow: 1;
     width: 0;
+    > .toolbar {
+      display: flex;
+      gap: 5px;
+      height: 36px;
+      background-color: var(--bg-cr);
+      border-bottom: 1px solid #0002;
+      box-shadow: 0 20px 18px #3332;
+      > .button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 0 10px;
+        background-color: transparent;
+        cursor: pointer;
+        font-size: 1em;
+        font-weight: bold;
+        user-select: none;
+        transition: .1s;
+        &:hover {
+          background-color: #0001;
+        }
+        &:focus, &:active {
+          background-color: #0002;
+        }
+        html[theme-mode=dark] & {
+          &:hover {
+            background-color: #fff1;
+          }
+          &:active {
+            background-color: #fff2;
+          }
+        }
+      }
+    }
   }
 }
