@@ -100,6 +100,7 @@ export function defineDevtoolsPanel(
 
             this.element.appendChild(root)
             const cache = new Map()
+            // TODO use React.portal
             ReactDOM.createRoot(root)
               .render(<ImportsContext.Provider value={{
                 async get(url) {
