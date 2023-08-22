@@ -6,6 +6,7 @@ import type { Placement } from '@popperjs/core'
 import { createPopper } from '@popperjs/core'
 
 export interface PopoverProps {
+  tabIndex?: number
   children: React.ReactNode
   content: React.ReactNode
 
@@ -57,6 +58,16 @@ export function Popover(props: PopoverProps) {
   }, [arrowElement, offset, placement])
 
   const [visible, setVisible] = useState(false)
+  function clickOther(event: MouseEvent) {
+    if (event.target instanceof HTMLElement) {
+      if (!event.target.closest(
+        `.${prefix}, .${prefix}-reference`
+      )) {
+        setVisible(false)
+        removeEventListener('click', clickOther)
+      }
+    }
+  }
   useEffect(() => {
     if (trigger === 'always') {
       setVisible(true)
@@ -72,26 +83,22 @@ export function Popover(props: PopoverProps) {
     + (props.className ? ' ' + props.className : '')
 
   const [popoverId] = useState(Math.random().toString(36).slice(2))
+  const isFocus = useRef(false)
   return <>
     <div
       ref={setReferenceElement}
+      tabIndex={props.tabIndex}
       className={classname}
       style={props.style}
       onClick={() => {
-        function clickOther(event: MouseEvent) {
-          if (event.target instanceof HTMLElement) {
-            if (!event.target.closest(
-              `.${prefix}, .${prefix}-reference`
-            )) {
-              setVisible(false)
-              removeEventListener('click', clickOther)
-            }
-          }
-        }
-        if (!visible) {
-          addEventListener('click', clickOther)
-        }
         if (trigger === 'click') {
+          if (isFocus.current) {
+            isFocus.current = false
+            return
+          }
+          if (!visible && props.tabIndex !== undefined) {
+            addEventListener('click', clickOther)
+          }
           setVisible(!visible)
         }
         onClick?.()
@@ -104,6 +111,37 @@ export function Popover(props: PopoverProps) {
       onMouseOut={() => {
         if (trigger === 'hover') {
           setVisible(false)
+        }
+      }}
+      onFocus={() => {
+        if (props.tabIndex !== undefined) {
+          if (!visible) {
+            addEventListener('click', clickOther)
+          }
+          isFocus.current = true
+          setVisible(true)
+        }
+      }}
+      onBlur={event => {
+        if (props.tabIndex !== undefined) {
+          if (event.relatedTarget instanceof HTMLElement) {
+            if (event.relatedTarget.closest(
+              `.${prefix}, .${prefix}-reference`
+            )) return
+          }
+          setVisible(false)
+        }
+      }}
+      onKeyDown={event => {
+        if (event.key === 'Enter') {
+          if (trigger === 'click') {
+            setVisible(!visible)
+          }
+          onClick?.()
+        }
+        if (event.key === 'Escape') {
+          setVisible(false)
+          event.stopPropagation()
         }
       }}
       >
@@ -124,6 +162,12 @@ export function Popover(props: PopoverProps) {
       onMouseOut={() => {
         if (trigger === 'hover') {
           setVisible(false)
+        }
+      }}
+      onKeyDown={event => {
+        if (event.key === 'Escape') {
+          setVisible(false)
+          event.stopPropagation()
         }
       }}
       >
