@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { copyToClipboard, definePlugin, messenger } from '@power-playground/core'
 
+import { dispatchEditState } from './history-for-local/store'
+
 export default definePlugin({
   editor: {
     use: [() => {
@@ -27,13 +29,14 @@ export default definePlugin({
         const code = editor.getValue()
         history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
         copyToClipboard(location.href)
+        dispatchEditState('add', {
+          code,
+          cursor: editor.getPosition() ?? undefined
+        })
         messenger.then(m => m.display(
           'success', 'Saved to clipboard, you can share it to your friends!'
         ))
         editor.focus()
-        // TODO refactor as executeCommand
-        // setCodeHistory(old => old.concat({ code, time: Date.now() }))
-        messenger.then(m => m.display('warning', 'Code history is building, save to history is not available now.'))
       })
     }
   }
