@@ -6,9 +6,9 @@ import { mergeAll } from 'ramda'
 
 import { definePlugin } from '../'
 
-import { Langs } from './Langs'
+import { Langs } from './statusbar/Langs'
+import { Versions } from './statusbar/Versions'
 import { use } from './use'
-import { Versions } from './Versions'
 
 export interface ExtraFile {
   content: string
