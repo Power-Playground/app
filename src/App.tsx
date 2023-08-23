@@ -133,7 +133,7 @@ export function App() {
           <EditorZone
             resizable={resizable}
             style={{
-              '--editor-width': dockTo === 'bottom' ? '100%' : '50%',
+              '--editor-width': dockTo === 'bottom' ? '100%' : '65%',
               '--editor-height': dockTo === 'bottom' ? '50%' : '100%'
             }}
             plugins={plugins}
