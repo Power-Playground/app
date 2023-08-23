@@ -17,6 +17,7 @@ export const History: React.ComponentType<BarItemProps> = ({ shareState }) => {
     <HistoryDialog
       ref={historyDialogRef}
       code={code}
+      // TODO set cursor position and dispatch change for every history item watcher
       onChange={ch => setCode?.(ch.code)}
     />
     <Popover
