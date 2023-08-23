@@ -17,10 +17,10 @@ export interface HistoryDialogProps {
   onChange?: (codeHistory: EditState) => void
 }
 
-// TODO remove history item
 // TODO configure max history length
 // TODO save and load lang
-// TODO set code history item name
+// TODO set code history item name and tag
+// TODO display history item length in the list bottom
 export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function HistoryDialog({ code, onChange }, ref) {
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
