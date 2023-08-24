@@ -31,6 +31,7 @@ export const compilerOptionsAtom = atom<
   monacoEditor.languages.typescript.CompilerOptions
 >({
   target: 4,
+  module: 99,
   moduleResolution: 2,
   declaration: true,
   lib: ['esnext', 'dom', 'esnext.disposable']
