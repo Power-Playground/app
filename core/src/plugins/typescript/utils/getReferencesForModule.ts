@@ -12,7 +12,6 @@ export const getReferencesForModule = (ts: typeof import('typescript'), code: st
 
   // TODO: strip /// <reference path='X' />?
 
-  console.log(meta)
   const references = meta.referencedFiles
     .concat(meta.importedFiles)
     .concat(meta.libReferenceDirectives)
@@ -24,7 +23,7 @@ export const getReferencesForModule = (ts: typeof import('typescript'), code: st
     if (!r.fileName.startsWith('.')) {
       version = 'latest'
       const line = code.slice(r.end).split('\n')[0]!
-      if (line.includes('// @version')) version = line.split('// @version')[1]!.trim()
+      if (line.includes('// @version: ')) version = line.split('// @version: ')[1]!.trim()
     }
 
     return {
