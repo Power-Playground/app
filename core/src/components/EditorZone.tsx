@@ -24,6 +24,7 @@ import { TopBar } from './TopBar'
 
 const prefix = 'ppd-editor-zone'
 
+// TODO resolve remove plugin hook dispose logic
 export default function EditorZone(props: {
   style?: React.CSSProperties & {
     '--editor-width'?: unknown
