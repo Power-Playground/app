@@ -108,6 +108,15 @@ export default function EditorZone(props: {
 
   const [displayLeftBar, setDisplayLeftBar] = useAtom(displayLeftBarAtom)
 
+  useEffect(() => {
+    if (!monaco || !editor) return
+
+    const dispose = plugins.map(plugin => plugin?.editor?.load?.(
+      editor as IStandaloneCodeEditor,
+      monaco
+    ))
+    return () => dispose.forEach(func => func?.())
+  }, [monaco, editor, plugins])
   return <ExtensionContext.Provider value={{
     searchParams: searchParams.current,
     plugins, shareState
@@ -163,15 +172,7 @@ export default function EditorZone(props: {
             path={`file://${curFilePath}`}
             value={code}
             onChange={code => setCode(code ?? '')}
-            onMount={(editor, monaco) => {
-              plugins
-                .forEach(plugin => plugin.editor?.load?.(
-                  editor as IStandaloneCodeEditor,
-                  monaco
-                ))
-              setEditor(editor)
-              editor.focus()
-            }}
+            onMount={editor => (setEditor(editor), editor.focus())}
           />}
           <BottomStatus />
         </div>
