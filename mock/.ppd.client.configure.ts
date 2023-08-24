@@ -1,5 +1,5 @@
 import { defineConfigure } from '@power-playground/core'
-import { mergeLeft } from 'ramda'
+import { mergeDeepLeft } from 'ramda'
 
 import sharePpdClientConfigure from '../.share.ppd.client.configure'
 
@@ -12,7 +12,7 @@ const aTestInitPackage = Object.entries(import.meta.glob([
   eager: true
 }))
 
-export default mergeLeft(
+export default mergeDeepLeft(
   defineConfigure({
     plugins: {
       outputs: {
