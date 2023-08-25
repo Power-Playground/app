@@ -6,8 +6,8 @@ import { messenger } from '@power-playground/core'
 import { atom, getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 import { mergeAll } from 'ramda'
-import sentinel from 'sentinel-js'
 
+import { useDocumentEventListener } from '../../hooks/useDocumentEventListener'
 import { definePlugin } from '..'
 
 import { Langs } from './statusbar/Langs'
@@ -108,6 +108,12 @@ const editor: Editor<TypeScriptPluginX> = {
         })
       }
     }, [monaco, curFilePath, language, defaults, extraFiles, extraModules])
+
+    useDocumentEventListener('mousedown', e => {
+      if (e.target instanceof HTMLElement && e.target.classList.contains('ts__button-decoration')) {
+        messenger.then(m => m.display('warning', 'Switching dependency version is not supported yet'))
+      }
+    })
   },
   preload(monaco) {
     return function (disposes: (() => void)[]) {
@@ -230,16 +236,9 @@ const editor: Editor<TypeScriptPluginX> = {
       editor.onDidChangeModelContent(analysisCode).dispose,
       editor.onDidFocusEditorWidget(analysisCode).dispose
     ]
-    const watchButtonDecoration = (el: HTMLDivElement) => {
-      el.addEventListener('mousedown', () => {
-        messenger.then(m => m.display('warning', 'Switching dependency version is not supported yet'))
-      })
-    }
-    sentinel.on('.ts__button-decoration', watchButtonDecoration)
 
     return () => {
       disposes.forEach(dispose => dispose())
-      sentinel.off('.ts__button-decoration', watchButtonDecoration)
     }
   },
   topbar: [Langs],
