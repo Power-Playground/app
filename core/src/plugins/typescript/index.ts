@@ -120,7 +120,7 @@ const editor: Editor<TypeScriptPluginX> = {
         }
       }).dispose,
       monaco.languages.registerCodeLensProvider(['javascript', 'typescript'], {
-        provideCodeLenses(model, token) {
+        provideCodeLenses(model) {
           if (model.isDisposed()) return
 
           const lenses: monacoEditor.languages.CodeLens[] = []
@@ -163,27 +163,29 @@ const editor: Editor<TypeScriptPluginX> = {
     }
     const modelDecorationIds = modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol]
       ?? (modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol] = new Map<string, string[]>())
-    const disposable = editor.onDidChangeModelContent(function analysisCode() {
+    const analysisCodeDisposable = editor.onDidChangeModelContent(function analysisCode() {
       const model = editor.getModel()
       if (!model) return analysisCode
 
-      const uri = model.uri.toString()
-      const ids = modelDecorationIds.get(uri)
-        ?? modelDecorationIds.set(uri, []).get(uri)!
+      ;(async () => {
+        const uri = model.uri.toString()
+        const ids = modelDecorationIds.get(uri)
+          ?? modelDecorationIds.set(uri, []).get(uri)!
 
-      const content = model.getValue()
-      new Promise<typeof import('typescript')>(resolve => {
-        if (typescript === undefined) {
-          re(['vs/language/typescript/tsWorker'], () => {
-            // @ts-ignore
-            typescript = window.ts
-            // @ts-ignore
-            resolve(window.ts as unknown as typeof import('typescript'))
-          })
-        } else {
-          resolve(typescript)
-        }
-      }).then(ts => {
+        const content = model.getValue()
+        const ts = await new Promise<typeof import('typescript')>(resolve => {
+          if (typescript === undefined) {
+            re(['vs/language/typescript/tsWorker'], () => {
+              // @ts-ignore
+              typescript = window.ts
+              // @ts-ignore
+              resolve(window.ts as unknown as typeof import('typescript'))
+            })
+          } else {
+            resolve(typescript)
+          }
+        })
+
         const references = getReferencesForModule(ts, content)
         editor.removeDecorations(ids)
         const newIds = decorationsCollection.set(references.map(ref => {
@@ -209,7 +211,7 @@ const editor: Editor<TypeScriptPluginX> = {
           } as monacoEditor.editor.IModelDeltaDecoration
         }))
         modelDecorationIds.set(uri, newIds)
-      })
+      })()
       return analysisCode
     }())
     const watchButtonDecoration = (el: HTMLDivElement) => {
@@ -220,7 +222,7 @@ const editor: Editor<TypeScriptPluginX> = {
     sentinel.on('.ts__button-decoration', watchButtonDecoration)
 
     return () => {
-      disposable.dispose()
+      analysisCodeDisposable.dispose()
       sentinel.off('.ts__button-decoration', watchButtonDecoration)
     }
   },
