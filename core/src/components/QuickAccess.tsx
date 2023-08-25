@@ -3,6 +3,7 @@ import './QuickAccess.scss'
 import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import { useDocumentEventListener } from '../hooks/useDocumentEventListener.ts'
 import { scrollIntoViewIfNeeded } from '../utils/scrollIntoViewIfNeeded.ts'
 
 class Feature<T> {
@@ -38,23 +39,6 @@ class Feature<T> {
     })
     return this
   }
-}
-
-// TODO export as util function
-function useDocumentEventListener<K extends keyof DocumentEventMap>(
-  type: K,
-  listener: (this: Document, ev: DocumentEventMap[K]) => any,
-  active?: boolean,
-  options?: boolean | AddEventListenerOptions
-) {
-  useEffect(() => {
-    if (active === false) return
-
-    document.addEventListener(type, listener, options)
-    return () => {
-      document.removeEventListener(type, listener, options)
-    }
-  }, [type, listener, options, active])
 }
 
 export interface QuickAccessProps {
