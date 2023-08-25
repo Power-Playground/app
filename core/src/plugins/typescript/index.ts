@@ -158,62 +158,77 @@ const editor: Editor<TypeScriptPluginX> = {
     let typescript: typeof import('typescript') | undefined = undefined
     const decorationsCollection = editor.createDecorationsCollection()
 
+    let timeId: number | undefined = undefined
+    let reject: (reason?: any) => void = () => void 0
+    const debounce = (time: number) => {
+      reject()
+      timeId && clearTimeout(timeId)
+      return new Promise<void>((resolve, _rej) => {
+        reject = _rej
+        timeId = setTimeout(() => {
+          resolve()
+        }, time) as unknown as number
+      })
+    }
     const modelDecorationIdsConfigurableEditor = editor as unknown as {
       [modelDecorationIdsSymbol]?: Map<string, string[]>
     }
     const modelDecorationIds = modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol]
       ?? (modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol] = new Map<string, string[]>())
-    const analysisCodeDisposable = editor.onDidChangeModelContent(function analysisCode() {
+    async function analysisCode() {
       const model = editor.getModel()
-      if (!model) return analysisCode
+      if (!model) return
 
-      ;(async () => {
-        const uri = model.uri.toString()
-        const ids = modelDecorationIds.get(uri)
-          ?? modelDecorationIds.set(uri, []).get(uri)!
+      try { await debounce(300) } catch { return }
+      const uri = model.uri.toString()
+      const ids = modelDecorationIds.get(uri)
+        ?? modelDecorationIds.set(uri, []).get(uri)!
 
-        const content = model.getValue()
-        const ts = await new Promise<typeof import('typescript')>(resolve => {
-          if (typescript === undefined) {
-            re(['vs/language/typescript/tsWorker'], () => {
-              // @ts-ignore
-              typescript = window.ts
-              // @ts-ignore
-              resolve(window.ts as unknown as typeof import('typescript'))
-            })
-          } else {
-            resolve(typescript)
-          }
-        })
+      const content = model.getValue()
+      const ts = await new Promise<typeof import('typescript')>(resolve => {
+        if (typescript === undefined) {
+          re(['vs/language/typescript/tsWorker'], () => {
+            // @ts-ignore
+            typescript = window.ts
+            // @ts-ignore
+            resolve(window.ts as unknown as typeof import('typescript'))
+          })
+        } else {
+          resolve(typescript)
+        }
+      })
 
-        const references = getReferencesForModule(ts, content)
-        editor.removeDecorations(ids)
-        const newIds = decorationsCollection.set(references.map(ref => {
-          const [start, end] = ref.position
-          const startP = model.getPositionAt(start)
-          const endP = model.getPositionAt(end)
-          const range = new monaco.Range(
-            startP.lineNumber,
-            startP.column + 1,
-            endP.lineNumber,
-            endP.column + 1
-          )
-          const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
-          return {
-            range,
-            options: {
-              isWholeLine: true,
-              after: {
-                content: `@${ref.version ?? 'latest'}`,
-                inlineClassName
-              }
+      const references = getReferencesForModule(ts, content)
+      editor.removeDecorations(ids)
+      const newIds = decorationsCollection.set(references.map(ref => {
+        const [start, end] = ref.position
+        const startP = model.getPositionAt(start)
+        const endP = model.getPositionAt(end)
+        const range = new monaco.Range(
+          startP.lineNumber,
+          startP.column + 1,
+          endP.lineNumber,
+          endP.column + 1
+        )
+        const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
+        return {
+          range,
+          options: {
+            isWholeLine: true,
+            after: {
+              content: `@${ref.version ?? 'latest'}`,
+              inlineClassName
             }
-          } as monacoEditor.editor.IModelDeltaDecoration
-        }))
-        modelDecorationIds.set(uri, newIds)
-      })()
-      return analysisCode
-    }())
+          }
+        } as monacoEditor.editor.IModelDeltaDecoration
+      }))
+      modelDecorationIds.set(uri, newIds)
+    }
+    analysisCode()
+    const disposes = [
+      editor.onDidChangeModelContent(analysisCode).dispose,
+      editor.onDidFocusEditorWidget(analysisCode).dispose
+    ]
     const watchButtonDecoration = (el: HTMLDivElement) => {
       el.addEventListener('mousedown', () => {
         messenger.then(m => m.display('warning', 'Switching dependency version is not supported yet'))
@@ -222,7 +237,7 @@ const editor: Editor<TypeScriptPluginX> = {
     sentinel.on('.ts__button-decoration', watchButtonDecoration)
 
     return () => {
-      analysisCodeDisposable.dispose()
+      disposes.forEach(dispose => dispose())
       sentinel.off('.ts__button-decoration', watchButtonDecoration)
     }
   },
