@@ -226,6 +226,7 @@ const editor: Editor<TypeScriptPluginX> = {
     }
     analysisCode()
     const disposes = [
+      editor.onDidChangeModel(analysisCode).dispose,
       editor.onDidChangeModelContent(analysisCode).dispose,
       editor.onDidFocusEditorWidget(analysisCode).dispose
     ]
