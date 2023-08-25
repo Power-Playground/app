@@ -230,7 +230,7 @@ const editor: Editor<TypeScriptPluginX> = {
       }))
       modelDecorationIds.set(uri, newIds)
     }
-    analysisCode()
+    analysisCode().catch(console.error)
     const disposes = [
       editor.onDidChangeModel(analysisCode).dispose,
       editor.onDidChangeModelContent(analysisCode).dispose,
