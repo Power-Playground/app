@@ -29,7 +29,7 @@ export const getReferencesForModule = (ts: typeof import('typescript'), code: st
     return {
       module: r.fileName,
       version,
-      position: [r.pos, r.end]
+      position: [r.pos, r.end] as const
     }
   })
 }
