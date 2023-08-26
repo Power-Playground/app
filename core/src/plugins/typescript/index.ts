@@ -70,7 +70,8 @@ let referencesPromise = new Promise<RefForModule>(re => {
   resolveReferences = re
 })
 if (import.meta.hot) {
-  referencesPromise = import.meta.hot.data['ppd:typescript:referencesPromise']
+  const hotReferencesPromise = import.meta.hot.data['ppd:typescript:referencesPromise']
+  hotReferencesPromise && (referencesPromise = hotReferencesPromise)
 }
 
 const modelDecorationIdsSymbol = '_modelDecorationIds'
