@@ -65,6 +65,7 @@ function promiseStatus(promise: Promise<any>) {
 
 type RefForModule = ReturnType<typeof getReferencesForModule>
 let resolveReferences: (value: RefForModule) => void = () => void 0
+// TODO refactor as Map to reveal the promise by filePath
 let referencesPromise = new Promise<RefForModule>(re => {
   resolveReferences = re
 })
