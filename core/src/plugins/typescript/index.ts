@@ -161,14 +161,23 @@ const editor: Editor<TypeScriptPluginX> = {
               id: 'typescript-imports',
               command: {
                 id: 'typescript-imports',
-                title: 'Switch @latest'
+                title: 'Switch @latest',
+                arguments: [ref.module, 'latest']
               }
             }, {
               range,
               id: 'typescript-imports',
               command: {
                 id: 'typescript-imports',
-                title: '@beta'
+                title: '@beta',
+                arguments: [ref.module, 'beta']
+              }
+            }, {
+              range,
+              command: {
+                id: 'typescript-imports',
+                title: `[${ref.module}]`,
+                arguments: [ref.module]
               }
             })
           })
