@@ -13,7 +13,7 @@ import { definePlugin } from '..'
 import { Langs } from './statusbar/Langs'
 import { Versions } from './statusbar/Versions'
 import { use } from './use'
-import { getReferencesForModule } from './utils'
+import { getReferencesForModule, mapModuleNameToModule } from './utils'
 
 export interface ExtraFile {
   content: string
@@ -228,6 +228,18 @@ const editor: Editor<TypeScriptPluginX> = {
       })
 
       const references = getReferencesForModule(ts, content)
+        .filter(ref => !ref.module.startsWith('.'))
+        .map(ref => ({
+          ...ref,
+          module: mapModuleNameToModule(ref.module)
+        }))
+        .reduce((acc, cur) => {
+          const index = acc.findIndex(({ module }) => module === cur.module)
+          if (index === -1) {
+            acc.push(cur)
+          }
+          return acc
+        }, [] as RefForModule)
       resolveReferences(references)
       if (import.meta.hot) {
         import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
