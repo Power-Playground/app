@@ -56,11 +56,11 @@ export interface TypeScriptPluginX {
 
 function promiseStatus(promise: Promise<any>) {
   let status = 'pending'
-  promise.then(
-    () => status = 'fulfilled',
-    () => status = 'rejected'
-  )
-  return status
+  return Promise.race([
+    promise.then(() => status = 'fulfilled'),
+    promise.catch(() => status = 'rejected'),
+    new Promise(resolve => setTimeout(() => resolve(status), 0))
+  ])
 }
 
 type RefForModule = ReturnType<typeof getReferencesForModule>
@@ -200,7 +200,7 @@ const editor: Editor<TypeScriptPluginX> = {
     const modelDecorationIds = modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol]
       ?? (modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol] = new Map<string, string[]>())
     async function analysisCode() {
-      if (promiseStatus(referencesPromise) === 'fulfilled') {
+      if (await promiseStatus(referencesPromise) === 'fulfilled') {
         referencesPromise = new Promise<RefForModule>(re => {
           resolveReferences = re
         })
