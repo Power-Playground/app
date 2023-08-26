@@ -54,6 +54,24 @@ export interface TypeScriptPluginX {
   }
 }
 
+function promiseStatus(promise: Promise<any>) {
+  let status = 'pending'
+  promise.then(
+    () => status = 'fulfilled',
+    () => status = 'rejected'
+  )
+  return status
+}
+
+type RefForModule = ReturnType<typeof getReferencesForModule>
+let resolveReferences: (value: RefForModule) => void = () => void 0
+let referencesPromise = new Promise<RefForModule>(re => {
+  resolveReferences = re
+})
+if (import.meta.hot) {
+  referencesPromise = import.meta.hot.data['ppd:typescript:referencesPromise']
+}
+
 const modelDecorationIdsSymbol = '_modelDecorationIds'
 
 const editor: Editor<TypeScriptPluginX> = {
@@ -126,34 +144,32 @@ const editor: Editor<TypeScriptPluginX> = {
         }
       }).dispose,
       monaco.languages.registerCodeLensProvider(['javascript', 'typescript'], {
-        provideCodeLenses(model) {
+        async provideCodeLenses(model, cancelToken) {
           if (model.isDisposed()) return
+          const references = await referencesPromise
+          if (cancelToken.isCancellationRequested) return
 
           const lenses: monacoEditor.languages.CodeLens[] = []
-          const queryRegex = /^import\s+(?:(?:\*\s+as\s+)?\w+\s+from\s+)?['"]([^'"]+)['"]$/gm
-
-          const text = model.getValue()
-          let match: RegExpExecArray | null
-
-          while ((match = queryRegex.exec(text)) !== null) {
-            const end = match.index + match[0].length - 1
-            const endPos = model.getPositionAt(end)
+          references.forEach(ref => {
+            const [start] = ref.position
+            const startP = model.getPositionAt(start)
+            const range = new monaco.Range(startP.lineNumber, startP.column, startP.lineNumber, startP.column)
             lenses.push({
-              range: new monaco.Range(endPos.lineNumber, endPos.column, endPos.lineNumber, endPos.column),
+              range,
               id: 'typescript-imports',
               command: {
                 id: 'typescript-imports',
                 title: 'Switch @latest'
               }
             }, {
-              range: new monaco.Range(endPos.lineNumber, endPos.column, endPos.lineNumber, endPos.column),
+              range,
               id: 'typescript-imports',
               command: {
                 id: 'typescript-imports',
                 title: '@beta'
               }
             })
-          }
+          })
           return { lenses, dispose: () => void 0 }
         }
       }).dispose
@@ -182,6 +198,11 @@ const editor: Editor<TypeScriptPluginX> = {
     const modelDecorationIds = modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol]
       ?? (modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol] = new Map<string, string[]>())
     async function analysisCode() {
+      if (promiseStatus(referencesPromise) === 'fulfilled') {
+        referencesPromise = new Promise<RefForModule>(re => {
+          resolveReferences = re
+        })
+      }
       const model = editor.getModel()
       if (!model) return
 
@@ -205,6 +226,10 @@ const editor: Editor<TypeScriptPluginX> = {
       })
 
       const references = getReferencesForModule(ts, content)
+      resolveReferences(references)
+      if (import.meta.hot) {
+        import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
+      }
       editor.removeDecorations(ids)
       const newIds = decorationsCollection.set(references.map(ref => {
         const [start, end] = ref.position
