@@ -167,7 +167,6 @@ export async function resolveDeps(deps: [module: string, version: string][]) {
     } else {
       acc[`${module}@${version}`] = result.value
     }
-    console.log(acc)
     return acc
   }, {} as {
     [dependencyNameWithVersion: string]: {
