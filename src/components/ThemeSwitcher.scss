@@ -1,17 +1,13 @@
 .theme-switch {
   position: relative;
-  width: 72px;
+  width: 85px;
   display: flex;
   align-items: center;
   padding: 4px;
-  background-color: rgba(220, 220, 220, 0.6);
   border-radius: 4px;
   overflow: hidden;
   transition: 0.3s;
 
-  html[theme-mode=dark] & {
-    background-color: rgba(80, 80, 80, 0.8);
-  }
   > .cur-card {
     z-index: 9;
     position: absolute;
@@ -31,7 +27,7 @@
   }
   &[data-mode=auto] > .cur-card {
     left: calc((100% - 8px) / 3 * 2 + 4px);
-    background-color: #4766AC88;
+    background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
   }
   > .light,
   > .dark,
@@ -58,8 +54,6 @@
   }
   > .auto {
     position: relative;
-    width: 20px;
-    height: 20px;
     > svg:first-child {
       border-right: 2px dashed white;
       color: orange;
