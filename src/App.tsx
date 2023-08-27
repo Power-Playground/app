@@ -84,7 +84,10 @@ export function App() {
   }, [])
   return (
     <>
-      <header style={{ display: displayHeader ? 'flex' : 'none' }}>
+      <header style={{
+        padding: displayHeader ? undefined : 0,
+        maxHeight: displayHeader ? undefined : 0
+      }}>
         <h1>
           {headerTitleJumpLink
             ? <a target='_blank' rel='noreferrer' href={headerTitleJumpLink}>{headerTitle}</a>
