@@ -195,6 +195,7 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
       ? (dependencyLoadErrorReason = hotDependencyLoadErrorReason)
       : (dependencyLoadErrorReason = import.meta.hot.data['ppd:typescript:dependencyLoadErrorReason'] = {})
   }
+  let isCancel = { value: false }
 
   async function analysisCode() {
     if (await promiseStatus(referencesPromise) === 'fulfilled') {
@@ -206,6 +207,9 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
     if (!model) return
 
     try { await debounce(300) } catch { return }
+    isCancel.value = true
+    isCancel = { value: false }
+    const currentIsCancel = isCancel
 
     const uri = model.uri.toString()
     const ids = modelDecorationIds.get(uri)
@@ -252,7 +256,10 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
         dependencyLoadErrorReason[depName] = `⚠️ ${error.message}`
       }
     })
-      .then(() => resolveModulesFulfilled())
+      .then(() => {
+        if (currentIsCancel.value) return
+        resolveModulesFulfilled()
+      })
     prevRefs = references
     if (import.meta.hot) {
       import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
