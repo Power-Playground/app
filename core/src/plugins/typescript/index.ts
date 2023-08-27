@@ -431,6 +431,7 @@ const editor: Editor<TypeScriptPluginX> = {
           return { lenses, dispose: () => void 0 }
         }
       }).dispose
+      // TODO support inline completion version
     ])
   },
   load: editorLoad,
