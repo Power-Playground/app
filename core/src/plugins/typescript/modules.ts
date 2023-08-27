@@ -151,19 +151,27 @@ export async function resolveDep(module: string, version: string): Promise<{
   return modules
 }
 
+export const depLoadErrorSymbol = Symbol('depLoadError')
+
 export async function resolveDeps(deps: [module: string, version: string][]) {
   return (
     await Promise
-      .all(deps.map(([module, version]) => resolveDep(module, version)))
-  ).reduce((acc, cur, currentIndex) => {
-    acc[`${
-      deps[currentIndex][0]
-    }@${
-      deps[currentIndex][1]
-    }`] = cur
+      .allSettled(deps.map(([module, version]) => resolveDep(module, version)))
+  ).reduce((acc, result, currentIndex) => {
+    const [module, version] = deps[currentIndex]
+    if (result.status === 'rejected') {
+      console.error(`Failed to load ${module}@${version}\n`, result.reason)
+      acc[`${module}@${version}`] = {
+        [depLoadErrorSymbol]: result.reason.message
+      }
+    } else {
+      acc[`${module}@${version}`] = result.value
+    }
+    console.log(acc)
     return acc
   }, {} as {
     [dependencyNameWithVersion: string]: {
+      [depLoadErrorSymbol]?: string
       [module: string]: ModuleCacheItem
     }
   })
