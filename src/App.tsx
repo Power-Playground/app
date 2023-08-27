@@ -12,7 +12,8 @@ import {
   EditorZone,
   elBridgeP, isConfigureUpdateWatchablePlugin, messenger, onConfigureUpdateSymbol,
   QuickAccess,
-  QuickAccessContext
+  QuickAccessContext,
+  useDocumentEventListener
 } from '@power-playground/core'
 import commonPlugins from '@power-playground/core/common-plugins'
 
@@ -82,6 +83,29 @@ export function App() {
     if (typeof HeaderTitle === 'string') return HeaderTitle
     return <HeaderTitle />
   }, [])
+  function hideHeader() {
+    if (!displayHeader) return
+
+    setDisplayHeader(false)
+    messenger.then(m => m.display(
+      'info', <>Press <kbd>Esc</kbd> to show the header again</>, {
+        position: 'top-center'
+      }
+    ))
+    document.addEventListener('keydown', function onEsc(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setDisplayHeader(true)
+        document.removeEventListener('keydown', onEsc)
+      }
+    })
+  }
+  useDocumentEventListener('keydown', function (e: KeyboardEvent) {
+    if (e.key === 'ArrowUp' && e.shiftKey && (
+      e.ctrlKey || e.metaKey
+    )) {
+      hideHeader()
+    }
+  })
   return (
     <>
       <header style={{
@@ -108,20 +132,7 @@ export function App() {
             dangerouslySetInnerHTML={{
               __html: '<svg viewBox="100 -900 800 800"><path d="M270-223q-20 0-33.5-13.5T223-270q0-20 13.5-33.5T270-317h420q20 0 33.5 13.5T737-270q0 20-13.5 33.5T690-223H270Zm210-403L325-471q-14 14-33 13.5T259-472q-14-14-14-33.5t14-33.5l187-187q14-14 34-14t34 14l192 192q14 14 14 33t-14 33q-14 14-33.5 14T639-468L480-626Z"/></svg>'
             }}
-            onClick={() => {
-              setDisplayHeader(false)
-              messenger.then(m => m.display(
-                'info', <>Press <kbd>Esc</kbd> to show the header again</>, {
-                  position: 'top-center'
-                }
-              ))
-              document.addEventListener('keydown', function onEsc(e: KeyboardEvent) {
-                if (e.key === 'Escape') {
-                  setDisplayHeader(true)
-                  document.removeEventListener('keydown', onEsc)
-                }
-              })
-            }}
+            onClick={hideHeader}
           />
           <I18N />
           <ThemeSwitcher />
