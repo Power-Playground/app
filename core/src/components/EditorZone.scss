@@ -12,7 +12,6 @@
     left: 0;
     width: 26px;
     height: 26px;
-    transform: rotate(0);
     cursor: pointer;
     user-select: none;
     transition: .1s;
@@ -25,7 +24,6 @@
       width: 36px;
       height: 36px;
       box-sizing: border-box;
-      transform: rotate(360deg);
       background-color: #fff3;
       border-radius: 4px;
       border: 2px solid color-mix(in srgb, var(--primary), var(--bg-cr) 40%);
