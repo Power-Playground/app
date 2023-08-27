@@ -12,7 +12,7 @@ import { definePlugin } from '..'
 
 import { Langs } from './statusbar/Langs'
 import { Versions } from './statusbar/Versions'
-import { depLoadErrorSymbol, moduleLoadErrorSymbol, moduleLoadingStateSymbol, resolveDeps } from './modules'
+import { depLoadErrorSymbol, moduleLoadingStateSymbol, resolveDeps } from './modules'
 import { use } from './use'
 import { getReferencesForModule, mapModuleNameToModule } from './utils'
 
