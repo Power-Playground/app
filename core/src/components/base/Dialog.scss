@@ -4,21 +4,35 @@ dialog.ppd-dialog {
   --min-height: 40vh;
 
   z-index: 1000;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
   padding: 0;
   width: 100vw;
   height: 100vh;
   background-color: #0008;
   outline: none;
   border: none;
+  transition: .5s;
+  & {
+    display: block;
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  &[open] {
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+    > .ppd-dialog__container {
+      top: 50%;
+    }
+  }
   > .ppd-dialog__container {
     display: flex;
     flex-direction: column;
 
     position: absolute;
-    top: 50%;
+    top: 100%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: var(--width);
@@ -29,7 +43,7 @@ dialog.ppd-dialog {
     box-shadow: 0 30px 128px #2224;
     border-radius: 4px;
     overflow: overlay;
-    transition: .1s;
+    transition: .5s;
     > .ppd-dialog__title {
       display: flex;
       align-items: center;
