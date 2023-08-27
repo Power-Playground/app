@@ -6,7 +6,7 @@ import { Popover } from '../../../components/base/Popover'
 import type { TypeScriptPluginX } from '..'
 import { typescriptVersionMeta, useDistTags } from '../editor.typescript.versions'
 
-export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = (({ searchParams, shareState }) => {
+export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShareState']>> = ({ searchParams, shareState }) => {
   const queryVersion = searchParams.get('typescript')
     ?? searchParams.get('ts')
     ?? searchParams.get('tsv')
@@ -152,4 +152,4 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
     >
     TypeScript@{value}
   </Popover>
-})
+}

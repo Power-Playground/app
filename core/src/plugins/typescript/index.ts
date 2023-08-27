@@ -10,6 +10,7 @@ import { mergeAll, mergeDeepLeft } from 'ramda'
 import { useDocumentEventListener } from '../../hooks/useDocumentEventListener'
 import { definePlugin } from '..'
 
+import { Setting } from './statusbar/Setting'
 import { Versions } from './statusbar/Versions'
 import { Langs } from './topbar/Langs'
 import { depLoadErrorSymbol, moduleLoadingStateSymbol, resolveDeps } from './modules'
@@ -436,7 +437,7 @@ const editor: Editor<TypeScriptPluginX> = {
   },
   load: editorLoad,
   topbar: [Langs],
-  statusbar: [Versions]
+  statusbar: [Versions, Setting]
 }
 
 export default definePlugin<'typescript', TypeScriptPluginX>('typescript', conf => {
