@@ -81,6 +81,30 @@ if (import.meta.hot) {
   hotPrevRefs && (prevRefs = hotPrevRefs)
 }
 
+type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
+
+function foreachDeps(
+  deps: Awaited<ReturnType<typeof resolveDeps>>,
+  cb: (args: {
+    moduleName: string
+    filePath: string
+    content: string
+  }) => void
+) {
+  const allModules = Object.entries(deps)
+    .flatMap(([, modules]) => {
+      return Object.entries(modules)
+    })
+  allModules.forEach(([moduleName, module]) => {
+    if (module[moduleLoadingStateSymbol] === 'loaded') {
+      Object.entries(module)
+        .forEach(([filePath, content]) => cb({
+          moduleName, filePath, content
+        }))
+    }
+  })
+}
+
 async function resolveModules(monaco: typeof monacoEditor, oldRefs: RefForModule, newRefs: RefForModule) {
   const addRefs = newRefs.filter(ref => !oldRefs.some(({ module }) => module === ref.module))
   const delRefs = oldRefs.filter(ref => !newRefs.some(({ module }) => module === ref.module))
@@ -89,37 +113,19 @@ async function resolveModules(monaco: typeof monacoEditor, oldRefs: RefForModule
   const extraLibs = Object
     .entries(monaco.languages.typescript.typescriptDefaults.getExtraLibs())
     .map(([filePath, lib]) => [filePath, lib.content])
-  Object.entries(delDeps)
-    .forEach(([, modules]) => {
-      Object.entries(modules)
-        .forEach(([, module]) => {
-          if (module[moduleLoadingStateSymbol] === 'loaded') {
-            Object.entries(module)
-              .forEach(([filePath]) => {
-                const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
-                if (index !== -1) {
-                  extraLibs.splice(index, 1)
-                }
-              })
-          }
-        })
-    })
-  Object.entries(addDeps)
-    .forEach(([, modules]) => {
-      Object.entries(modules)
-        .forEach(([moduleName, module]) => {
-          if (module[moduleLoadingStateSymbol] === 'loaded') {
-            Object.entries(module)
-              .forEach(([filePath, content]) => {
-                const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
-                if (index !== -1) {
-                  extraLibs.splice(index, 1)
-                }
-                extraLibs.push([`file:///node_modules/${moduleName}${filePath}`, content])
-              })
-          }
-        })
-    })
+  foreachDeps(delDeps, ({ filePath }) => {
+    const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
+    if (index !== -1) {
+      extraLibs.splice(index, 1)
+    }
+  })
+  foreachDeps(addDeps, ({ moduleName, filePath, content }) => {
+    const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
+    if (index !== -1) {
+      extraLibs.splice(index, 1)
+    }
+    extraLibs.push([`file:///node_modules/${moduleName}${filePath}`, content])
+  })
   if (
     Object.keys(delDeps).length === 0
     && Object.keys(addDeps).length === 0
