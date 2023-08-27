@@ -5,7 +5,7 @@ import type { Editor } from '@power-playground/core'
 import { messenger } from '@power-playground/core'
 import { atom, getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
-import { mergeAll } from 'ramda'
+import { mergeAll, mergeDeepLeft } from 'ramda'
 
 import { useDocumentEventListener } from '../../hooks/useDocumentEventListener'
 import { definePlugin } from '..'
@@ -323,7 +323,9 @@ const editor: Editor<TypeScriptPluginX> = {
           }
           return acc
         }, [] as RefForModule)
+      let resolveModulesFulfilled = () => void 0
       resolveModules(monaco, prevRefs, references)
+        .then(() => resolveModulesFulfilled())
       prevRefs = references
       if (import.meta.hot) {
         import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
@@ -333,7 +335,10 @@ const editor: Editor<TypeScriptPluginX> = {
         import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
       }
       editor.removeDecorations(ids)
-      const newIds = decorationsCollection.set(references.map(ref => {
+      const loadingDecorations: (
+        & { loadedVersion: string }
+        & monacoEditor.editor.IModelDeltaDecoration
+      )[] = references.map(ref => {
         const [start, end] = ref.position
         const startP = model.getPositionAt(start)
         const endP = model.getPositionAt(end)
@@ -345,17 +350,30 @@ const editor: Editor<TypeScriptPluginX> = {
         )
         const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
         return {
+          loadedVersion: ref.version ?? 'latest',
           range,
           options: {
             isWholeLine: true,
             after: {
-              content: `@${ref.version ?? 'latest'}`,
+              content: '⚡️ Downloading...',
               inlineClassName
             }
           }
-        } as monacoEditor.editor.IModelDeltaDecoration
-      }))
+        }
+      })
+      const newIds = decorationsCollection.set(loadingDecorations)
       modelDecorationIds.set(uri, newIds)
+
+      resolveModulesFulfilled = () => {
+        editor.removeDecorations(newIds)
+        const loadedDecorations = loadingDecorations.map(d => {
+          return mergeDeepLeft({
+            options: { after: { content: `@${d.loadedVersion}` } }
+          }, d)
+        })
+        const loadedIds = decorationsCollection.set(loadedDecorations)
+        modelDecorationIds.set(uri, loadedIds)
+      }
     }
     analysisCode().catch(console.error)
     const disposes = [
