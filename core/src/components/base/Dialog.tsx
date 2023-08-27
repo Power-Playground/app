@@ -76,13 +76,11 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
     open={open}
     className={`${prefix} ${className ?? ''}`}
     style={style}
+    onClick={() => setOpen(false)}
     >
-    <div className={`${prefix}__container`}>
+    <div className={`${prefix}__container`} onClick={e => e.stopPropagation()}>
       <div className={`${prefix}__title`}>
         <h1>{title}</h1>
-        <button className={`${prefix}__close`}
-                onClick={() => setOpen(false)}
-        >×</button>
       </div>
       <div className={`${prefix}__content`}>
         {open && <>{children}</>}
