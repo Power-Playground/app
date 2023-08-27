@@ -187,6 +187,15 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
   }
   const modelDecorationIds = modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol]
     ?? (modelDecorationIdsConfigurableEditor[modelDecorationIdsSymbol] = new Map<string, string[]>())
+
+  let dependencyLoadErrorReason: Record<string, string>
+  if (import.meta.hot) {
+    const hotDependencyLoadErrorReason = import.meta.hot.data['ppd:typescript:dependencyLoadErrorReason']
+    hotDependencyLoadErrorReason
+      ? (dependencyLoadErrorReason = hotDependencyLoadErrorReason)
+      : (dependencyLoadErrorReason = import.meta.hot.data['ppd:typescript:dependencyLoadErrorReason'] = {})
+  }
+
   async function analysisCode() {
     if (await promiseStatus(referencesPromise) === 'fulfilled') {
       referencesPromise = new Promise<RefForModule>(re => {
@@ -238,7 +247,6 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
         return acc
       }, [] as RefForModule)
     let resolveModulesFulfilled = () => void 0
-    const dependencyLoadErrorReason = {} as Record<string, string>
     resolveModules(monaco, prevRefs, references, {
       onDepLoadError({ depName, error }) {
         dependencyLoadErrorReason[depName] = `⚠️ ${error.message}`
