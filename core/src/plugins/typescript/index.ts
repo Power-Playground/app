@@ -12,6 +12,7 @@ import { definePlugin } from '..'
 
 import { Langs } from './statusbar/Langs'
 import { Versions } from './statusbar/Versions'
+import { moduleLoadingStateSymbol, resolveDeps } from './modules'
 import { use } from './use'
 import { getReferencesForModule, mapModuleNameToModule } from './utils'
 
@@ -39,6 +40,7 @@ export const compilerOptionsAtom = atom<
   module: 99,
   moduleResolution: 2,
   declaration: true,
+  allowSyntheticDefaultImports: true,
   lib: ['esnext', 'dom', 'esnext.disposable']
 })
 
@@ -72,6 +74,64 @@ let referencesPromise = new Promise<RefForModule>(re => {
 if (import.meta.hot) {
   const hotReferencesPromise = import.meta.hot.data['ppd:typescript:referencesPromise']
   hotReferencesPromise && (referencesPromise = hotReferencesPromise)
+}
+let prevRefs: RefForModule = []
+if (import.meta.hot) {
+  const hotPrevRefs = import.meta.hot.data['ppd:typescript:prevRefs']
+  hotPrevRefs && (prevRefs = hotPrevRefs)
+}
+
+async function resolveModules(monaco: typeof monacoEditor, oldRefs: RefForModule, newRefs: RefForModule) {
+  const addRefs = newRefs.filter(ref => !oldRefs.some(({ module }) => module === ref.module))
+  const delRefs = oldRefs.filter(ref => !newRefs.some(({ module }) => module === ref.module))
+  const addDeps = await resolveDeps(addRefs.map(({ module, version }) => [module, version ?? 'latest']))
+  const delDeps = await resolveDeps(delRefs.map(({ module, version }) => [module, version ?? 'latest']))
+  const extraLibs = Object
+    .entries(monaco.languages.typescript.typescriptDefaults.getExtraLibs())
+    .map(([filePath, lib]) => [filePath, lib.content])
+  Object.entries(delDeps)
+    .forEach(([, modules]) => {
+      Object.entries(modules)
+        .forEach(([, module]) => {
+          if (module[moduleLoadingStateSymbol] === 'loaded') {
+            Object.entries(module)
+              .forEach(([filePath]) => {
+                const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
+                if (index !== -1) {
+                  extraLibs.splice(index, 1)
+                }
+              })
+          }
+        })
+    })
+  Object.entries(addDeps)
+    .forEach(([, modules]) => {
+      Object.entries(modules)
+        .forEach(([moduleName, module]) => {
+          if (module[moduleLoadingStateSymbol] === 'loaded') {
+            Object.entries(module)
+              .forEach(([filePath, content]) => {
+                const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
+                if (index !== -1) {
+                  extraLibs.splice(index, 1)
+                }
+                extraLibs.push([`file:///node_modules/${moduleName}${filePath}`, content])
+              })
+          }
+        })
+    })
+  if (
+    Object.keys(delDeps).length === 0
+    && Object.keys(addDeps).length === 0
+  ) return
+  monaco.languages.typescript.typescriptDefaults
+    .setExtraLibs(extraLibs
+      .reduce((acc, [filePath, content]) => {
+        return acc.concat([{ filePath, content }])
+      }, [] as {
+        filePath?: string
+        content: string
+      }[]))
 }
 
 const modelDecorationIdsSymbol = '_modelDecorationIds'
@@ -236,8 +296,16 @@ const editor: Editor<TypeScriptPluginX> = {
         }
       })
 
+      const extraModules = store.get(extraModulesAtom).reduce((acc, { filePath }) => {
+        const name = /((?:@[^/]*\/)?[^/]+)/.exec(filePath)?.[1]
+        if (name && !acc.includes(name)) {
+          acc.push(name)
+        }
+        return acc
+      }, [] as string[])
       const references = getReferencesForModule(ts, content)
         .filter(ref => !ref.module.startsWith('.'))
+        .filter(ref => !extraModules.includes(ref.module))
         .map(ref => ({
           ...ref,
           module: mapModuleNameToModule(ref.module)
@@ -249,6 +317,11 @@ const editor: Editor<TypeScriptPluginX> = {
           }
           return acc
         }, [] as RefForModule)
+      resolveModules(monaco, prevRefs, references)
+      prevRefs = references
+      if (import.meta.hot) {
+        import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
+      }
       resolveReferences(references)
       if (import.meta.hot) {
         import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise

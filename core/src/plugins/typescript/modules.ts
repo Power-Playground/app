@@ -125,7 +125,9 @@ export function isDTSModule(meta: ModuleMeta) {
   )
 }
 
-export async function resolveDep(module: string, version: string) {
+export async function resolveDep(module: string, version: string): Promise<{
+  [module: string]: ModuleCacheItem
+}> {
   let m = await getModule(module, version, { ext: ['.d.ts'] })
   const modules = { [module]: m }
   const meta = m[metaSymbol]
@@ -137,7 +139,7 @@ export async function resolveDep(module: string, version: string) {
       modules[dtsMName] = m
       dtsMeta = m[metaSymbol]
     } catch (e) {
-      console.error('Failed to load @types module', e)
+      console.error(`Failed to load type for ${module}@${version} and @types/${getDTName(module)}@${version}`, e)
     }
   }
   const deps = Object.assign(meta.dependencies ?? {}, dtsMeta.dependencies ?? {})
@@ -150,8 +152,21 @@ export async function resolveDep(module: string, version: string) {
 }
 
 export async function resolveDeps(deps: [module: string, version: string][]) {
-  const modules = await Promise.all(deps.map(([module, version]) => resolveDep(module, version)))
-  return modules.flat()
+  return (
+    await Promise
+      .all(deps.map(([module, version]) => resolveDep(module, version)))
+  ).reduce((acc, cur, currentIndex) => {
+    acc[`${
+      deps[currentIndex][0]
+    }@${
+      deps[currentIndex][1]
+    }`] = cur
+    return acc
+  }, {} as {
+    [dependencyNameWithVersion: string]: {
+      [module: string]: ModuleCacheItem
+    }
+  })
 }
 
 async function fj<T>(url: string, init?: RequestInit): Promise<T> {
