@@ -1,8 +1,5 @@
-import PP from '../../resources/PP_P.svg'
-
 export function HeaderTitle() {
   return <>
-    <img src={PP} width='24px' alt='Power Playground Icon' />
     &nbsp;
     <span style={{
       color: 'color-mix(in srgb, var(--primary), #fff 80%)',

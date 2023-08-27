@@ -11,6 +11,7 @@ import { LeftBar } from '@power-playground/core/components/LeftBar.tsx'
 import { useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 
+import PP from '../../../resources/PP_P.svg'
 import { ExtensionContext } from '../contextes/Extension'
 import { MonacoScopeContext } from '../contextes/MonacoScope'
 import type { IStandaloneCodeEditor, Plugin, ShareState } from '../plugins'
@@ -150,10 +151,15 @@ export default function EditorZone(props: {
           title='display left zone.'
           onClick={() => setDisplayLeftBar(!displayLeftBar)}
         >
-          <div className='cldr codicon codicon-menu' />
+          <img src={PP} alt='Power Playground menu icon.' />
         </div>}
         {/* TODO support display animation */}
-        {displayLeftBar && <LeftBar />}
+        <LeftBar
+          style={{
+            width: displayLeftBar ? undefined : 0,
+            padding: displayLeftBar ? undefined : 0
+          }}
+        />
         <div className={`${prefix}__container`}>
           <TopBar
             className={enableMenuSwitch && displayLeftBar ? 'is-active' : undefined}
