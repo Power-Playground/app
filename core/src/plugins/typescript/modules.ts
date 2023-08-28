@@ -182,6 +182,44 @@ export async function resolveDeps(deps: [module: string, version: string][]) {
   })
 }
 
+type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
+
+export function foreachDeps(
+  deps: Awaited<ReturnType<typeof resolveDeps>>,
+  cb: (args: {
+    moduleName: string
+    filePath: string
+    content: string
+  }) => void,
+  opts: {
+    onDepLoadError?: (args: { depName: string; error: Error }) => void
+  } = {}
+) {
+  const allModules = Object.entries(deps)
+    .filter(([depName, dep]) => {
+      dep[depLoadErrorSymbol] && opts.onDepLoadError?.({
+        depName,
+        error: new Error(dep[depLoadErrorSymbol]!)
+      })
+      return !dep[depLoadErrorSymbol]
+    })
+    .flatMap(([, dep]) => {
+      return Object.entries(dep)
+    })
+  allModules.forEach(([moduleName, module]) => {
+    if (module[moduleLoadingStateSymbol] === 'loaded') {
+      Object.entries(module)
+        .forEach(([filePath, content]) => cb({
+          moduleName, filePath, content
+        }))
+      return
+    }
+    if (module[moduleLoadingStateSymbol] === 'error') {
+      // TODO
+    }
+  })
+}
+
 async function fj<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(url, init)
   if (res.ok) {

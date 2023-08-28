@@ -13,7 +13,7 @@ import { definePlugin } from '..'
 import { Setting } from './statusbar/Setting'
 import { Versions } from './statusbar/Versions'
 import { Langs } from './topbar/Langs'
-import { depLoadErrorSymbol, moduleLoadingStateSymbol, resolveDeps } from './modules'
+import { foreachDeps, resolveDeps } from './modules'
 import { use } from './use'
 import { getReferencesForModule, mapModuleNameToModule } from './utils'
 
@@ -80,44 +80,6 @@ let prevRefs: RefForModule = []
 if (import.meta.hot) {
   const hotPrevRefs = import.meta.hot.data['ppd:typescript:prevRefs']
   hotPrevRefs && (prevRefs = hotPrevRefs)
-}
-
-type Awaited<T> = T extends PromiseLike<infer U> ? Awaited<U> : T
-
-function foreachDeps(
-  deps: Awaited<ReturnType<typeof resolveDeps>>,
-  cb: (args: {
-    moduleName: string
-    filePath: string
-    content: string
-  }) => void,
-  opts: {
-    onDepLoadError?: (args: { depName: string; error: Error }) => void
-  } = {}
-) {
-  const allModules = Object.entries(deps)
-    .filter(([depName, dep]) => {
-      dep[depLoadErrorSymbol] && opts.onDepLoadError?.({
-        depName,
-        error: new Error(dep[depLoadErrorSymbol]!)
-      })
-      return !dep[depLoadErrorSymbol]
-    })
-    .flatMap(([, dep]) => {
-      return Object.entries(dep)
-    })
-  allModules.forEach(([moduleName, module]) => {
-    if (module[moduleLoadingStateSymbol] === 'loaded') {
-      Object.entries(module)
-        .forEach(([filePath, content]) => cb({
-          moduleName, filePath, content
-        }))
-      return
-    }
-    if (module[moduleLoadingStateSymbol] === 'error') {
-      // TODO
-    }
-  })
 }
 
 async function resolveModules(
