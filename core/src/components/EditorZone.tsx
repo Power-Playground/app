@@ -110,6 +110,21 @@ export default function EditorZone(props: {
 
   const [displayLeftBar, setDisplayLeftBar] = useAtom(displayLeftBarAtom)
 
+  const editorCursorPosition = useRef<monacoEditor.Position | null>(null)
+
+  useEffect(() => {
+    if (editor) {
+      // restore cursor position
+      editor.setPosition(editorCursorPosition.current ?? { lineNumber: 1, column: 1 })
+      editor.focus()
+
+      return () => {
+        // save current cursor position
+        editorCursorPosition.current = editor.getPosition() ?? null
+      }
+    }
+  }, [language, editor])
+
   useEffect(() => {
     if (!monaco || !editor) return
 
