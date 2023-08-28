@@ -1,4 +1,6 @@
-import { getDTName } from './utils'
+import type * as monacoEditor from 'monaco-editor'
+
+import { getDTName, type getReferencesForModule } from './utils'
 
 export const moduleLoadingStateSymbol = Symbol('moduleLoadingState')
 export const moduleLoadErrorSymbol = Symbol('moduleLoadError')
@@ -218,6 +220,52 @@ export function foreachDeps(
       // TODO
     }
   })
+}
+
+type RefForModule = ReturnType<typeof getReferencesForModule>
+
+export async function resolveModules(
+  monaco: typeof monacoEditor,
+  oldRefs: RefForModule,
+  newRefs: RefForModule,
+  opts: {
+    onDepLoadError?: (args: { depName: string; error: Error }) => void
+  } = {}
+) {
+  const addRefs = newRefs.filter(ref => !oldRefs.some(({ module }) => module === ref.module))
+  const delRefs = oldRefs.filter(ref => !newRefs.some(({ module }) => module === ref.module))
+  const addDeps = await resolveDeps(addRefs.map(({ module, version }) => [module, version ?? 'latest']))
+  const delDeps = await resolveDeps(delRefs.map(({ module, version }) => [module, version ?? 'latest']))
+  const extraLibs = Object
+    .entries(monaco.languages.typescript.typescriptDefaults.getExtraLibs())
+    .map(([filePath, lib]) => [filePath, lib.content])
+  foreachDeps(delDeps, ({ filePath }) => {
+    const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
+    if (index !== -1) {
+      extraLibs.splice(index, 1)
+    }
+  })
+  foreachDeps(addDeps, ({ moduleName, filePath, content }) => {
+    const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
+    if (index !== -1) {
+      extraLibs.splice(index, 1)
+    }
+    extraLibs.push([`file:///node_modules/${moduleName}${filePath}`, content])
+  }, {
+    onDepLoadError: opts.onDepLoadError
+  })
+  if (
+    Object.keys(delDeps).length === 0
+    && Object.keys(addDeps).length === 0
+  ) return
+  monaco.languages.typescript.typescriptDefaults
+    .setExtraLibs(extraLibs
+      .reduce((acc, [filePath, content]) => {
+        return acc.concat([{ filePath, content }])
+      }, [] as {
+        filePath?: string
+        content: string
+      }[]))
 }
 
 async function fj<T>(url: string, init?: RequestInit): Promise<T> {

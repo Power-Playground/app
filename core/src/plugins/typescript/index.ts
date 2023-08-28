@@ -13,7 +13,7 @@ import { definePlugin } from '..'
 import { Setting } from './statusbar/Setting'
 import { Versions } from './statusbar/Versions'
 import { Langs } from './topbar/Langs'
-import { foreachDeps, resolveDeps } from './modules'
+import { resolveModules } from './modules'
 import { use } from './use'
 import { getReferencesForModule, mapModuleNameToModule } from './utils'
 
@@ -80,50 +80,6 @@ let prevRefs: RefForModule = []
 if (import.meta.hot) {
   const hotPrevRefs = import.meta.hot.data['ppd:typescript:prevRefs']
   hotPrevRefs && (prevRefs = hotPrevRefs)
-}
-
-async function resolveModules(
-  monaco: typeof monacoEditor,
-  oldRefs: RefForModule,
-  newRefs: RefForModule,
-  opts: {
-    onDepLoadError?: (args: { depName: string; error: Error }) => void
-  } = {}
-) {
-  const addRefs = newRefs.filter(ref => !oldRefs.some(({ module }) => module === ref.module))
-  const delRefs = oldRefs.filter(ref => !newRefs.some(({ module }) => module === ref.module))
-  const addDeps = await resolveDeps(addRefs.map(({ module, version }) => [module, version ?? 'latest']))
-  const delDeps = await resolveDeps(delRefs.map(({ module, version }) => [module, version ?? 'latest']))
-  const extraLibs = Object
-    .entries(monaco.languages.typescript.typescriptDefaults.getExtraLibs())
-    .map(([filePath, lib]) => [filePath, lib.content])
-  foreachDeps(delDeps, ({ filePath }) => {
-    const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
-    if (index !== -1) {
-      extraLibs.splice(index, 1)
-    }
-  })
-  foreachDeps(addDeps, ({ moduleName, filePath, content }) => {
-    const index = extraLibs.findIndex(([extPath]) => extPath === filePath)
-    if (index !== -1) {
-      extraLibs.splice(index, 1)
-    }
-    extraLibs.push([`file:///node_modules/${moduleName}${filePath}`, content])
-  }, {
-    onDepLoadError: opts.onDepLoadError
-  })
-  if (
-    Object.keys(delDeps).length === 0
-    && Object.keys(addDeps).length === 0
-  ) return
-  monaco.languages.typescript.typescriptDefaults
-    .setExtraLibs(extraLibs
-      .reduce((acc, [filePath, content]) => {
-        return acc.concat([{ filePath, content }])
-      }, [] as {
-        filePath?: string
-        content: string
-      }[]))
 }
 
 const modelDecorationIdsSymbol = '_modelDecorationIds'
