@@ -144,9 +144,10 @@ export async function resolveDep(module: string, version: string): Promise<{
   }
   const deps = Object.assign(meta.dependencies ?? {}, dtsMeta.dependencies ?? {})
   if (deps) {
-    for (const [module, version] of Object.entries(deps)) {
-      Object.assign(modules, await resolveDep(module, version))
-    }
+    const resolvedDeps = await Promise.all([
+      ...Object.entries(deps).map(([module, version]) => resolveDep(module, version, depth + 1))
+    ])
+    Object.assign(modules, resolvedDeps)
   }
   return modules
 }
