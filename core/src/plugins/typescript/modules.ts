@@ -125,9 +125,14 @@ export function isDTSModule(meta: ModuleMeta) {
   )
 }
 
-export async function resolveDep(module: string, version: string): Promise<{
+export async function resolveDep(module: string, version: string, depth = 0): Promise<{
   [module: string]: ModuleCacheItem
 }> {
+  console.log(`Resolving ${module}@${version}`, depth)
+  if (depth > 2) {
+    console.error('Dependency tree is too deep')
+    return {}
+  }
   let m = await getModule(module, version, { ext: ['.d.ts'] })
   const modules = { [module]: m }
   const meta = m[metaSymbol]
