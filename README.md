@@ -15,5 +15,12 @@ Provide a powerful and scalable API to simplify the cost of building an excellen
 
 ## Thanks
 
+### Contributors
+
+<!-- readme: collaborators,contributors -start -->
+<!-- readme: collaborators,contributors -end -->
+
+### Helpers
+
 Thanks to [🔩 Losses](https://github.com/losses) for the icon design.
 I made some modifications based on his design, so if anyone finds it ugly, it's definitely my fault, not his.
