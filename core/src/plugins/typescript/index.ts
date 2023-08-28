@@ -2,7 +2,7 @@ import './index.scss'
 
 import { useEffect, useMemo } from 'react'
 import type { Editor } from '@power-playground/core'
-import { messenger } from '@power-playground/core'
+import { asyncDebounce, messenger } from '@power-playground/core'
 import { atom, getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 import { mergeAll, mergeDeepLeft } from 'ramda'
@@ -89,18 +89,7 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
   let typescript: typeof import('typescript') | undefined = undefined
   const decorationsCollection = editor.createDecorationsCollection()
 
-  let timeId: number | undefined = undefined
-  let reject: (reason?: any) => void = () => void 0
-  const debounce = (time: number) => {
-    reject()
-    timeId && clearTimeout(timeId)
-    return new Promise<void>((resolve, _rej) => {
-      reject = _rej
-      timeId = setTimeout(() => {
-        resolve()
-      }, time) as unknown as number
-    })
-  }
+  const debounce = asyncDebounce()
   const modelDecorationIdsConfigurableEditor = editor as unknown as {
     [modelDecorationIdsSymbol]?: Map<string, string[]>
   }
