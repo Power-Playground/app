@@ -10,7 +10,11 @@
   align-items: center;
   justify-content: space-between;
   padding: .6em;
-  background-color: var(--primary);
+  background-image: linear-gradient(
+    70deg,
+    var(--primary) 40%,
+    color-mix(in srgb, var(--primary), var(--bg-cr) 60%) 100%
+  );
   color: #fff;
   overflow: hidden;
   transition: .1s;
