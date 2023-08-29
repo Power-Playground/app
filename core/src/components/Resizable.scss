@@ -17,13 +17,10 @@
   }
   &-border {
     position: absolute;
-
+    background-color: #cacdd1;
+    
     html[theme-mode=dark] & {
       background-color: #494c50;
-    }
-    
-    html[theme-mode=light] & {
-        background-color: #cacdd1;
     }
     
     &__left, &__right {
