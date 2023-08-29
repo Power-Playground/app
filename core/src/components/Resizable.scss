@@ -1,5 +1,5 @@
 .ppd-resizable {
-  --inner-border-width: var(--border-width, 5px);
+  --inner-border-width: var(--border-width, 1px);
 
   position: relative;
   border: 0 solid black;
@@ -17,8 +17,15 @@
   }
   &-border {
     position: absolute;
-    background-color: #999;
-    transition: .1s;
+
+    html[theme-mode=dark] & {
+      background-color: #494c50;
+    }
+    
+    html[theme-mode=light] & {
+        background-color: #cacdd1;
+    }
+    
     &__left, &__right {
       top: 0;
       width: var(--inner-border-width);
