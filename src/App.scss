@@ -5,6 +5,7 @@
 }
 
 #root > header {
+  z-index: 1;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -15,6 +16,7 @@
     var(--primary) 40%,
     color-mix(in srgb, var(--primary), var(--bg-cr) 60%) 100%
   );
+  box-shadow: 0 0 16px #00000047;
   color: #fff;
   overflow: hidden;
   transition: .1s;
