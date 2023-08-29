@@ -1,0 +1,33 @@
+.logo {
+  margin-top: -0.3em;
+  margin-left: -0.6em;
+  margin-bottom: -0.3em;
+  padding-top: 0.3em;
+  padding-left: 0.6em;
+  padding-bottom: 0.5em;
+  min-width: 100px;
+  background-image: url("../../resources/PP_bg.svg");
+  background-repeat: no-repeat;
+  background-position: -1.2em -0.7em;
+  background-size: 80%;
+  filter: drop-shadow(0 0 5px #00000047);
+  transition: .3s;
+  &:hover {
+    filter: drop-shadow(0 0 8px #00000047) brightness(1.1);
+  }
+  > .highlight {
+    color: color-mix(in srgb, var(--primary), #fff 80%);
+    font-weight: bold;
+    transition: .3s;
+  }
+  > .secondary {
+    color: color-mix(in srgb, var(--primary), #fff 70%);
+    transition: .3s;
+  }
+  > .highlight, > .secondary {
+    text-shadow: 0 0 5px #00000047;
+    &:hover {
+      text-shadow: 0 0 8px #00000088;
+    }
+  }
+}
