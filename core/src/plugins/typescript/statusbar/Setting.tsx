@@ -9,7 +9,8 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { Dialog, type DialogRef } from '../../../components/base/Dialog'
 import { Popover } from '../../../components/base/Popover'
-import { compilerOptionsAtom, type TypeScriptPluginX } from '..'
+import { compilerOptionsAtom } from '../atoms'
+import { type TypeScriptPluginX } from '..'
 
 const getEnumKeyMap = (monaco: typeof monacoEditor) => ({
   target: monaco.languages.typescript.ScriptTarget,

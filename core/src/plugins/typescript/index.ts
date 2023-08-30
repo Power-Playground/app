@@ -3,7 +3,7 @@ import './index.scss'
 import { useEffect, useMemo } from 'react'
 import type { Editor } from '@power-playground/core'
 import { asyncDebounce, messenger } from '@power-playground/core'
-import { atom, getDefaultStore, useAtom } from 'jotai'
+import { getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 import { mergeAll, mergeDeepLeft } from 'ramda'
 
@@ -13,6 +13,7 @@ import { definePlugin } from '..'
 import { Setting } from './statusbar/Setting'
 import { Versions } from './statusbar/Versions'
 import { Langs } from './topbar/Langs'
+import { compilerOptionsAtom, extraFilesAtom, extraModulesAtom } from './atoms'
 import { resolveModules } from './modules'
 import { use } from './use'
 import { getReferencesForModule, mapModuleNameToModule } from './utils'
@@ -33,20 +34,6 @@ declare module '@power-playground/core' {
 }
 
 const store = getDefaultStore()
-
-export const compilerOptionsAtom = atom<
-  monacoEditor.languages.typescript.CompilerOptions
->({
-  target: 4,
-  module: 99,
-  moduleResolution: 2,
-  declaration: true,
-  allowSyntheticDefaultImports: true,
-  lib: ['esnext', 'dom', 'esnext.disposable']
-})
-
-export const extraFilesAtom = atom<ExtraFile[]>([])
-export const extraModulesAtom = atom<ExtraFile[]>([])
 
 export interface TypeScriptPluginX {
   ExtShareState: {
