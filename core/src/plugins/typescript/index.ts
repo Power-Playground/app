@@ -1,7 +1,7 @@
 import './index.scss'
 
 import { useEffect, useMemo } from 'react'
-import type { Editor } from '@power-playground/core'
+import type { Editor, IStandaloneCodeEditor } from '@power-playground/core'
 import { asyncDebounce, messenger } from '@power-playground/core'
 import { getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
@@ -71,12 +71,64 @@ if (import.meta.hot) {
 
 const modelDecorationIdsSymbol = '_modelDecorationIds'
 
-const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
-  const re = require as unknown as (id: string[], cb: (...args: any[]) => void) => void
-  let typescript: typeof import('typescript') | undefined = undefined
+type Provider<T> = (
+  model: monacoEditor.editor.ITextModel,
+  opts: { mountInitValue: T; isCancel: { value: boolean } },
+) => Promise<() => void> | (() => void)
+
+function makeProvider<T>(
+  mount: (
+    editor: IStandaloneCodeEditor
+  ) => T,
+  clear: (
+    editor: IStandaloneCodeEditor,
+    mountInitValue: T
+  ) => void,
+  anytime?: () => void
+) {
+  return (
+    editor: IStandaloneCodeEditor,
+    selector: { languages: string[] },
+    provider: Provider<T>
+  ) => {
+    const mountInitValue = mount(editor)
+
+    const debounce = asyncDebounce()
+    let isCancel = { value: false }
+    let prevDispose: (() => void) | undefined = undefined
+
+    async function callback() {
+      anytime?.()
+      const model = editor.getModel()
+      if (!model) return
+
+      if (!selector.languages.includes(model.getLanguageId())) {
+        clear(editor, mountInitValue)
+        return
+      }
+      try { await debounce(300) } catch { return }
+
+      isCancel.value = true
+      isCancel = { value: false }
+
+      prevDispose?.()
+      prevDispose = await provider(model, { mountInitValue, isCancel })
+    }
+    callback().catch(console.error)
+    return [
+      editor.onDidChangeModel(callback).dispose,
+      editor.onDidChangeModelContent(callback).dispose,
+      editor.onDidFocusEditorWidget(callback).dispose
+    ].reduce((acc, cur) => () => (acc(), cur()), () => {
+      clear(editor, mountInitValue)
+      prevDispose?.()
+    })
+  }
+}
+
+const addDecorationProvider = makeProvider(editor => {
   const decorationsCollection = editor.createDecorationsCollection()
 
-  const debounce = asyncDebounce()
   const modelDecorationIdsConfigurableEditor = editor as unknown as {
     [modelDecorationIdsSymbol]?: Map<string, string[]>
   }
@@ -89,135 +141,32 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
     hotDependencyLoadErrorReason
       ? (dependencyLoadErrorReason = hotDependencyLoadErrorReason)
       : (dependencyLoadErrorReason = import.meta.hot.data['ppd:typescript:dependencyLoadErrorReason'] = {})
+  } else {
+    dependencyLoadErrorReason = {}
   }
-  let isCancel = { value: false }
 
-  async function analysisCode() {
-    if (await promiseStatus(referencesPromise) === 'fulfilled') {
-      referencesPromise = new Promise<RefForModule>(re => {
-        resolveReferences = re
-      })
-    }
+  return { decorationsCollection, modelDecorationIds, dependencyLoadErrorReason }
+}, (editor, {
+  decorationsCollection,
+  modelDecorationIds
+}) => {
+  const uri = editor.getModel()?.uri.toString()
+  if (!uri) return
 
-    try { await debounce(300) } catch { return }
-    isCancel.value = true
-    isCancel = { value: false }
-    const currentIsCancel = isCancel
+  const ids = modelDecorationIds.get(uri)
+  if (!ids) return
 
-    const model = editor.getModel()
-    if (!model) return
-
-    const uri = model.uri.toString()
-    const ids = modelDecorationIds.get(uri)
-      ?? modelDecorationIds.set(uri, []).get(uri)!
-
-    const content = model.getValue()
-    const ts = await new Promise<typeof import('typescript')>(resolve => {
-      if (typescript === undefined) {
-        re(['vs/language/typescript/tsWorker'], () => {
-          // @ts-ignore
-          typescript = window.ts
-          // @ts-ignore
-          resolve(window.ts as unknown as typeof import('typescript'))
-        })
-      } else {
-        resolve(typescript)
-      }
-    })
-
-    const extraModules = store.get(extraModulesAtom).reduce((acc, { filePath }) => {
-      const name = /((?:@[^/]*\/)?[^/]+)/.exec(filePath)?.[1]
-      if (name && !acc.includes(name)) {
-        acc.push(name)
-      }
-      return acc
-    }, [] as string[])
-    const references = getReferencesForModule(ts, content)
-      .filter(ref => !ref.module.startsWith('.'))
-      .filter(ref => !extraModules.includes(ref.module))
-      .map(ref => ({
-        ...ref,
-        module: mapModuleNameToModule(ref.module)
-      }))
-      .reduce((acc, cur) => {
-        const index = acc.findIndex(({ module }) => module === cur.module)
-        if (index === -1) {
-          acc.push(cur)
-        }
-        return acc
-      }, [] as RefForModule)
-    let resolveModulesFulfilled = () => void 0
-    resolveModules(monaco, prevRefs, references, {
-      onDepLoadError({ depName, error }) {
-        dependencyLoadErrorReason[depName] = `⚠️ ${error.message}`
-      }
-    })
-      .then(() => {
-        if (currentIsCancel.value) return
-        resolveModulesFulfilled()
-      })
-    prevRefs = references
-    if (import.meta.hot) {
-      import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
-    }
-    resolveReferences(references)
-    if (import.meta.hot) {
-      import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
-    }
-    editor.removeDecorations(ids)
-    const loadingDecorations: (
-      & { loadedVersion: string, loadModule: string }
-      & monacoEditor.editor.IModelDeltaDecoration
-    )[] = references.map(ref => {
-      const [start, end] = ref.position
-      const startP = model.getPositionAt(start)
-      const endP = model.getPositionAt(end)
-      const range = new monaco.Range(
-        startP.lineNumber,
-        startP.column + 1,
-        endP.lineNumber,
-        endP.column + 1
-      )
-      const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
-      return {
-        loadModule: ref.module,
-        loadedVersion: ref.version ?? 'latest',
-        range,
-        options: {
-          isWholeLine: true,
-          after: {
-            content: '⚡️ Downloading...',
-            inlineClassName
-          }
-        }
-      }
-    })
-    const newIds = decorationsCollection.set(loadingDecorations)
-    modelDecorationIds.set(uri, newIds)
-
-    resolveModulesFulfilled = () => {
-      editor.removeDecorations(newIds)
-      const loadedDecorations = loadingDecorations.map(d => {
-        const error = dependencyLoadErrorReason[`${d.loadModule}@${d.loadedVersion}`]
-        return mergeDeepLeft({
-          options: { after: { content: error ?? `@${d.loadedVersion}` } }
-        }, d)
-      })
-      const loadedIds = decorationsCollection.set(loadedDecorations)
-      modelDecorationIds.set(uri, loadedIds)
-    }
+  editor.removeDecorations(ids)
+  modelDecorationIds.delete(uri)
+  decorationsCollection.clear()
+  if (import.meta.hot) {
+    import.meta.hot.data['ppd:typescript:dependencyLoadErrorReason'] = {}
   }
-  analysisCode().catch(console.error)
-  const disposes = [
-    editor.onDidChangeModel(analysisCode).dispose,
-    editor.onDidChangeModelContent(analysisCode).dispose,
-    editor.onDidFocusEditorWidget(analysisCode).dispose
-  ]
-
-  return () => {
-    disposes.forEach(dispose => dispose())
+}, async () => {
+  if (await promiseStatus(referencesPromise) === 'fulfilled') {
+    referencesPromise = new Promise<RefForModule>(re => resolveReferences = re)
   }
-}
+})
 
 const editor: Editor<TypeScriptPluginX> = {
   use,
@@ -330,7 +279,119 @@ const editor: Editor<TypeScriptPluginX> = {
       // TODO support inline completion version
     ])
   },
-  load: editorLoad,
+  load: (editor, monaco) => {
+    const re = require as unknown as (id: string[], cb: (...args: any[]) => void) => void
+    let typescript: typeof import('typescript') | undefined = undefined
+    return addDecorationProvider(
+      editor,
+      { languages: ['javascript', 'typescript'] },
+      async (model, { mountInitValue: {
+        modelDecorationIds,
+        decorationsCollection,
+        dependencyLoadErrorReason
+      }, isCancel }) => {
+        const uri = model.uri.toString()
+        const ids = modelDecorationIds.get(uri)
+          ?? modelDecorationIds.set(uri, []).get(uri)!
+
+        const content = model.getValue()
+        const ts = await new Promise<typeof import('typescript')>(resolve => {
+          if (typescript === undefined) {
+            re(['vs/language/typescript/tsWorker'], () => {
+              // @ts-ignore
+              typescript = window.ts
+              // @ts-ignore
+              resolve(window.ts as unknown as typeof import('typescript'))
+            })
+          } else {
+            resolve(typescript)
+          }
+        })
+
+        const extraModules = store.get(extraModulesAtom).reduce((acc, { filePath }) => {
+          const name = /((?:@[^/]*\/)?[^/]+)/.exec(filePath)?.[1]
+          if (name && !acc.includes(name)) {
+            acc.push(name)
+          }
+          return acc
+        }, [] as string[])
+        const references = getReferencesForModule(ts, content)
+          .filter(ref => !ref.module.startsWith('.'))
+          .filter(ref => !extraModules.includes(ref.module))
+          .map(ref => ({
+            ...ref,
+            module: mapModuleNameToModule(ref.module)
+          }))
+          .reduce((acc, cur) => {
+            const index = acc.findIndex(({ module }) => module === cur.module)
+            if (index === -1) {
+              acc.push(cur)
+            }
+            return acc
+          }, [] as RefForModule)
+        let resolveModulesFulfilled = () => void 0
+        resolveModules(monaco, prevRefs, references, {
+          onDepLoadError({ depName, error }) {
+            dependencyLoadErrorReason[depName] = `⚠️ ${error.message}`
+          }
+        })
+          .then(() => {
+            if (isCancel.value) return
+            resolveModulesFulfilled()
+          })
+        prevRefs = references
+        if (import.meta.hot) {
+          import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
+        }
+        resolveReferences(references)
+        if (import.meta.hot) {
+          import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
+        }
+        editor.removeDecorations(ids)
+        const loadingDecorations: (
+          & { loadedVersion: string, loadModule: string }
+          & monacoEditor.editor.IModelDeltaDecoration
+        )[] = references.map(ref => {
+          const [start, end] = ref.position
+          const startP = model.getPositionAt(start)
+          const endP = model.getPositionAt(end)
+          const range = new monaco.Range(
+            startP.lineNumber,
+            startP.column + 1,
+            endP.lineNumber,
+            endP.column + 1
+          )
+          const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
+          return {
+            loadModule: ref.module,
+            loadedVersion: ref.version ?? 'latest',
+            range,
+            options: {
+              isWholeLine: true,
+              after: {
+                content: '⚡️ Downloading...',
+                inlineClassName
+              }
+            }
+          }
+        })
+        const newIds = decorationsCollection.set(loadingDecorations)
+        modelDecorationIds.set(uri, newIds)
+
+        resolveModulesFulfilled = () => {
+          editor.removeDecorations(newIds)
+          const loadedDecorations = loadingDecorations.map(d => {
+            const error = dependencyLoadErrorReason[`${d.loadModule}@${d.loadedVersion}`]
+            return mergeDeepLeft({
+              options: { after: { content: error ?? `@${d.loadedVersion}` } }
+            }, d)
+          })
+          const loadedIds = decorationsCollection.set(loadedDecorations)
+          modelDecorationIds.set(uri, loadedIds)
+        }
+        return () => {}
+      })
+  },
   topbar: [Langs],
   statusbar: [Versions, Setting]
 }
