@@ -42,6 +42,9 @@
     > section {
       flex-grow: 1;
       height: 0 !important;
+      > div > div.monaco-editor {
+        padding-left: 5px;
+      }
     }
   }
 }
