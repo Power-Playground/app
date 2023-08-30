@@ -159,7 +159,7 @@ export default function EditorZone(props: {
         }}
         resizable={props.resizable ?? { right: true }}
       >
-        {enableMenuSwitch && <div
+        {enableMenuSwitch && false && <div
           className={classnames(`${prefix}__menu-switch`, {
             'is-active': displayLeftBar
           })}
