@@ -98,13 +98,14 @@ const editorLoad: Editor<TypeScriptPluginX>['load'] = (editor, monaco) => {
         resolveReferences = re
       })
     }
-    const model = editor.getModel()
-    if (!model) return
 
     try { await debounce(300) } catch { return }
     isCancel.value = true
     isCancel = { value: false }
     const currentIsCancel = isCancel
+
+    const model = editor.getModel()
+    if (!model) return
 
     const uri = model.uri.toString()
     const ids = modelDecorationIds.get(uri)
