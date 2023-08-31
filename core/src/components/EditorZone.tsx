@@ -160,14 +160,25 @@ export default function EditorZone(props: {
         }}
         resizable={props.resizable ?? { right: true }}
       >
-        {enableMenuSwitch && false && <div
+        {enableMenuSwitch && <div
           className={classnames(`${prefix}__menu-switch`, {
             'is-active': displayLeftBar
           })}
           title='display left zone.'
           onClick={() => setDisplayLeftBar(!displayLeftBar)}
         >
-          <img src={PP} alt='Power Playground menu icon.' />
+          {/*<img src={PP} alt='Power Playground menu icon.' />*/}
+          <span
+            className={classnames(
+              'cldr codicon',
+              !displayLeftBar
+                ? 'codicon-debug-line-by-line'
+                : 'codicon-menu'
+            )}
+            style={{
+              transform: !displayLeftBar ? 'rotate(180deg)' : undefined
+            }}
+          />
         </div>}
         {/* TODO support display animation */}
         <LeftBar

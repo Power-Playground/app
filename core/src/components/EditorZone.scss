@@ -2,6 +2,7 @@
   position: relative;
   display: flex;
   > .ppd-editor-zone__menu-switch {
+    --inner-color: var(--btn-color, var(--primary));
     z-index: 10;
 
     display: flex;
@@ -9,24 +10,33 @@
     align-items: center;
     justify-content: space-evenly;
     position: absolute;
-    left: 0;
+    top: 2px;
+    left: 2px;
     width: 26px;
     height: 26px;
     cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #fff;
     user-select: none;
-    transition: .1s;
+    transition: .2s;
     &:hover {
-      background-color: #fff5 !important;
+      background-color: color-mix(in srgb, var(--inner-color), #fff5 10%);
+      border: 1px solid color-mix(in srgb, var(--inner-color), #fff5 40%);
     }
     &.is-active {
       top: 5px;
       left: 5px;
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       box-sizing: border-box;
-      background-color: #fff3;
       border-radius: 4px;
-      border: 2px solid color-mix(in srgb, var(--primary), var(--bg-cr) 40%);
+      &:hover {
+        background-color: #fff1;
+        border: 2px solid color-mix(in srgb, var(--primary), var(--bg-cr) 60%);
+      }
+    }
+    > .codicon {
     }
   }
   &__container {
