@@ -12,13 +12,14 @@ import type * as monacoEditor from 'monaco-editor'
 
 import { ExtensionContext } from '../contextes/Extension'
 import { MonacoScopeContext } from '../contextes/MonacoScope'
+import { useDocumentEventListener } from '../hooks/useDocumentEventListener'
 import type { IStandaloneCodeEditor, Plugin, ShareState } from '../plugins'
 import { classnames, isMacOS } from '../utils'
 
-import { Popover } from './base/Popover.tsx'
+import { Popover } from './base/Popover'
 import { BottomStatus } from './BottomStatus'
 import { displayLeftBarAtom } from './EditorZoneShareAtoms'
-import { LeftBar } from './LeftBar.tsx'
+import { LeftBar } from './LeftBar'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
@@ -134,6 +135,12 @@ export default function EditorZone(props: {
     ))
     return () => dispose.forEach(func => func?.())
   }, [monaco, editor, plugins])
+
+  useDocumentEventListener('keydown', e => {
+    if (e.key === '\\' && (e.metaKey || e.ctrlKey)) {
+      setDisplayLeftBar(!displayLeftBar)
+    }
+  })
   return <ExtensionContext.Provider value={{
     searchParams: searchParams.current,
     plugins, shareState
