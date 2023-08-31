@@ -87,7 +87,9 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
   useEffect(() => {
     if (visible) {
       popper.current?.update()
-      setArrowPlacement(popper.current?.state?.placement ?? 'top')
+      setTimeout(() => {
+        setArrowPlacement(popper.current?.state?.placement ?? 'top')
+      }, 100)
     }
   }, [visible])
   const classname = `${prefix}-reference ${prefix}-${trigger}`
