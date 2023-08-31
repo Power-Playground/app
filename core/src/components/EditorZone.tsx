@@ -168,7 +168,7 @@ export default function EditorZone(props: {
           content={<>
             {displayLeftBar ? 'Hide activity bar' : 'Show activity bar'}
             <br />
-            <kbd>{isMacOS ? '⌘' : 'Ctrl'} \</kbd>
+            <kbd>{isMacOS ? '⌘' : 'Ctrl'} + \</kbd>
           </>}
           onClick={() => setDisplayLeftBar(!displayLeftBar)}
         >
