@@ -152,8 +152,6 @@ export interface BarItemProps<S = {}> {
   shareState: Partial<ShareState & S>
 }
 
-export const defineBarItem: <S>(Comp: React.ComponentType<BarItemProps<S>>) => typeof Comp = comp => comp
-
 export interface StandaloneKeybindingService {
   // from: https://github.com/microsoft/vscode/blob/df6d78a/src/vs/editor/standalone/browser/simpleServices.ts#L337
   // Passing undefined with `-` prefixing the commandId, will unset the existing keybinding.

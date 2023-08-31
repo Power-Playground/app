@@ -15,6 +15,8 @@ div.ppd-top-bar {
   color: #fff;
   transition: .1s;
   button {
+    --inner-color: var(--btn-color, var(--primary));
+
     display: flex;
     align-items: center;
     justify-content: center;
@@ -33,8 +35,8 @@ div.ppd-top-bar {
     outline: none;
     transition: .2s;
     &:hover {
-      background-color: color-mix(in srgb, var(--primary), #fff5 10%);
-      border: 1px solid color-mix(in srgb, var(--primary), #fff5 40%);
+      background-color: color-mix(in srgb, var(--inner-color), #fff5 10%);
+      border: 1px solid color-mix(in srgb, var(--inner-color), #fff5 40%);
     }
     > .cldr.codicon {
       font-size: 14px;
