@@ -1,11 +1,27 @@
 import { definePlugin } from '@power-playground/core'
 
+const hackStyle = `
+.tabbed-pane-header {
+  flex: 0 0 33px;
+}
+.tabbed-pane-header > .tabbed-pane-left-toolbar.toolbar {
+  display: none !important;
+}
+.tabbed-pane-header .tabbed-pane-header-tab {
+  height: 32px;
+}
+.tabbed-pane-right-toolbar {
+  display: flex;
+  align-items: center;
+}
+`.trim()
+
 export default definePlugin({
   devtools: {
     beforeMount({ devtoolsWindow }) {
       const { document } = devtoolsWindow
       const style = document.createElement('style')
-      style.innerText = `.tabbed-pane-header > .tabbed-pane-left-toolbar.toolbar { display: none !important; }`
+      style.innerText = hackStyle
       let tabbedPane: Element | null
       // TODO refactor by sentinel, now it's a hack
       //      unable load right document when use sentinel
