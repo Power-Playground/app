@@ -7,17 +7,18 @@ import React, {
   useState
 } from 'react'
 import Editor, { useMonaco } from '@monaco-editor/react'
-import { LeftBar } from '@power-playground/core/components/LeftBar.tsx'
 import { useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 
 import { ExtensionContext } from '../contextes/Extension'
 import { MonacoScopeContext } from '../contextes/MonacoScope'
 import type { IStandaloneCodeEditor, Plugin, ShareState } from '../plugins'
-import { classnames } from '../utils'
+import { classnames, isMacOS } from '../utils'
 
+import { Popover } from './base/Popover.tsx'
 import { BottomStatus } from './BottomStatus'
 import { displayLeftBarAtom } from './EditorZoneShareAtoms'
+import { LeftBar } from './LeftBar.tsx'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
 import { TopBar } from './TopBar'
@@ -159,11 +160,16 @@ export default function EditorZone(props: {
         }}
         resizable={props.resizable ?? { right: true }}
       >
-        {enableMenuSwitch && <div
+        {enableMenuSwitch && <Popover
+          placement='right'
           className={classnames(`${prefix}__menu-switch`, {
             'is-active': displayLeftBar
           })}
-          title='display left zone.'
+          content={<>
+            {displayLeftBar ? 'Hide activity bar' : 'Show activity bar'}
+            <br />
+            <kbd>{isMacOS ? '⌘' : 'Ctrl'} \</kbd>
+          </>}
           onClick={() => setDisplayLeftBar(!displayLeftBar)}
         >
           <span
@@ -174,7 +180,7 @@ export default function EditorZone(props: {
                 : 'codicon-menu'
             )}
           />
-        </div>}
+        </Popover>}
         {/* TODO support display animation */}
         <LeftBar
           style={{
