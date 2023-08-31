@@ -6,7 +6,7 @@
   width: 36px;
   background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 10%);
   transition: .1s;
-  &__bottom {
+  &__bottom, &__top {
     display: flex;
     flex-direction: column;
     gap: 5px;
