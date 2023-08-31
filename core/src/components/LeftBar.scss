@@ -29,6 +29,7 @@
       }
       > .codicon {
         font-size: 16px;
+        filter: drop-shadow(0 0 2px #333);
         &:before {
           font-size: 20px;
         }
