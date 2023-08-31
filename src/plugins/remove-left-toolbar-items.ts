@@ -1,5 +1,6 @@
 import { definePlugin } from '@power-playground/core'
 
+// TODO make change `.tabbed-pane-header` style as single logic to `extension-support.ts`
 const hackStyle = `
 .tabbed-pane-header {
   flex: 0 0 33px;
