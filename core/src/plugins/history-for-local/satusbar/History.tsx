@@ -24,9 +24,9 @@ export const History: React.ComponentType<BarItemProps> = ({ shareState }) => {
       style={{ cursor: 'pointer' }}
       offset={[0, 2]}
       content={<>
-        Show History(<code>
-          {isMacOS ? '⌘' : 'Ctrl'}
-        </code> + <code>H</code>)
+        Show History
+        &nbsp;&nbsp;
+        <kbd>{isMacOS ? '⌘' : 'Ctrl'} + H</kbd>
       </>}
       onClick={() => historyDialogRef.current?.open()}
       >

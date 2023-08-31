@@ -16,7 +16,9 @@ export function Help() {
         style={{ cursor: 'pointer' }}
         offset={[0, 3]}
         content={<>
-          Find Help(<code>{isMacOS ? '^' : 'Ctrl'}</code> + <code>/</code>)
+          Find Help
+          &nbsp;&nbsp;
+          <kbd>{isMacOS ? '^' : 'Ctrl'} + /</kbd>
         </>}
         onClick={() => helpDialogRef.current?.open()}
         >

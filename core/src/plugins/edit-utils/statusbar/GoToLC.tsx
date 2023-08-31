@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 
 import { Popover } from '../../../components/base/Popover'
 import { MonacoScopeContext } from '../../../contextes/MonacoScope'
+import { isMacOS } from '@power-playground/core'
 
 export function GoToLC() {
   // TODO remove MonacoScopeContext use
@@ -21,7 +22,11 @@ export function GoToLC() {
   return <Popover
     style={{ cursor: 'pointer' }}
     offset={[0, 3]}
-    content='Go to Line and Column'
+    content={<>
+      Go to Line and Column
+      &nbsp;&nbsp;
+      <kbd>{isMacOS ? '⌘' : 'Ctrl'} + L</kbd>
+    </>}
     onClick={() => {
       if (!editorInstance) return
 
