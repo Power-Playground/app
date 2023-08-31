@@ -23,8 +23,15 @@
       position: absolute;
       width: 0;
       height: 0;
-      left: -6px;
       border: 6px solid transparent;
+    }
+    &[data-position^=top]::before, &[data-position^=bottom]::before {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    &[data-position^=left]::before, &[data-position^=right]::before {
+      top: 50%;
+      transform: translateY(-50%);
     }
     &[data-position^=top] {
       bottom: 0;
@@ -37,6 +44,18 @@
     }
     &[data-position^=bottom]::before {
       border-bottom-color: var(--vscode-dropdown-background);
+    }
+    &[data-position^=left] {
+      right: 0;
+    }
+    &[data-position^=left]::before {
+      border-left-color: var(--vscode-dropdown-background);
+    }
+    &[data-position^=right] {
+      left: -12px;
+    }
+    &[data-position^=right]::before {
+      border-right-color: var(--vscode-dropdown-background);
     }
   }
 }
