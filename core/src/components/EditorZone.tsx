@@ -150,6 +150,7 @@ export default function EditorZone(props: {
         className={classnames(prefix, props.className)}
         style={{
           ...props.style,
+          '--border-width': '2px',
           width: 'var(--editor-width, 50%)',
           minWidth: 'var(--editor-min-width)',
           maxWidth: 'var(--editor-max-width)',

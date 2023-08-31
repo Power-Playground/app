@@ -8,8 +8,7 @@ import { classnames } from '../utils'
 export interface ResizableProps {
   className?: string
   style?: CSSProperties & {
-    '--border-size'?: string
-    '--inner-border-width'?: string
+    '--border-width'?: string
   }
   children?: React.ReactNode
 
