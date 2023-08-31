@@ -1,8 +1,8 @@
-import './index.scss'
+import './BottomStatus.scss'
 
 import React, { useContext, useMemo } from 'react'
 
-import { ExtensionContext } from '../../contextes/Extension'
+import { ExtensionContext } from '../contextes/Extension'
 
 const prefix = 'ppd-bottom-status'
 
