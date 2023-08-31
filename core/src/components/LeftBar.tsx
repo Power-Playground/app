@@ -17,21 +17,29 @@ export function LeftBar(props: LeftBarProps) {
     <div className={`${prefix}__top`}>
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
         <span className='cldr codicon codicon-folder'></span>
+        {/* TODO multiple files plugin */}
       </button>
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
-        <span className='cldr codicon codicon-symbol-snippet'></span>
+        <span className='cldr codicon codicon-heart'></span>
+        {/* TODO snippets */}
       </button>
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
         <span className='cldr codicon codicon-source-control'></span>
+        {/* TODO code timeline */}
       </button>
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
         <span className='cldr codicon codicon-book'></span>
+        {/* TODO examples and documents */}
       </button>
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
         <span className='cldr codicon codicon-extensions'></span>
+        {/* TODO extensions marketplace */}
       </button>
     </div>
     <div className={`${prefix}__bottom`}>
+      <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
+        <span className='cldr codicon codicon-account'></span>
+      </button>
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
         <span className='cldr codicon codicon-gear'></span>
       </button>
