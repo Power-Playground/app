@@ -9,7 +9,9 @@ export const Run: React.ComponentType<BarItemProps> = () => {
   return <Popover
     placement='top'
     content={<>
-      Execute(<code>{isMacOS ? '⌘' : 'Ctrl'}</code> + <code>E</code>)
+      Execute
+      &nbsp;&nbsp;
+      <kbd>{isMacOS ? '⌘' : 'Ctrl'} + E</kbd>
     </>}
     offset={[0, 6]}
     >
