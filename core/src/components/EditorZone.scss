@@ -21,22 +21,32 @@
     user-select: none;
     transition: .2s;
     &:hover {
-      background-color: color-mix(in srgb, var(--inner-color), #fff5 10%);
-      border: 1px solid color-mix(in srgb, var(--inner-color), #fff5 40%);
+      > .codicon {
+        &.codicon-layout-activitybar-left {
+          transform: rotate(-90deg) translateY(-1px);
+          &::before {
+            content: '\eaf3';
+          }
+        }
+        &.codicon-menu {
+          transform: rotate(90deg) translateY(1px);
+          &::before {
+            content: '\eaf3';
+          }
+        }
+      }
     }
     &.is-active {
       top: 5px;
       left: 6px;
       width: 34px;
       height: 34px;
-      box-sizing: border-box;
-      border-radius: 4px;
-      &:hover {
-        background-color: #fff1;
-        border: 2px solid color-mix(in srgb, var(--primary), var(--bg-cr) 60%);
+      > .codicon:before {
+        font-size: 20px;
       }
     }
     > .codicon {
+      transition: .1s;
     }
   }
   &__container {

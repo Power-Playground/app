@@ -172,12 +172,9 @@ export default function EditorZone(props: {
             className={classnames(
               'cldr codicon',
               !displayLeftBar
-                ? 'codicon-debug-line-by-line'
+                ? 'codicon-layout-activitybar-left'
                 : 'codicon-menu'
             )}
-            style={{
-              transform: !displayLeftBar ? 'rotate(180deg)' : undefined
-            }}
           />
         </div>}
         {/* TODO support display animation */}
