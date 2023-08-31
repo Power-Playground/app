@@ -2,4 +2,13 @@
   display: flex;
   border-radius: 4px;
   overflow: hidden;
+  &__mi {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: bold;
+    > img {
+      border-radius: 4px;
+    }
+  }
 }

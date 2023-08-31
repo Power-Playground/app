@@ -47,7 +47,7 @@ export function Menu(props: MenuProps) {
     className={props.className}
     trigger='click'
     placement='bottom-start'
-    offset={[50, 5]}
+    offset={[0, 5]}
     onKeydown={e => {
       if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
         e.stopPropagation()
