@@ -57,7 +57,8 @@ if (Object.getOwnPropertyDescriptor(window, '__PPD_CONFIGURES__')?.get === undef
   let resolve: Function | null = null
   let DEVTOOLS: HTMLIFrameElement | null = null
   if (import.meta.hot && __ENABLE_HOT_MODULE_REPLACE__) {
-    registerPluginConfigures(window.__PPD_CONFIGURES__.plugins)
+    window.__PPD_CONFIGURES__.plugins
+      && registerPluginConfigures(window.__PPD_CONFIGURES__.plugins)
     import.meta.hot.data['hmr:plugins-update'] = elBridgeC.on('hmr:plugins-update', () => {
       console.debug('hmr:plugins-update')
       cache()
