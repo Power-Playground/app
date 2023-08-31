@@ -2,6 +2,8 @@ import './LeftBar.scss'
 
 import { classnames, messenger } from '@power-playground/core'
 
+import PP from '../../../resources/PP_P.svg'
+
 const prefix = 'ppd-left-bar'
 
 export interface LeftBarProps {
@@ -18,6 +20,7 @@ export function LeftBar(props: LeftBarProps) {
       <button onClick={() => messenger.then(m => m.display('warning', 'Not implemented yet'))}>
         <span className='cldr codicon codicon-gear'></span>
       </button>
+      <img src={PP} alt='Power Playground menu icon.' />
     </div>
   </div>
 }

@@ -11,7 +11,6 @@ import { LeftBar } from '@power-playground/core/components/LeftBar.tsx'
 import { useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 
-import PP from '../../../resources/PP_P.svg'
 import { ExtensionContext } from '../contextes/Extension'
 import { MonacoScopeContext } from '../contextes/MonacoScope'
 import type { IStandaloneCodeEditor, Plugin, ShareState } from '../plugins'
@@ -167,7 +166,6 @@ export default function EditorZone(props: {
           title='display left zone.'
           onClick={() => setDisplayLeftBar(!displayLeftBar)}
         >
-          {/*<img src={PP} alt='Power Playground menu icon.' />*/}
           <span
             className={classnames(
               'cldr codicon',

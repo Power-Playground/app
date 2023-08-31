@@ -7,6 +7,9 @@
   background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 10%);
   transition: .1s;
   &__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
     > button {
       display: flex;
       align-items: center;
@@ -30,6 +33,9 @@
           font-size: 20px;
         }
       }
+    }
+    > img {
+      border-radius: 4px;
     }
   }
 }
