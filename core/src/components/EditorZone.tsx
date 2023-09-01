@@ -26,8 +26,7 @@ import { TopBar } from './TopBar'
 
 const prefix = 'ppd-editor-zone'
 
-// TODO resolve remove plugin hook dispose logic
-export default function EditorZone(props: {
+export interface EditorZoneProps extends Pick<ResizableProps, 'onBorderBtnClick'> {
   style?: React.CSSProperties & {
     '--editor-width'?: unknown
     '--editor-min-width'?: unknown
@@ -40,7 +39,10 @@ export default function EditorZone(props: {
   resizable?: ResizableProps['resizable']
   plugins?: Record<string, Plugin | undefined>
   enableMenuSwitch?: boolean
-}) {
+}
+
+// TODO resolve remove plugin hook dispose logic
+export default function EditorZone(props: EditorZoneProps) {
   const {
     enableMenuSwitch = true
   } = props
@@ -166,6 +168,7 @@ export default function EditorZone(props: {
           maxHeight: 'var(--editor-max-height)'
         }}
         resizable={props.resizable ?? { right: true }}
+        onBorderBtnClick={props.onBorderBtnClick}
       >
         {enableMenuSwitch && <Popover
           placement='right'

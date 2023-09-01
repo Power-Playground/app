@@ -8,6 +8,7 @@ import './init'
 import { useEffect, useMemo, useState } from 'react'
 import type { Plugin } from '@power-playground/core'
 import {
+  classnames,
   createQuickAccessInstance,
   EditorZone,
   elBridgeP, isConfigureUpdateWatchablePlugin, messenger, onConfigureUpdateSymbol,
@@ -106,6 +107,8 @@ export function App() {
       hideHeader()
     }
   })
+
+  const [evalLogsVisible, setEvalLogsVisible] = useState(true)
   return (
     <>
       <header style={{
@@ -138,21 +141,31 @@ export function App() {
           <ThemeSwitcher />
         </div>
       </header>
-      <div className={`main ${dockTo}`}>
+      <div className={classnames(
+        'main', dockTo,
+        evalLogsVisible ? 'eval-logs-visible' : ''
+      )}>
         <QuickAccessContext.Provider value={createQuickAccessInstance()}>
           <QuickAccess />
           <EditorZone
             resizable={resizable}
             style={{
-              '--editor-width': dockTo === 'bottom' ? '100%' : '65%',
-              '--editor-height': dockTo === 'bottom' ? '50%' : '100%'
+              '--editor-width': dockTo === 'bottom' ? '100%'
+                : evalLogsVisible ? '65%' : '100%',
+              '--editor-height': dockTo !== 'bottom' ? '100%'
+                : evalLogsVisible ? '50%' : '100%'
             }}
             plugins={plugins}
+            onBorderBtnClick={(...[, , { type }]) => {
+              if (type === 'full') {
+                setEvalLogsVisible(e => !e)
+              }
+            }}
           />
-          <iframe
+          {evalLogsVisible && <iframe
             src='./eval-logs.html'
             className='eval-logs'
-          />
+          />}
         </QuickAccessContext.Provider>
       </div>
     </>

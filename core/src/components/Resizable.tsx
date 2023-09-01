@@ -189,7 +189,7 @@ export function Resizable({
       {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
         <button onClick={e => props.onBorderBtnClick?.(
           'left', e, {
-            type: 'resize'
+            type: 'full'
           })}>
           <span className='cldr codicon codicon-debug-continue-small' style={{ transform: 'rotate(180deg)' }} />
         </button>
@@ -201,7 +201,7 @@ export function Resizable({
       {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
         <button onClick={e => props.onBorderBtnClick?.(
           'right', e, {
-            type: 'resize'
+            type: 'full'
           })}>
           <span className='cldr codicon codicon-debug-continue-small' />
         </button>
@@ -213,7 +213,7 @@ export function Resizable({
       {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
         <button onClick={e => props.onBorderBtnClick?.(
           'top', e, {
-            type: 'resize'
+            type: 'full'
           })}>
           <span className='cldr codicon codicon-debug-continue-small' style={{ transform: 'rotate(270deg)' }} />
         </button>
@@ -225,7 +225,7 @@ export function Resizable({
       {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
         <button onClick={e => props.onBorderBtnClick?.(
           'bottom', e, {
-            type: 'resize'
+            type: 'full'
           })}>
           <span className='cldr codicon codicon-debug-continue-small' style={{ transform: 'rotate(90deg)' }} />
         </button>
