@@ -4,7 +4,12 @@
   justify-content: space-between;
   padding: 44px 5px 5px;
   width: 36px;
-  background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 10%);
+  background-image: linear-gradient(
+    135deg,
+      color-mix(in srgb, var(--primary), var(--bg-cr) 10%) 50%,
+      color-mix(in srgb, var(--primary), var(--bg-cr) 40%) 80%,
+      color-mix(in srgb, var(--primary), var(--bg-cr) 80%)
+  );
   transition: .1s;
   &__bottom, &__top {
     display: flex;
