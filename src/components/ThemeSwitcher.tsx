@@ -1,6 +1,7 @@
 import './ThemeSwitcher.scss'
 
 import { useState } from 'react'
+import { applyTheme, argbFromHex, themeFromSourceColor } from "@material/material-color-utilities"
 
 declare const theme: 'light' | 'dark' | (string & {})
 
@@ -25,6 +26,17 @@ function updateTheme(mode?: typeof theme) {
   }
   curThemeMode = mode || 'light'
   themeChangeListeners.forEach(listener => listener(curThemeMode, theme === 'auto'))
+
+  const themeColorArgb = argbFromHex('0x263c6e')
+  const md3Theme = themeFromSourceColor(themeColorArgb)
+
+  applyTheme(md3Theme, {
+    dark: mode === "dark", brightnessSuffix: true, paletteTones: [
+      10, 20, 30, 40, 50, 60, 70, 80, 90, 100
+    ],
+    target: document.documentElement
+  })
+
   if (mode === 'dark') {
     document.documentElement.setAttribute('theme-mode', 'dark')
   } else {

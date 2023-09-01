@@ -3,13 +3,12 @@
   flex-direction: row-reverse;
   width: 100%;
   height: 27px;
-  background-color: color-mix(in srgb, var(--primary) 20%, var(--bg-cr));
-  border-top: 1px solid var(--primary);
+  background-color: var(--md-sys-color-primary-container);
   > * {
     padding: 0 10px;
     transition: .1s;
     &:hover {
-      background-color: color-mix(in srgb, var(--primary) 70%, var(--bg-cr));
+      background-color: var(--md-sys-color-on-primary);
     }
   }
   > .ppd-popover-reference.ppd-popover-hover {
