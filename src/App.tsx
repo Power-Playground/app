@@ -86,6 +86,8 @@ export function App() {
   }, [])
   function hideHeader() {
     if (!displayHeader) return
+    // TODO query cache
+    // TODO keyboard a11y support
 
     setDisplayHeader(false)
     messenger.then(m => m.display(
@@ -159,6 +161,7 @@ export function App() {
             onBorderBtnClick={(...[, , { type }]) => {
               if (type === 'full') {
                 setEvalLogsVisible(e => !e)
+                // TODO query cache
               }
             }}
           />
