@@ -6,6 +6,7 @@
   background-color: color-mix(in srgb, var(--primary) 20%, var(--bg-cr));
   border-top: 1px solid var(--primary);
   color: #555;
+  overflow: hidden;
   html[theme-mode=dark] & {
     color: #999;
   }
@@ -15,6 +16,10 @@
     &:hover {
       color: white;
       background-color: color-mix(in srgb, var(--primary) 70%, var(--bg-cr));
+      box-shadow: 0 0 4px #888;
+      html[theme-mode=dark] & {
+        box-shadow: 0 0 4px #111;
+      }
     }
   }
   > .ppd-popover-reference.ppd-popover-hover {
