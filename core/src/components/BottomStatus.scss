@@ -5,10 +5,15 @@
   height: 27px;
   background-color: color-mix(in srgb, var(--primary) 20%, var(--bg-cr));
   border-top: 1px solid var(--primary);
+  color: #555;
+  html[theme-mode=dark] & {
+    color: #999;
+  }
   > * {
     padding: 0 10px;
     transition: .1s;
     &:hover {
+      color: white;
       background-color: color-mix(in srgb, var(--primary) 70%, var(--bg-cr));
     }
   }
