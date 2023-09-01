@@ -33,6 +33,9 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+
+      opacity: 0;
+      transition: .1s;
       > button {
         display: flex;
         align-items: center;
@@ -55,6 +58,9 @@
         }
         > span.cldr { font-size: 12px }
       }
+    }
+    &:hover &__btns {
+      opacity: 1;
     }
     &__top > &__btns, &__bottom > &__btns {
       flex-direction: row;
