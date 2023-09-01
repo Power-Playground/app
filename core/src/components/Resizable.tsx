@@ -22,6 +22,12 @@ export interface ResizableProps {
       top?: boolean
       bottom?: boolean
     }
+
+  onBorderBtnClick?: (
+    type: 'left' | 'right' | 'top' | 'bottom',
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    args: { type: string }
+  ) => void
 }
 
 function resolveResizable(resizable?: ResizableProps['resizable']): [
@@ -179,15 +185,51 @@ export function Resizable({
     {children}
     {left && <div
       className={`${prefix}-border ${prefix}-border__left`}
-    />}
+    >
+      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => props.onBorderBtnClick?.(
+          'left', e, {
+            type: 'resize'
+          })}>
+          <span className='cldr codicon codicon-debug-continue-small' style={{ transform: 'rotate(180deg)' }} />
+        </button>
+      </div>}
+    </div>}
     {right && <div
       className={`${prefix}-border ${prefix}-border__right`}
-    />}
+    >
+      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => props.onBorderBtnClick?.(
+          'right', e, {
+            type: 'resize'
+          })}>
+          <span className='cldr codicon codicon-debug-continue-small' />
+        </button>
+      </div>}
+    </div>}
     {top && <div
       className={`${prefix}-border ${prefix}-border__top`}
-    />}
+    >
+      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => props.onBorderBtnClick?.(
+          'top', e, {
+            type: 'resize'
+          })}>
+          <span className='cldr codicon codicon-debug-continue-small' style={{ transform: 'rotate(270deg)' }} />
+        </button>
+      </div>}
+    </div>}
     {bottom && <div
       className={`${prefix}-border ${prefix}-border__bottom`}
-    />}
+    >
+      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => props.onBorderBtnClick?.(
+          'bottom', e, {
+            type: 'resize'
+          })}>
+          <span className='cldr codicon codicon-debug-continue-small' style={{ transform: 'rotate(90deg)' }} />
+        </button>
+      </div>}
+    </div>}
   </div>
 }

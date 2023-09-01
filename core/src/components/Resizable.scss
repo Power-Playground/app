@@ -16,13 +16,53 @@
     border-bottom-width: var(--inner-border-width);
   }
   &-border {
+    z-index: 100;
     position: absolute;
     background-color: #cacdd1;
-    
+    transition: .1s;
     html[theme-mode=dark] & {
       background-color: #494c50;
     }
-    
+    &__btns {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      > button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0;
+        width: 16px;
+        height: 30px;
+        border-radius: 4px;
+
+        color: #fff;
+        background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
+        border: 1px solid color-mix(in srgb, var(--primary), var(--bg-cr) 80%);
+
+        cursor: pointer;
+        transition: .1s;
+        &:hover {
+          box-shadow: 0 0 2px gray;
+          background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 30%);
+        }
+        > span.cldr { font-size: 12px }
+      }
+    }
+    &__top > &__btns, &__bottom > &__btns {
+      flex-direction: row;
+      > button {
+        width: 30px;
+        height: 16px;
+      }
+    }
     &__left, &__right {
       top: 0;
       width: var(--inner-border-width);
