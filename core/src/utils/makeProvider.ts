@@ -10,20 +10,23 @@ export type Provider<T> = (
 
 export function makeProvider<T>(
   mount: (
-    editor: IStandaloneCodeEditor
+    editor: IStandaloneCodeEditor,
+    monaco: typeof monacoEditor
   ) => T,
   clear: (
     editor: IStandaloneCodeEditor,
-    mountInitValue: T
+    mountInitValue: T,
+    monaco: typeof monacoEditor
   ) => void,
   anytime?: () => void
 ) {
   return (
+    monaco: typeof monacoEditor,
     editor: IStandaloneCodeEditor,
     selector: { languages: string[] },
     provider: Provider<T>
   ) => {
-    const mountInitValue = mount(editor)
+    const mountInitValue = mount(editor, monaco)
 
     const debounce = asyncDebounce()
     let isCancel = { value: false }
@@ -35,7 +38,7 @@ export function makeProvider<T>(
       if (!model) return
 
       if (!selector.languages.includes(model.getLanguageId())) {
-        clear(editor, mountInitValue)
+        clear(editor, mountInitValue, monaco)
         return
       }
       try { await debounce(300) } catch { return }
@@ -52,7 +55,7 @@ export function makeProvider<T>(
       editor.onDidChangeModelContent(callback).dispose,
       editor.onDidFocusEditorWidget(callback).dispose
     ].reduce((acc, cur) => () => (acc(), cur()), () => {
-      clear(editor, mountInitValue)
+      clear(editor, mountInitValue, monaco)
       prevDispose?.()
     })
   }
