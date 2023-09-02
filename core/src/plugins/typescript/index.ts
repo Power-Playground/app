@@ -227,115 +227,120 @@ const editor: Editor<TypeScriptPluginX> = {
   load: (editor, monaco) => {
     const re = require as unknown as (id: string[], cb: (...args: any[]) => void) => void
     let typescript: typeof import('typescript') | undefined = undefined
-    return addDecorationProvider(
-      editor,
-      { languages: ['javascript', 'typescript'] },
-      async (model, { mountInitValue: {
-        modelDecorationIds,
-        decorationsCollection,
-        dependencyLoadErrorReason
-      }, isCancel }) => {
-        const uri = model.uri.toString()
-        const ids = modelDecorationIds.get(uri)
-          ?? modelDecorationIds.set(uri, []).get(uri)!
+    return [
+      addDecorationProvider(
+        editor,
+        { languages: ['javascript', 'typescript'] },
+        async (model, { mountInitValue: {
+          modelDecorationIds,
+          decorationsCollection,
+          dependencyLoadErrorReason
+        }, isCancel }) => {
+          const uri = model.uri.toString()
+          const ids = modelDecorationIds.get(uri)
+            ?? modelDecorationIds.set(uri, []).get(uri)!
 
-        const content = model.getValue()
-        const ts = await new Promise<typeof import('typescript')>(resolve => {
-          if (typescript === undefined) {
-            re(['vs/language/typescript/tsWorker'], () => {
-              // @ts-ignore
-              typescript = window.ts
-              // @ts-ignore
-              resolve(window.ts as unknown as typeof import('typescript'))
-            })
-          } else {
-            resolve(typescript)
-          }
-        })
+          const content = model.getValue()
+          const ts = await new Promise<typeof import('typescript')>(resolve => {
+            if (typescript === undefined) {
+              re(['vs/language/typescript/tsWorker'], () => {
+                // @ts-ignore
+                typescript = window.ts
+                // @ts-ignore
+                resolve(window.ts as unknown as typeof import('typescript'))
+              })
+            } else {
+              resolve(typescript)
+            }
+          })
 
-        const extraModules = store.get(extraModulesAtom).reduce((acc, { filePath }) => {
-          const name = /((?:@[^/]*\/)?[^/]+)/.exec(filePath)?.[1]
-          if (name && !acc.includes(name)) {
-            acc.push(name)
-          }
-          return acc
-        }, [] as string[])
-        const references = getReferencesForModule(ts, content)
-          .filter(ref => !ref.module.startsWith('.'))
-          .filter(ref => !extraModules.includes(ref.module))
-          .map(ref => ({
-            ...ref,
-            module: mapModuleNameToModule(ref.module)
-          }))
-          .reduce((acc, cur) => {
-            const index = acc.findIndex(({ module }) => module === cur.module)
-            if (index === -1) {
-              acc.push(cur)
+          const extraModules = store.get(extraModulesAtom).reduce((acc, { filePath }) => {
+            const name = /((?:@[^/]*\/)?[^/]+)/.exec(filePath)?.[1]
+            if (name && !acc.includes(name)) {
+              acc.push(name)
             }
             return acc
-          }, [] as RefForModule)
-        let resolveModulesFulfilled = () => void 0
-        resolveModules(monaco, prevRefs, references, {
-          onDepLoadError({ depName, error }) {
-            dependencyLoadErrorReason[depName] = `⚠️ ${error.message}`
-          }
-        })
-          .then(() => {
-            if (isCancel.value) return
-            resolveModulesFulfilled()
-          })
-        prevRefs = references
-        if (import.meta.hot) {
-          import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
-        }
-        resolveReferences(references)
-        if (import.meta.hot) {
-          import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
-        }
-        editor.removeDecorations(ids)
-        const loadingDecorations: (
-          & { loadedVersion: string, loadModule: string }
-          & monacoEditor.editor.IModelDeltaDecoration
-        )[] = references.map(ref => {
-          const [start, end] = ref.position
-          const startP = model.getPositionAt(start)
-          const endP = model.getPositionAt(end)
-          const range = new monaco.Range(
-            startP.lineNumber,
-            startP.column + 1,
-            endP.lineNumber,
-            endP.column + 1
-          )
-          const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
-          return {
-            loadModule: ref.module,
-            loadedVersion: ref.version ?? 'latest',
-            range,
-            options: {
-              isWholeLine: true,
-              after: {
-                content: '⚡️ Downloading...',
-                inlineClassName
+          }, [] as string[])
+          const references = getReferencesForModule(ts, content)
+            .filter(ref => !ref.module.startsWith('.'))
+            .filter(ref => !extraModules.includes(ref.module))
+            .map(ref => ({
+              ...ref,
+              module: mapModuleNameToModule(ref.module)
+            }))
+            .reduce((acc, cur) => {
+              const index = acc.findIndex(({ module }) => module === cur.module)
+              if (index === -1) {
+                acc.push(cur)
               }
+              return acc
+            }, [] as RefForModule)
+          let resolveModulesFulfilled = () => void 0
+          resolveModules(monaco, prevRefs, references, {
+            onDepLoadError({ depName, error }) {
+              dependencyLoadErrorReason[depName] = `⚠️ ${error.message}`
             }
-          }
-        })
-        const newIds = decorationsCollection.set(loadingDecorations)
-        modelDecorationIds.set(uri, newIds)
-
-        resolveModulesFulfilled = () => {
-          editor.removeDecorations(newIds)
-          const loadedDecorations = loadingDecorations.map(d => {
-            const error = dependencyLoadErrorReason[`${d.loadModule}@${d.loadedVersion}`]
-            return mergeDeepLeft({
-              options: { after: { content: error ?? `@${d.loadedVersion}` } }
-            }, d)
           })
-          const loadedIds = decorationsCollection.set(loadedDecorations)
-          modelDecorationIds.set(uri, loadedIds)
-        }
-        return () => {}
-      })
+            .then(() => {
+              if (isCancel.value) return
+              resolveModulesFulfilled()
+            })
+          prevRefs = references
+          if (import.meta.hot) {
+            import.meta.hot.data['ppd:typescript:prevRefs'] = prevRefs
+          }
+          resolveReferences(references)
+          if (import.meta.hot) {
+            import.meta.hot.data['ppd:typescript:referencesPromise'] = referencesPromise
+          }
+          editor.removeDecorations(ids)
+          const loadingDecorations: (
+            & { loadedVersion: string, loadModule: string }
+            & monacoEditor.editor.IModelDeltaDecoration
+            )[] = references.map(ref => {
+              const [start, end] = ref.position
+              const startP = model.getPositionAt(start)
+              const endP = model.getPositionAt(end)
+              const range = new monaco.Range(
+                startP.lineNumber,
+                startP.column + 1,
+                endP.lineNumber,
+                endP.column + 1
+              )
+              const inlineClassName = `ts__button-decoration ts__button-decoration__position-${start}__${end}`
+              return {
+                loadModule: ref.module,
+                loadedVersion: ref.version ?? 'latest',
+                range,
+                options: {
+                  isWholeLine: true,
+                  after: {
+                    content: '⚡️ Downloading...',
+                    inlineClassName
+                  }
+                }
+              }
+            })
+          const newIds = decorationsCollection.set(loadingDecorations)
+          modelDecorationIds.set(uri, newIds)
+
+          resolveModulesFulfilled = () => {
+            editor.removeDecorations(newIds)
+            const loadedDecorations = loadingDecorations.map(d => {
+              const error = dependencyLoadErrorReason[`${d.loadModule}@${d.loadedVersion}`]
+              return mergeDeepLeft({
+                options: { after: { content: error ?? `@${d.loadedVersion}` } }
+              }, d)
+            })
+            const loadedIds = decorationsCollection.set(loadedDecorations)
+            modelDecorationIds.set(uri, loadedIds)
+          }
+          return () => {}
+        })
+    ].reduce(
+      (acc, cur) => () => (acc(), cur()),
+      () => void 0
+    )
   },
   topbar: [Langs],
   statusbar: [Versions, Setting]
