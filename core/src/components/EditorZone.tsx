@@ -131,10 +131,22 @@ export default function EditorZone(props: EditorZoneProps) {
   useEffect(() => {
     if (!monaco || !editor) return
 
-    const dispose = plugins.map(plugin => plugin?.editor?.load?.(
-      editor as IStandaloneCodeEditor,
-      monaco
-    ))
+    const dispose = plugins
+      .map(plugin => {
+        const loadRT = plugin?.editor?.load?.(
+          editor as IStandaloneCodeEditor,
+          monaco
+        )
+        if (typeof loadRT === 'function') {
+          return loadRT
+        }
+        if (Array.isArray(loadRT)) {
+          return loadRT.reduce(
+            (acc, func) => () => (acc?.(), func?.()),
+            () => void 0
+          )
+        }
+      })
     return () => dispose.forEach(func => func?.())
   }, [monaco, editor, plugins])
 

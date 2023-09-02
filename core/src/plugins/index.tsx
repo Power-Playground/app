@@ -191,7 +191,7 @@ export type Editor<X extends {
   load?: (
     editorInstance: IStandaloneCodeEditor,
     monaco: typeof MonacoEditor
-  ) => Dispose | void
+  ) => Dispose | void | Dispose[]
 
   topbar?: React.ComponentType<BarItemProps<X['ExtShareState']>>[]
   statusbar?: React.ComponentType<

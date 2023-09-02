@@ -337,10 +337,7 @@ const editor: Editor<TypeScriptPluginX> = {
           }
           return () => {}
         })
-    ].reduce(
-      (acc, cur) => () => (acc(), cur()),
-      () => void 0
-    )
+    ]
   },
   topbar: [Langs],
   statusbar: [Versions, Setting]
