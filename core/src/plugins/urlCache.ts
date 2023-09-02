@@ -26,6 +26,7 @@ export default definePlugin({
     }],
     load(editor, monaco) {
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+        // TODO prevent event of browser default behavior
         const code = editor.getValue()
         history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
         copyToClipboard(location.href)
