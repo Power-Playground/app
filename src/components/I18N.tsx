@@ -6,7 +6,11 @@ import { Popover } from '@power-playground/core/components/base/Popover.tsx'
 export function I18N() {
   return <Popover
     className='i18n'
-    content='Not implemented yet'
+    content={<>
+      Not implemented yet, it will come soon, <a href='https://github.com/Power-Playground/app/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22' target='_blank' rel='noreferrer'>
+        help us
+      </a>
+    </>}
     placement='bottom-start'
     trigger='click'
     offset={[0, 10]}
