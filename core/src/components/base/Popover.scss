@@ -24,6 +24,7 @@
       width: 0;
       height: 0;
       border: 6px solid transparent;
+      pointer-events: none;
     }
     &[data-position^=top]::before, &[data-position^=bottom]::before {
       left: 50%;
