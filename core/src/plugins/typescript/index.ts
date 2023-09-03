@@ -108,9 +108,11 @@ const addDecorationProvider = makeProvider(editor => {
   if (import.meta.hot) {
     import.meta.hot.data['ppd:typescript:dependencyLoadErrorReason'] = {}
   }
-}, async () => {
-  if (await promiseStatus(referencesPromise) === 'fulfilled') {
-    referencesPromise = new Promise<RefForModule>(re => resolveReferences = re)
+}, {
+  anytime: async () => {
+    if (await promiseStatus(referencesPromise) === 'fulfilled') {
+      referencesPromise = new Promise<RefForModule>(re => resolveReferences = re)
+    }
   }
 })
 

@@ -18,8 +18,13 @@ export function makeProvider<T>(
     mountInitValue: T,
     monaco: typeof monacoEditor
   ) => void,
-  anytime?: () => void
+  opts?: {
+    anytime?: () => void
+  }
 ) {
+  const {
+    anytime
+  } = opts ?? {}
   return (
     monaco: typeof monacoEditor,
     editor: IStandaloneCodeEditor,
