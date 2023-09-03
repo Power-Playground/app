@@ -2,7 +2,14 @@ import './index.scss'
 
 import { useEffect, useMemo } from 'react'
 import type { Editor } from '@power-playground/core'
-import { classnames, DEFAULT_WATCH_EVENT_KEYS, makeProvider, messenger } from '@power-playground/core'
+import {
+  classnames,
+  DEFAULT_WATCH_EVENT_KEYS,
+  isWhatArgs,
+  makeProvider,
+  messenger,
+  StopThisTimeError
+} from '@power-playground/core'
 import { getDefaultStore, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 import { mergeAll, mergeDeepLeft } from 'ramda'
@@ -174,7 +181,15 @@ const addGlyphProvider = makeProvider((editor, monaco) => {
   watchEventKeys: [
     ...DEFAULT_WATCH_EVENT_KEYS,
     'onDidChangeModelDecorations'
-  ]
+  ],
+  anytime(type, ...args) {
+    if (isWhatArgs(type, 'onDidChangeModelDecorations', args)) {
+      const [e] = args
+      if (!e.affectsMinimap) {
+        throw StopThisTimeError.instance
+      }
+    }
+  }
 })
 
 const editor: Editor<TypeScriptPluginX> = {

@@ -8,13 +8,34 @@ export type Provider<T> = (
   opts: { mountInitValue: T; isCancel: { value: boolean } },
 ) => Promise<() => void> | (() => void)
 
+export type WatchEventKeys = Extract<keyof IStandaloneCodeEditor, `onDid${string}`>
+
 export const DEFAULT_WATCH_EVENT_KEYS = [
   'onDidChangeModel',
   'onDidChangeModelContent',
   'onDidFocusEditorWidget'
-] as const
+] as WatchEventKeys[]
 
-export function makeProvider<T>(
+export class StopThisTimeError extends Error {
+  constructor() {
+    super('stop this time')
+  }
+  static instance = new StopThisTimeError()
+}
+
+export function isWhatArgs<
+  T extends WatchEventKeys | null
+>(lt: string | null, rt: T, args: unknown[]): args is (
+  T extends keyof IStandaloneCodeEditor
+    ? Parameters<
+      Parameters<IStandaloneCodeEditor[T]>[0]
+    >
+    : []
+) {
+  return lt === rt
+}
+
+export function makeProvider<T, Keys extends WatchEventKeys>(
   mount: (
     editor: IStandaloneCodeEditor,
     monaco: typeof monacoEditor
@@ -25,13 +46,13 @@ export function makeProvider<T>(
     monaco: typeof monacoEditor
   ) => void,
   opts?: {
-    anytime?: () => void
-    watchEventKeys?: Extract<keyof IStandaloneCodeEditor, `onDid${string}`>[]
+    anytime?: (type: Keys | null, ...args: unknown[]) => void
+    watchEventKeys?: Keys[]
   }
 ) {
   const {
     anytime,
-    watchEventKeys = DEFAULT_WATCH_EVENT_KEYS
+    watchEventKeys = DEFAULT_WATCH_EVENT_KEYS as Keys[]
   } = opts ?? {}
   return (
     monaco: typeof monacoEditor,
@@ -45,8 +66,15 @@ export function makeProvider<T>(
     let isCancel = { value: false }
     let prevDispose: (() => void) | undefined = undefined
 
-    async function callback() {
-      anytime?.()
+    async function callback(type: Keys | null, ...args: unknown[]) {
+      try {
+        anytime?.(type, ...args)
+      } catch (e) {
+        if (e instanceof StopThisTimeError) {
+          return
+        }
+        console.error(e)
+      }
       const model = editor.getModel()
       if (!model) return
 
@@ -62,9 +90,9 @@ export function makeProvider<T>(
       prevDispose?.()
       prevDispose = await provider(model, { mountInitValue, isCancel })
     }
-    callback().catch(console.error)
+    callback(null).catch(console.error)
     return watchEventKeys
-      .map(key => editor[key](callback).dispose)
+      .map(key => editor[key](callback.bind(null, key)).dispose)
       .reduce((acc, cur) => () => (acc(), cur()), () => {
         clear(editor, mountInitValue, monaco)
         prevDispose?.()
