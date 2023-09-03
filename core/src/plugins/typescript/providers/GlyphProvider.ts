@@ -2,14 +2,15 @@ import type {
   IStandaloneCodeEditor
 } from '@power-playground/core'
 import {
-  classnames,
-  DEFAULT_WATCH_EVENT_KEYS,
-  isWhatArgs,
-  makeProvider, messenger,
-  StopThisTimeError
+  classnames, messenger
 } from '@power-playground/core'
 import type * as monacoEditor from 'monaco-editor'
 
+import {
+  createProviderMaker, DEFAULT_WATCH_EVENT_KEYS,
+  isWhatArgs,
+  StopThisTimeError
+} from '../../../utils'
 import { getNamespaces } from '../utils'
 
 const GLYPH_PREFIX = 'ppd-plugins-typescript-glyph-margin'
@@ -35,7 +36,7 @@ const createGlyph = (
   getId: () => `${GLYPH_PREFIX} ${GLYPH_PREFIX}__${line}`
 })
 
-const addGlyphProvider = makeProvider((editor, monaco) => {
+const glyphProviderMaker = createProviderMaker((editor, monaco) => {
   const glyphMarginWidgets: monacoEditor.editor.IGlyphMarginWidget[] = []
 
   return {
@@ -86,7 +87,7 @@ export default (
   monaco: typeof monacoEditor,
   lazyTS: Promise<typeof import('typescript')>
 ) => {
-  type ProviderDefaultParams = Parameters<ReturnType<typeof makeProvider>> extends [
+  type ProviderDefaultParams = Parameters<ReturnType<typeof createProviderMaker>> extends [
     ...infer T, infer _Ignore
   ] ? T : never
   const providerDefaultParams: ProviderDefaultParams = [monaco, editor, { languages: ['javascript', 'typescript'] }]
@@ -94,7 +95,7 @@ export default (
     content: string,
     namespaces: ReturnType<typeof getNamespaces>,
   ]>()
-  return addGlyphProvider(
+  return glyphProviderMaker(
     ...providerDefaultParams, async (model, { mountInitValue: {
       addGlyph, removeGlyph
     } }) => {

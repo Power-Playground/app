@@ -3,7 +3,6 @@ import './index.scss'
 import { useEffect, useMemo } from 'react'
 import type { Editor } from '@power-playground/core'
 import {
-  makeProvider,
   messenger
 } from '@power-playground/core'
 import { getDefaultStore, useAtom } from 'jotai'
@@ -11,6 +10,7 @@ import type * as monacoEditor from 'monaco-editor'
 import { mergeAll, mergeDeepLeft } from 'ramda'
 
 import { useDocumentEventListener } from '../../hooks/useDocumentEventListener'
+import { createProviderMaker } from '../../utils'
 import { definePlugin } from '..'
 
 import glyphProvider from './providers/GlyphProvider.ts'
@@ -20,7 +20,9 @@ import { Langs } from './topbar/Langs'
 import { compilerOptionsAtom, extraFilesAtom, extraModulesAtom } from './atoms'
 import { resolveModules } from './modules'
 import { use } from './use'
-import { getReferencesForModule, mapModuleNameToModule } from './utils'
+import {
+  getReferencesForModule, mapModuleNameToModule
+} from './utils'
 
 export interface ExtraFile {
   content: string
@@ -75,7 +77,7 @@ if (import.meta.hot) {
 
 const modelDecorationIdsSymbol = '_modelDecorationIds'
 
-const addDecorationProvider = makeProvider(editor => {
+const addDecorationProvider = createProviderMaker(editor => {
   const decorationsCollection = editor.createDecorationsCollection()
 
   const modelDecorationIdsConfigurableEditor = editor as unknown as {
@@ -246,7 +248,7 @@ const editor: Editor<TypeScriptPluginX> = {
       }
     })
 
-    type ProviderDefaultParams = Parameters<ReturnType<typeof makeProvider>> extends [
+    type ProviderDefaultParams = Parameters<ReturnType<typeof createProviderMaker>> extends [
       ...infer T, infer _Ignore
     ] ? T : never
     const providerDefaultParams: ProviderDefaultParams = [monaco, editor, { languages: ['javascript', 'typescript'] }]

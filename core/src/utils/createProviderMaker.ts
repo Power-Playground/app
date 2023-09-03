@@ -35,7 +35,7 @@ export function isWhatArgs<
   return lt === rt
 }
 
-export function makeProvider<T, Keys extends WatchEventKeys>(
+export function createProviderMaker<T, Keys extends WatchEventKeys>(
   mount: (
     editor: IStandaloneCodeEditor,
     monaco: typeof monacoEditor
