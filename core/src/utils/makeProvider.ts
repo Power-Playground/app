@@ -8,6 +8,12 @@ export type Provider<T> = (
   opts: { mountInitValue: T; isCancel: { value: boolean } },
 ) => Promise<() => void> | (() => void)
 
+export const DEFAULT_WATCH_EVENT_KEYS = [
+  'onDidChangeModel',
+  'onDidChangeModelContent',
+  'onDidFocusEditorWidget'
+] as const
+
 export function makeProvider<T>(
   mount: (
     editor: IStandaloneCodeEditor,
@@ -20,10 +26,12 @@ export function makeProvider<T>(
   ) => void,
   opts?: {
     anytime?: () => void
+    watchEventKeys?: Extract<keyof IStandaloneCodeEditor, `onDid${string}`>[]
   }
 ) {
   const {
-    anytime
+    anytime,
+    watchEventKeys = DEFAULT_WATCH_EVENT_KEYS
   } = opts ?? {}
   return (
     monaco: typeof monacoEditor,
@@ -55,13 +63,11 @@ export function makeProvider<T>(
       prevDispose = await provider(model, { mountInitValue, isCancel })
     }
     callback().catch(console.error)
-    return [
-      editor.onDidChangeModel(callback).dispose,
-      editor.onDidChangeModelContent(callback).dispose,
-      editor.onDidFocusEditorWidget(callback).dispose
-    ].reduce((acc, cur) => () => (acc(), cur()), () => {
-      clear(editor, mountInitValue, monaco)
-      prevDispose?.()
-    })
+    return watchEventKeys
+      .map(key => editor[key](callback).dispose)
+      .reduce((acc, cur) => () => (acc(), cur()), () => {
+        clear(editor, mountInitValue, monaco)
+        prevDispose?.()
+      })
   }
 }
