@@ -323,6 +323,10 @@ const editor: Editor<TypeScriptPluginX> = {
       ...infer T, infer _Ignore
     ] ? T : never
     const providerDefaultParams: ProviderDefaultParams = [monaco, editor, { languages: ['javascript', 'typescript'] }]
+    const modelNamespacesCache = new Map<string, [
+      content: string,
+      namespaces: ReturnType<typeof getNamespaces>,
+    ]>()
     return [
       addDecorationProvider(
         ...providerDefaultParams, async (model, { mountInitValue: {
@@ -425,7 +429,12 @@ const editor: Editor<TypeScriptPluginX> = {
           addGlyph, removeGlyph
         } }) => {
           const ts = await lazyTS
-          const namespaces = getNamespaces(ts, editor.getValue())
+          const uri = model.uri.toString()
+          const cache = modelNamespacesCache.get(uri)
+          const namespaces = cache?.[1] ?? modelNamespacesCache.set(uri, [
+            model.getValue(),
+            getNamespaces(ts, model.getValue())
+          ]).get(uri)![1]
           const visibleRanges = editor.getVisibleRanges()
 
           const gids: string[] = []
