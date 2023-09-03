@@ -97,11 +97,15 @@ export default (
     } }) => {
       const ts = await lazyTS
       const uri = model.uri.toString()
-      const cache = modelNamespacesCache.get(uri)
-      const namespaces = cache?.[1] ?? modelNamespacesCache.set(uri, [
-        model.getValue(),
-        getNamespaces(ts, model.getValue())
-      ]).get(uri)![1]
+      const cot = model.getValue()
+      const [prevContent, prevNamespaces] = modelNamespacesCache.get(uri) ?? []
+      let namespaces: ReturnType<typeof getNamespaces>
+      if (prevNamespaces && prevContent === cot) {
+        namespaces = prevNamespaces
+      } else {
+        namespaces = getNamespaces(ts, cot)
+        modelNamespacesCache.set(uri, [cot, namespaces])
+      }
       const visibleRanges = editor.getVisibleRanges()
 
       const gids: string[] = []
