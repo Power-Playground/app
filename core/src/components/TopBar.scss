@@ -19,6 +19,7 @@ div.ppd-top-bar {
   button {
     --inner-color: var(--btn-color, var(--primary));
 
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
-import { copyToClipboard, definePlugin, messenger } from '@power-playground/core'
+import { asyncDebounce, copyToClipboard, definePlugin, messenger } from '@power-playground/core'
+import { getDefaultStore } from 'jotai'
 
 import { dispatchEditState } from '../history-for-local/store'
 
 import { Save } from './topbar/Save'
+import { saveStatusAtom } from './atoms'
+
+const store = getDefaultStore()
 
 export default definePlugin({
   editor: {
@@ -27,10 +31,20 @@ export default definePlugin({
       }
     }],
     load(editor, monaco) {
+      const uri = editor.getModel()?.uri.toString()
+      if (uri) {
+        store.set(saveStatusAtom, { ...store.get(saveStatusAtom), [uri]: true })
+      }
       editor.addAction({
         id: 'ppd.save',
         label: 'Save code to url',
         run(editor) {
+          const uri = editor.getModel()?.uri.toString()
+          if (!uri) {
+            messenger.then(m => m.display('error', ''))
+            return
+          }
+
           const code = editor.getValue()
           history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
           copyToClipboard(location.href)
@@ -42,10 +56,20 @@ export default definePlugin({
             'success', 'Saved to clipboard, you can share it to your friends!'
           ))
           editor.focus()
+          store.set(saveStatusAtom, { ...store.get(saveStatusAtom), [uri]: true })
         }
       })
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
         editor.trigger('whatever', 'ppd.save', {})
+      })
+      const contentDebounce = asyncDebounce()
+      editor.onDidChangeModelContent(async () => {
+        await contentDebounce(100)
+        const model = editor.getModel()
+        if (!model) return
+
+        const uri = model.uri.toString()
+        store.set(saveStatusAtom, { ...store.get(saveStatusAtom), [uri]: false })
       })
     },
     topbar: [Save]
