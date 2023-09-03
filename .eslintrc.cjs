@@ -96,6 +96,7 @@ module.exports = {
     }],
     'simple-import-sort/exports': 'error',
     'semi': ['error', 'never'],
+    'quotes': ['error', 'single'],
     'keyword-spacing': ['error', { before: true, after: true }],
     'space-before-blocks': ['error', 'always'],
     'comma-dangle': ['error', 'never'],
