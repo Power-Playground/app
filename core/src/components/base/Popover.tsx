@@ -4,6 +4,7 @@ import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useSta
 import { createPortal } from 'react-dom'
 import type { Placement } from '@popperjs/core'
 import { createPopper } from '@popperjs/core'
+import { useDebouncedValue } from 'foxact/use-debounced-value'
 
 export interface PopoverProps {
   tabIndex?: number
@@ -102,6 +103,7 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
     open: () => changeVisible(true),
     hide: () => changeVisible(false)
   }), [changeVisible])
+  const display = useDebouncedValue(visible, 200)
   return <>
     <div
       ref={setReferenceElement}
@@ -165,13 +167,17 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
       >
       {children}
     </div>
-    {createPortal(<div
+    {(
+      visible ? true : display
+    ) && createPortal(<div
       ref={setPopperElement}
       className={
         `monaco-editor ${prefix}`
         + (props.contentClassName ? ' ' + props.contentClassName : '')
       }
-      data-show={visible}
+      data-show={(
+        !visible ? false : display
+      )}
       onMouseOver={() => {
         if (trigger === 'hover') {
           changeVisible(true)
