@@ -408,49 +408,49 @@ const editor: Editor<TypeScriptPluginX> = {
 
           const gids: string[] = []
           Object.entries(namespaces)
-            .forEach(([name, ns]) => {
-              if (!['describe', 'it'].some(n => name.startsWith(n))) return
-
-              const isDescribe = name.startsWith('describe')
-              ns.forEach(namespace => {
-                const realLine = model.getPositionAt(namespace.top.pos).lineNumber
-                let line = realLine
-                let inFold = false
-                let prevVisibleEndLineNumber = 1
-                visibleRanges.forEach(({ startLineNumber, endLineNumber }) => {
-                  if (realLine >= endLineNumber && realLine <= startLineNumber) {
-                    inFold = true
-                    return
-                  }
-                  if (realLine <= startLineNumber)
-                    return
-
-                  const offset = startLineNumber - prevVisibleEndLineNumber
-                  line -= offset === 0 ? 0 : offset - 1
-                  prevVisibleEndLineNumber = endLineNumber
-                })
-                if (inFold) return
-
-                gids.push(
-                  addGlyph(line, `<span class='${
-                    classnames('codicon', `codicon-run${isDescribe ? '-all' : ''}`)
-                  }'></span>`, ele => {
-                    ele.onclick = () => {
-                      messenger.then(m => m.display('warning', 'Running test is not supported yet'))
-                      // ele.innerHTML = `<span class="${
-                      //   classnames('codicon', `codicon-check${isDescribe ? '-all' : ''}`)
-                      // }"></span>`
-                      ele.innerHTML = `<span class="${
-                        classnames('codicon', 'codicon-run-errors')
-                      }"></span>`
+            .filter(([name]) => ['describe', 'it'].some(n => name.startsWith(n)))
+            .map(([name, ns]) => {
+              type FlatItem = [number, string, ReturnType<typeof getNamespaces>['describe'][0]]
+              return ns
+                .reduce((acc, namespace) => {
+                  const realLine = model.getPositionAt(namespace.top.pos).lineNumber
+                  let line = realLine
+                  let inFold = false
+                  let prevVisibleEndLineNumber = 1
+                  visibleRanges.forEach(({ startLineNumber, endLineNumber }) => {
+                    if (realLine >= endLineNumber && realLine <= startLineNumber) {
+                      inFold = true
+                      return
                     }
+                    if (realLine <= startLineNumber)
+                      return
+
+                    const offset = startLineNumber - prevVisibleEndLineNumber
+                    line -= offset === 0 ? 0 : offset - 1
+                    prevVisibleEndLineNumber = endLineNumber
                   })
-                )
-              })
+                  if (inFold) return acc
+                  return acc.concat([
+                    [line, name, namespace]
+                  ])
+                }, [] as FlatItem[])
+                .flat() as FlatItem
             })
-          return () => {
-            gids.forEach(id => removeGlyph(id))
-          }
+            .forEach(([line, name, namespace]) => {
+              const isDescribe = name.startsWith('describe')
+              gids.push(addGlyph(line, `<span class='${classnames('codicon', `codicon-run${isDescribe ? '-all' : ''}`)}'></span>`, ele => {
+                ele.onclick = () => {
+                  messenger.then(m => m.display('warning', 'Running test is not supported yet'))
+                  // ele.innerHTML = `<span class="${
+                  //   classnames('codicon', `codicon-check${isDescribe ? '-all' : ''}`)
+                  // }"></span>`
+                  ele.innerHTML = `<span class="${
+                    classnames('codicon', 'codicon-run-errors')
+                  }"></span>`
+                }
+              }))
+            })
+          return () => gids.forEach(id => removeGlyph(id))
         })
     ]
   },
