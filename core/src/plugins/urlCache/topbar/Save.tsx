@@ -41,7 +41,7 @@ export const Save: React.ComponentType<BarItemProps> = () => {
         prefix, curSaveStatus
       )}
       onClick={() => editorInstance?.trigger('whatever', 'ppd.save', {})}>
-      <div className='cldr codicon codicon-save' />
+      <span className='cldr codicon codicon-save' />
       <span className={`${prefix}-status`} />
     </button>
   </Popover>
