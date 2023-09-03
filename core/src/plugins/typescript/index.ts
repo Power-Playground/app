@@ -1,7 +1,9 @@
 import './index.scss'
 
 import { useEffect, useMemo } from 'react'
-import type { Editor } from '@power-playground/core'
+import type {
+  Editor
+} from '@power-playground/core'
 import {
   messenger
 } from '@power-playground/core'
@@ -247,14 +249,9 @@ const editor: Editor<TypeScriptPluginX> = {
         resolve(typescript)
       }
     })
-
-    type ProviderDefaultParams = Parameters<ReturnType<typeof createProviderMaker>> extends [
-      ...infer T, infer _Ignore
-    ] ? T : never
-    const providerDefaultParams: ProviderDefaultParams = [monaco, editor, { languages: ['javascript', 'typescript'] }]
     return [
       addDecorationProvider(
-        ...providerDefaultParams, async (model, { mountInitValue: {
+        monaco, editor, { languages: ['javascript', 'typescript'] }, async (model, { mountInitValue: {
           modelDecorationIds,
           decorationsCollection,
           dependencyLoadErrorReason

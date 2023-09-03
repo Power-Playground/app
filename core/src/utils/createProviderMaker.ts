@@ -35,6 +35,8 @@ export function isWhatArgs<
   return lt === rt
 }
 
+export type ProviderMaker = ReturnType<typeof createProviderMaker>
+
 export function createProviderMaker<T, Keys extends WatchEventKeys>(
   mount: (
     editor: IStandaloneCodeEditor,

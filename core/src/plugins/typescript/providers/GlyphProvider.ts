@@ -87,16 +87,12 @@ export default (
   monaco: typeof monacoEditor,
   lazyTS: Promise<typeof import('typescript')>
 ) => {
-  type ProviderDefaultParams = Parameters<ReturnType<typeof createProviderMaker>> extends [
-    ...infer T, infer _Ignore
-  ] ? T : never
-  const providerDefaultParams: ProviderDefaultParams = [monaco, editor, { languages: ['javascript', 'typescript'] }]
   const modelNamespacesCache = new Map<string, [
     content: string,
     namespaces: ReturnType<typeof getNamespaces>,
   ]>()
   return glyphProviderMaker(
-    ...providerDefaultParams, async (model, { mountInitValue: {
+    monaco, editor, { languages: ['javascript', 'typescript'] }, async (model, { mountInitValue: {
       addGlyph, removeGlyph
     } }) => {
       const ts = await lazyTS
