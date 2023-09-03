@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { copyToClipboard, definePlugin, messenger } from '@power-playground/core'
 
-import { dispatchEditState } from './history-for-local/store'
+import { dispatchEditState } from '../history-for-local/store'
+
+import { Save } from './topbar/Save'
 
 export default definePlugin({
   editor: {
@@ -25,20 +27,27 @@ export default definePlugin({
       }
     }],
     load(editor, monaco) {
-      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
-        // TODO prevent event of browser default behavior
-        const code = editor.getValue()
-        history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
-        copyToClipboard(location.href)
-        dispatchEditState('add', {
-          code,
-          cursor: editor.getPosition() ?? undefined
-        })
-        messenger.then(m => m.display(
-          'success', 'Saved to clipboard, you can share it to your friends!'
-        ))
-        editor.focus()
+      editor.addAction({
+        id: 'ppd.save',
+        label: 'Save code to url',
+        run(editor) {
+          const code = editor.getValue()
+          history.pushState(null, '', '#' + btoa(encodeURIComponent(code)))
+          copyToClipboard(location.href)
+          dispatchEditState('add', {
+            code,
+            cursor: editor.getPosition() ?? undefined
+          })
+          messenger.then(m => m.display(
+            'success', 'Saved to clipboard, you can share it to your friends!'
+          ))
+          editor.focus()
+        }
       })
-    }
+      editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+        editor.trigger('whatever', 'ppd.save', {})
+      })
+    },
+    topbar: [Save]
   }
 })
