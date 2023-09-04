@@ -164,6 +164,11 @@ export default function EditorZone(props: EditorZoneProps) {
       vimModeRef.current?.dispose()
       vimModeRef.current = null
     }
+
+    return () => {
+      vimModeRef.current?.dispose()
+      vimModeRef.current = null
+    }
   }, [editor, isVimMode])
 
   useDocumentEventListener('keydown', e => {
