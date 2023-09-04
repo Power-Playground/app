@@ -54,7 +54,7 @@ Object.defineProperty(window, '小黑子', {
     })['../resources/PP_小黑子.svg']))
     const base64 = btoa(decoded)
     const imgSource = `data:image/svg+xml;base64,${base64}`
-    console.log("%c ", `
+    console.log('%c ', `
       font-size: 128px;
       background: url("${imgSource}") no-repeat center;
     `)
