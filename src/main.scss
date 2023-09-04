@@ -32,6 +32,14 @@ body {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  a {
+    --mix-opcity: 20%;
+    color: color-mix(in srgb, var(--primary), var(--fr-cr) var(--mix-opcity));
+    transition: .1s;
+    &:hover {
+      --mix-opcity: 0%;
+    }
+  }
 }
 
 body {
@@ -87,5 +95,3 @@ body {
     color: var(--fr-cr) !important;
   }
 }
-
-
