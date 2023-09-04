@@ -115,7 +115,7 @@ export default definePlugin(id, () => {
                       name: model.uri.toString(),
                       writeByteOrderMark: false,
                       text: originalText,
-                      tsCompilerResultText: ''
+                      tsCompilerResultText: originalText
                     }
                   ].concat(modelCompileCompletedResult.outputFiles)
                 }
