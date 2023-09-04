@@ -57,7 +57,7 @@ export default defineDevtools({
     const disposeCompileWatch = elBridgeC.on('compile-completed', files => {
       const filesEntries = Object.entries(files)
       const newFilesState = filesEntries
-        .reduce((acc, [_path, { originalText, outputFiles }]) => acc.concat(outputFiles.map(({ name, text }) => {
+        .reduce((acc, [_path, { originalText, outputFiles }]) => acc.concat(outputFiles.map(({ name, text, tsCompilerResultText }) => {
           if (name.endsWith('.js')) {
             name = name.slice(7)
             try {
@@ -68,7 +68,8 @@ export default defineDevtools({
                   ...babelTransformOptions,
                   filename: name
                 })?.code ?? '',
-                editorText: originalText
+                editorText: originalText,
+                tsCompilerResultText
               }
             } catch (e) {
               return {
@@ -76,11 +77,12 @@ export default defineDevtools({
                 originalText: text,
                 // @ts-ignore
                 text: e!.message!,
-                editorText: originalText
+                editorText: originalText,
+                tsCompilerResultText
               }
             }
           }
-          return { name, text, editorText: originalText }
+          return { name, text, editorText: originalText, tsCompilerResultText }
         })),
         [] as typeof Files)
       setFiles(newFilesState)

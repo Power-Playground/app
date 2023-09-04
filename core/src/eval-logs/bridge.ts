@@ -13,7 +13,8 @@ export type EvalLogsIframeParentEvent =
         name: string
         writeByteOrderMark: boolean
         text: string
-      }[]
+        tsCompilerResultText: string
+      }[],
     }
   }
 }
