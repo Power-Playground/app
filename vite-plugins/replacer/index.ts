@@ -1,4 +1,5 @@
-// import * as fs from 'node:fs'
+import * as fs from 'node:fs'
+import * as path from 'node:path'
 import type { FilterPattern, PluginOption } from 'vite'
 import { createFilter } from 'vite'
 
@@ -96,43 +97,46 @@ export function replacer(options?: ReplacerOptions): PluginOption {
   return {
     name: 'replacer',
     enforce: 'pre',
-    transform
-    // config(config) {
-    //   let plugins = config.optimizeDeps?.esbuildOptions?.plugins
-    //   if (!config.optimizeDeps) {
-    //     config.optimizeDeps = {}
-    //   }
-    //   if (!config.optimizeDeps.esbuildOptions) {
-    //     config.optimizeDeps.esbuildOptions = {}
-    //   }
-    //   if (!plugins) {
-    //     plugins = config.optimizeDeps.esbuildOptions.plugins = []
-    //   }
-    //   const esbuildOptions = config.optimizeDeps.esbuildOptions
-    //
-    //   plugins.push({
-    //     name: 'replacer',
-    //     setup({ onLoad, esbuild }) {
-    //       onLoad({ filter: /.*/ }, async args => {
-    //         if (!filter(args.path)) return undefined
-    //
-    //         const code = transform(
-    //           await fs.promises.readFile(args.path, 'utf-8').then(code => code.toString()),
-    //           args.path
-    //         )
-    //         if (!code) return undefined
-    //         // use esbuild to transform code, because it will skip transform if return contents
-    //         // https://esbuild.github.io/plugins/#on-load-results:~:text=If%20this%20is%20set%2C%20no%20more%20on%2Dload%20callbacks%20will%20be%20run%20for%20this%20resolved%20path.
-    //         console.log(args.path, [code, esbuildOptions])
-    //         const esbuildTransformCode = await esbuild.transform(code, esbuildOptions).then(r => r.code)
-    //         console.log([esbuildTransformCode])
-    //         return {
-    //           contents: esbuildTransformCode
-    //         }
-    //       })
-    //     }
-    //   })
-    // }
+    transform,
+    config(config) {
+      let plugins = config.optimizeDeps?.esbuildOptions?.plugins
+      if (!config.optimizeDeps) {
+        config.optimizeDeps = {}
+      }
+      if (!config.optimizeDeps.esbuildOptions) {
+        config.optimizeDeps.esbuildOptions = {}
+      }
+      if (!plugins) {
+        plugins = config.optimizeDeps.esbuildOptions.plugins = []
+      }
+
+      plugins.push({
+        name: 'replacer',
+        setup({ onLoad, esbuild }) {
+          onLoad({ filter: /.*/ }, async args => {
+            const id = args.path
+            if (!filter(id)) return undefined
+
+            const code = transform(
+              await fs.promises.readFile(id, 'utf-8').then(code => code.toString()), id
+            )
+            if (!code) return undefined
+            let ext = path.extname(id).slice(1)
+            if (ext === 'mjs') ext = 'js'
+
+            // use esbuild to transform code, because it will skip transform if return contents
+            // https://esbuild.github.io/plugins/#on-load-results:~:text=If%20this%20is%20set%2C%20no%20more%20on%2Dload%20callbacks%20will%20be%20run%20for%20this%20resolved%20path.
+            const loader = config.optimizeDeps?.esbuildOptions?.loader?.[`.${ext}`] || ext
+            return {
+              loader: 'js',
+              contents: (await esbuild.transform(code, {
+                loader: loader as any
+              })).code
+            }
+          })
+        }
+      })
+    }
   }
 }
 
