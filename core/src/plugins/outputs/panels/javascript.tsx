@@ -19,8 +19,8 @@ export function JSPanel({ UI, devtoolsWindow: { simport } }: ReactRenderProps) {
 
       return files
         .filter(({ name }) => name.endsWith('.js'))
-        .map(({ name, text, editorText }) => `// @filename:${name}\n${
-          editorText.match(/^\/\/ @devtools.output.compiled\r?\n/)
+        .map(({ name, text, editorText, tsCompilerResultText }) => `// @filename:${name}\n${
+          tsCompilerResultText.match(/^\/\/ @devtools.output.compiled\r?\n/)
             ? text
             : editorText
         }`)

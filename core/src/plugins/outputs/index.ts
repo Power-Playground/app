@@ -34,7 +34,8 @@ export default definePlugin(id, () => {
                 outputFiles: [{
                   name: '(compile error)',
                   text: 'No output to compile, maybe the Editor is still loading',
-                  writeByteOrderMark: false
+                  writeByteOrderMark: false,
+                  tsCompilerResultText: ''
                 }]
               }
             })
@@ -94,13 +95,17 @@ export default definePlugin(id, () => {
               .then(client => client?.getEmitOutput(model.uri.toString()))
               .then(result => {
                 if (!result) return
-
                 const originalText = model.getValue()
                 const uri = model.uri.toString()
+                const outputFiles = result.outputFiles.reduce<(typeof compileCompletedResult & {})[number]['outputFiles']>((acc, cur) => {
+                  const tsCompilerResultText = `${cur.name.endsWith('.js') ? '// @devtools.output.compiled\r\n' : ''}${result.outputFiles[0].text}`
+                  acc.push({ ...cur, tsCompilerResultText })
+                  return acc
+                }, [])
                 compileCompletedResult = {
                   [uri]: {
                     originalText,
-                    outputFiles: result.outputFiles
+                    outputFiles: outputFiles
                   }
                 }
                 const modelCompileCompletedResult = compileCompletedResult[uri]
@@ -109,7 +114,8 @@ export default definePlugin(id, () => {
                     {
                       name: model.uri.toString(),
                       writeByteOrderMark: false,
-                      text: originalText
+                      text: originalText,
+                      tsCompilerResultText: ''
                     }
                   ].concat(modelCompileCompletedResult.outputFiles)
                 }
