@@ -7,8 +7,9 @@ import React, {
   useState
 } from 'react'
 import Editor, { useMonaco } from '@monaco-editor/react'
-import { createStore, Provider, useAtom } from 'jotai'
+import { createStore, Provider, useAtom, useAtomValue } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
+import { initVimMode } from 'monaco-vim'
 
 import { ExtensionContext } from '../contextes/Extension'
 import { MonacoScopeContext } from '../contextes/MonacoScope'
@@ -19,7 +20,7 @@ import { classnames, isMacOS } from '../utils'
 import { Popover } from './base/Popover'
 import { BottomStatus } from './BottomStatus'
 import { DrawerPanel } from './DrawerPanel'
-import { displayLeftBarAtom } from './EditorZoneShareAtoms'
+import { displayLeftBarAtom, isVimModeAtom } from './EditorZoneShareAtoms'
 import { LeftBar } from './LeftBar'
 import type { ResizableProps } from './Resizable'
 import { Resizable } from './Resizable'
@@ -114,6 +115,9 @@ export default function EditorZone(props: EditorZoneProps) {
 
   const [displayLeftBar, setDisplayLeftBar] = useAtom(displayLeftBarAtom)
 
+  const isVimMode = useAtomValue(isVimModeAtom)
+  const vimModeRef = useRef<ReturnType<typeof initVimMode> | null>(null)
+
   const editorCursorPosition = useRef<monacoEditor.Position | null>(null)
 
   useEffect(() => {
@@ -150,6 +154,17 @@ export default function EditorZone(props: EditorZoneProps) {
       })
     return () => dispose.forEach(func => func?.())
   }, [monaco, editor, plugins])
+
+  useEffect(() => {
+    if (!editor) return
+
+    if (isVimMode)
+      vimModeRef.current = initVimMode(editor, null!)
+    else {
+      vimModeRef.current?.dispose()
+      vimModeRef.current = null
+    }
+  }, [editor, isVimMode])
 
   useDocumentEventListener('keydown', e => {
     if (e.key === '\\' && (e.metaKey || e.ctrlKey)) {
