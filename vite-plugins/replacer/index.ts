@@ -1,3 +1,4 @@
+// import * as fs from 'node:fs'
 import type { FilterPattern, PluginOption } from 'vite'
 import { createFilter } from 'vite'
 
@@ -40,60 +41,98 @@ export function replacer(options?: ReplacerOptions): PluginOption {
     requireDeclaration = true
   } = options ?? {}
   const filter = createFilter(include, exclude)
+
+  const transform = (code: string, id: string) => {
+    if (!filter(id)) return
+    if (code.startsWith('// @replacer.disable'))
+      return
+
+    let enableReplaceKeys = Object.keys(define)
+    const singleLineCommentsInStart = [] as string[]
+    let index = 0
+    if (requireDeclaration) {
+      let line = ''
+      while (index < code.length) {
+        const char = code[index]
+        if (char === '\n') {
+          if (line.startsWith('// @replacer.')) {
+            singleLineCommentsInStart.push(line)
+          } else {
+            index = index - line.length
+            break
+          }
+          line = ''
+        } else {
+          line += char
+        }
+        index++
+      }
+      if (singleLineCommentsInStart.length === 0) return
+
+      const matchKeys = [] as string[]
+      // resolve "@replacer.use.define.${key}"
+      singleLineCommentsInStart.forEach(line => {
+        const match = line.match(/\/\/ @replacer\.use\.define\.(\w+)/)
+        if (match) {
+          const key = match[1]
+          if (define[key] !== undefined) {
+            matchKeys.push(key)
+          } else {
+            console.warn(
+              `${id}: ${line}\n`
+              + `"${key}" is not defined in replacer options`
+            )
+          }
+        }
+      })
+      enableReplaceKeys = matchKeys
+    }
+    code = code.slice(index)
+    enableReplaceKeys.forEach(key => {
+      code = code.replace(new RegExp(`\\b${key}\\b`, 'g'), define[key])
+    })
+    return code
+  }
   return {
     name: 'replacer',
     enforce: 'pre',
-    transform(code, id) {
-      if (!filter(id)) return
-      if (code.startsWith('// @replacer.disable'))
-        return
-
-      let enableReplaceKeys = Object.keys(define)
-      const singleLineCommentsInStart = [] as string[]
-      let index = 0
-      if (requireDeclaration) {
-        let line = ''
-        while (index < code.length) {
-          const char = code[index]
-          if (char === '\n') {
-            if (line.startsWith('// @replacer.')) {
-              singleLineCommentsInStart.push(line)
-            } else {
-              index = index - line.length
-              break
-            }
-            line = ''
-          } else {
-            line += char
-          }
-          index++
-        }
-        if (singleLineCommentsInStart.length === 0) return
-
-        const matchKeys = [] as string[]
-        // resolve "@replacer.use.define.${key}"
-        singleLineCommentsInStart.forEach(line => {
-          const match = line.match(/\/\/ @replacer\.use\.define\.(\w+)/)
-          if (match) {
-            const key = match[1]
-            if (define[key] !== undefined) {
-              matchKeys.push(key)
-            } else {
-              console.warn(
-                `${id}: ${line}\n`
-                + `"${key}" is not defined in replacer options`
-              )
-            }
-          }
-        })
-        enableReplaceKeys = matchKeys
-      }
-      code = code.slice(index)
-      enableReplaceKeys.forEach(key => {
-        code = code.replace(new RegExp(`\\b${key}\\b`, 'g'), define[key])
-      })
-      return code
-    }
+    transform
+    // config(config) {
+    //   let plugins = config.optimizeDeps?.esbuildOptions?.plugins
+    //   if (!config.optimizeDeps) {
+    //     config.optimizeDeps = {}
+    //   }
+    //   if (!config.optimizeDeps.esbuildOptions) {
+    //     config.optimizeDeps.esbuildOptions = {}
+    //   }
+    //   if (!plugins) {
+    //     plugins = config.optimizeDeps.esbuildOptions.plugins = []
+    //   }
+    //   const esbuildOptions = config.optimizeDeps.esbuildOptions
+    //
+    //   plugins.push({
+    //     name: 'replacer',
+    //     setup({ onLoad, esbuild }) {
+    //       onLoad({ filter: /.*/ }, async args => {
+    //         if (!filter(args.path)) return undefined
+    //
+    //         const code = transform(
+    //           await fs.promises.readFile(args.path, 'utf-8').then(code => code.toString()),
+    //           args.path
+    //         )
+    //         if (!code) return undefined
+    //         // use esbuild to transform code, because it will skip transform if return contents
+    //         // https://esbuild.github.io/plugins/#on-load-results:~:text=If%20this%20is%20set%2C%20no%20more%20on%2Dload%20callbacks%20will%20be%20run%20for%20this%20resolved%20path.
+    //         console.log(args.path, [code, esbuildOptions])
+    //         const esbuildTransformCode = await esbuild.transform(code, esbuildOptions).then(r => r.code)
+    //         console.log([esbuildTransformCode])
+    //         return {
+    //           contents: esbuildTransformCode
+    //         }
+    //       })
+    //     }
+    //   })
+    // }
   }
 }
 
