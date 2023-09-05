@@ -15,9 +15,16 @@
 
   box-shadow: 0 0 4px #333;
   overflow: hidden;
-  transition: .1s;
+  transition: .2s;
   html[theme-mode="dark"] & {
     box-shadow: 0 0 6px #111;
+  }
+  &:focus-visible {
+    outline: none;
+  }
+  &--active {
+    opacity: 1;
+    transform: translateX(0%);
   }
   &__header {
     z-index: 1;
@@ -44,7 +51,7 @@
       overflow: hidden;
       opacity: 0;
       transition: .15s;
-      > button {
+      button {
         display: flex;
         align-items: center;
         justify-content: center;
