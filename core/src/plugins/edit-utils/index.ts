@@ -4,7 +4,11 @@ import { GoToLC } from './statusbar/GoToLC'
 
 export default definePlugin('edit-utils', conf => ({
   editor: {
-    statusbar: [GoToLC],
+    statusbar: [
+      GoToLC
+      // TODO lock editor
+      // TODO notification
+    ],
     load(editor, monaco) {
       editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyL, () => {
         editor.trigger('whatever', 'editor.action.gotoLine', {})
