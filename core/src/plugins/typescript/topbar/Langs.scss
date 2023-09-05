@@ -1,6 +1,7 @@
 .ppd-plugins-typescript-topbar-langs {
   display: flex;
-  border-radius: 4px;
+  justify-content: center;
+  width: 26px;
   overflow: hidden;
   transition: .1s;
   &__mi {
@@ -9,10 +10,18 @@
     gap: 5px;
     font-weight: bold;
     > img {
-      border-radius: 4px;
+      border-radius: 2px;
     }
   }
   &:hover {
     box-shadow: 0 0 4px gray;
+    > img {
+      width: 26px;
+    }
+  }
+  > img {
+    width: 16px;
+    transition: .1s;
+    border-radius: 2px;
   }
 }

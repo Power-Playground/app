@@ -32,8 +32,7 @@ export const Langs: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtShare
     ]}
     onSelect={item => changeLanguage?.(item.id as 'typescript' | 'javascript')}
     >
-    <img width={size}
-         alt={language}
+    <img alt={language}
          src={`https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${language}/${language}-original.svg`}
     />
   </Menu>
