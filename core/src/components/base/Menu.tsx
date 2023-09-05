@@ -19,6 +19,7 @@ export interface MenuProps {
   items: (MenuItem | string | 'slider')[]
   onSelect?: (item: MenuItem) => void
   closeWhenSelect?: boolean
+  onVisibleChange?: (visible: boolean) => void
 }
 
 const prefix = 'ppd-menu'
@@ -27,6 +28,7 @@ export function Menu(props: MenuProps) {
   const {
     items,
     onSelect,
+    onVisibleChange,
     closeWhenSelect = true
   } = props
   const popoverRef = useRef<PopoverRef>(null)
@@ -64,6 +66,7 @@ export function Menu(props: MenuProps) {
       }
     }}
     onVisibleChange={v => {
+      onVisibleChange?.(v)
       if (v) {
         setTimeout(() => {
           menuItemsRef.current[focusIndexRef.current].focus()

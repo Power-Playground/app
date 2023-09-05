@@ -1,8 +1,6 @@
 .ppd-drawer-panel {
   opacity: 0;
   z-index: 1;
-  position: absolute;
-  left: 46px;
   transform: translateX(-100%);
 
   display: flex;
@@ -23,6 +21,8 @@
     outline: none;
   }
   &--active {
+    min-width: 300px !important;
+    max-width: inherit !important;
     opacity: 1;
     transform: translateX(0%);
   }
@@ -76,8 +76,17 @@
       }
     }
   }
-  &:hover &__header__actions {
+  &:hover &__header__actions,
+  &--menu-open &__header__actions {
     opacity: 1;
+  }
+  &.centered {
+    min-width: 0;
+    max-width: 0;
+  }
+  &.popout {
+    position: absolute;
+    left: 46px;
   }
   &__body {
     flex-grow: 1;
