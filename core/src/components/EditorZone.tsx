@@ -7,7 +7,7 @@ import React, {
   useState
 } from 'react'
 import Editor, { useMonaco } from '@monaco-editor/react'
-import { useAtom } from 'jotai'
+import { createStore, Provider, useAtom } from 'jotai'
 import type * as monacoEditor from 'monaco-editor'
 
 import { ExtensionContext } from '../contextes/Extension'
@@ -156,6 +156,8 @@ export default function EditorZone(props: EditorZoneProps) {
       setDisplayLeftBar(!displayLeftBar)
     }
   })
+
+  const editorStore = useMemo(() => createStore(), [])
   return <ExtensionContext.Provider value={{
     searchParams: searchParams.current,
     plugins, shareState
@@ -168,74 +170,76 @@ export default function EditorZone(props: EditorZoneProps) {
         theme: [theme, setTheme]
       }
     }}>
-      <Resizable
-        className={classnames(prefix, props.className)}
-        style={{
-          ...props.style,
-          '--border-width': '2px',
-          width: 'var(--editor-width, 50%)',
-          minWidth: 'var(--editor-min-width)',
-          maxWidth: 'var(--editor-max-width)',
-          height: 'var(--editor-height, 50%)',
-          minHeight: 'var(--editor-min-height)',
-          maxHeight: 'var(--editor-max-height)'
-        }}
-        resizable={props.resizable ?? { right: true }}
-        onBorderBtnClick={props.onBorderBtnClick}
-      >
-        {enableMenuSwitch && <Popover
-          placement='right'
-          className={classnames(`${prefix}__menu-switch`, {
-            'is-active': displayLeftBar
-          })}
-          content={<>
-            {displayLeftBar ? 'Hide activity bar' : 'Show activity bar'}
-            <br />
-            <kbd>{isMacOS ? '⌘' : 'Ctrl'} + \</kbd>
-          </>}
-          onClick={() => setDisplayLeftBar(!displayLeftBar)}
-        >
-          <span
-            className={classnames(
-              'cldr codicon',
-              !displayLeftBar
-                ? 'codicon-layout-activitybar-left'
-                : 'codicon-menu'
-            )}
-          />
-        </Popover>}
-        {/* TODO support display animation */}
-        <LeftBar
+      <Provider store={editorStore}>
+        <Resizable
+          className={classnames(prefix, props.className)}
           style={{
-            width: displayLeftBar ? undefined : 0,
-            padding: displayLeftBar ? undefined : 0
+            ...props.style,
+            '--border-width': '2px',
+            width: 'var(--editor-width, 50%)',
+            minWidth: 'var(--editor-min-width)',
+            maxWidth: 'var(--editor-max-width)',
+            height: 'var(--editor-height, 50%)',
+            minHeight: 'var(--editor-min-height)',
+            maxHeight: 'var(--editor-max-height)'
           }}
-        />
-        <DrawerPanel />
-        <div className={`${prefix}__container`}>
-          <TopBar
-            className={enableMenuSwitch && displayLeftBar ? 'is-active' : undefined}
-          />
-          {loadingNode ?? <Editor
-            language={language}
-            options={{
-              automaticLayout: true,
-              scrollbar: {
-                vertical: 'hidden',
-                verticalSliderSize: 0,
-                verticalScrollbarSize: 0
-              }
+          resizable={props.resizable ?? { right: true }}
+          onBorderBtnClick={props.onBorderBtnClick}
+        >
+          {enableMenuSwitch && <Popover
+            placement='right'
+            className={classnames(`${prefix}__menu-switch`, {
+              'is-active': displayLeftBar
+            })}
+            content={<>
+              {displayLeftBar ? 'Hide activity bar' : 'Show activity bar'}
+              <br />
+              <kbd>{isMacOS ? '⌘' : 'Ctrl'} + \</kbd>
+            </>}
+            onClick={() => setDisplayLeftBar(!displayLeftBar)}
+          >
+            <span
+              className={classnames(
+                'cldr codicon',
+                !displayLeftBar
+                  ? 'codicon-layout-activitybar-left'
+                  : 'codicon-menu'
+              )}
+            />
+          </Popover>}
+          {/* TODO support display animation */}
+          <LeftBar
+            style={{
+              width: displayLeftBar ? undefined : 0,
+              padding: displayLeftBar ? undefined : 0
             }}
-            theme={theme === 'light' ? 'vs' : 'vs-dark'}
-            loading={loadingNode}
-            path={`file://${curFilePath}`}
-            value={code}
-            onChange={code => setCode(code ?? '')}
-            onMount={editor => (setEditor(editor), editor.focus())}
-          />}
-          <BottomStatus />
-        </div>
-      </Resizable>
+          />
+          <DrawerPanel />
+          <div className={`${prefix}__container`}>
+            <TopBar
+              className={enableMenuSwitch && displayLeftBar ? 'is-active' : undefined}
+            />
+            {loadingNode ?? <Editor
+              language={language}
+              options={{
+                automaticLayout: true,
+                scrollbar: {
+                  vertical: 'hidden',
+                  verticalSliderSize: 0,
+                  verticalScrollbarSize: 0
+                }
+              }}
+              theme={theme === 'light' ? 'vs' : 'vs-dark'}
+              loading={loadingNode}
+              path={`file://${curFilePath}`}
+              value={code}
+              onChange={code => setCode(code ?? '')}
+              onMount={editor => (setEditor(editor), editor.focus())}
+            />}
+            <BottomStatus />
+          </div>
+        </Resizable>
+      </Provider>
     </MonacoScopeContext.Provider>
   </ExtensionContext.Provider>
 }
