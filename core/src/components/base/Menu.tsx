@@ -67,7 +67,7 @@ export function Menu(props: MenuProps) {
       if (v) {
         setTimeout(() => {
           menuItemsRef.current[focusIndexRef.current].focus()
-        }, 30)
+        }, 350)
       }
     }}
     content={
