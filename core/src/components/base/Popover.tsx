@@ -1,18 +1,22 @@
 import './Popover.scss'
 
 import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
-import type { Placement } from '@popperjs/core'
 
+import type { UsePopperProps } from '../../hooks/usePopper'
 import { POPPER_PREFIX, usePopper } from '../../hooks/usePopper'
 
-export interface PopoverProps {
+export interface PopoverProps extends Pick<
+  UsePopperProps,
+    | 'placement'
+    | 'offset'
+    | 'onVisibleChange'
+    | 'onKeydown'
+> {
   tabIndex?: number
   children: React.ReactNode
   content: React.ReactNode
 
   trigger?: 'click' | 'hover' | 'always'
-  placement?: Placement
-  offset?: [number, number]
 
   className?: string
   contentClassName?: string
@@ -20,8 +24,6 @@ export interface PopoverProps {
   contentStyle?: React.CSSProperties
 
   onClick?: () => void
-  onVisibleChange?: (visible: boolean) => void
-  onKeydown?: (event: React.KeyboardEvent) => void
 }
 
 export interface PopoverRef {
