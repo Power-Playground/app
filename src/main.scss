@@ -15,7 +15,7 @@ body {
 
   --primary: #365eb4;
   --fr-cr: #000;
-  --pr-fr-cr: color-mix(in srgb, var(--primary) 50%, var(--fr-cr) 60%);
+  --pr-fr-cr: #fff;
   --bg-cr: #efefef;
   --icon-cr: #fff;
   html[theme-mode=dark] & {

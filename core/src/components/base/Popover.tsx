@@ -53,7 +53,8 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
     placement, offset,
     closeWhenMouseLeave: trigger === 'hover',
     onVisibleChange: props.onVisibleChange,
-    onKeydown: props.onKeydown
+    onKeydown: props.onKeydown,
+    arrowVisible: true
   })
   useEffect(() => {
     if (trigger === 'always') changeVisible(true)
