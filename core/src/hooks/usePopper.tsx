@@ -18,7 +18,8 @@ export interface UsePopperProps {
 
   closeWhenMouseLeave?: boolean
   placement: Placement
-  offset: [number, number]
+  offset?: [number, number]
+  arrowVisible?: boolean
 
   onVisibleChange?: (visible: boolean) => void
   onKeydown?: (event: React.KeyboardEvent) => void
@@ -30,7 +31,8 @@ export const usePopper = (props: UsePopperProps) => {
     content,
     onVisibleChange, onKeydown,
     closeWhenMouseLeave,
-    placement, offset
+    placement, offset = [0, 0],
+    arrowVisible
   } = props
 
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -108,11 +110,11 @@ export const usePopper = (props: UsePopperProps) => {
       }}
       >
       {content}
-      <div
+      {arrowVisible && <div
         ref={setArrowElement}
         className={`${POPPER_PREFIX}-arrow`}
         data-position={arrowPlacement}
-      />
+      />}
     </div>, document.body, `popper-${popoverId}`)
   }
 }
