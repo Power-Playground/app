@@ -101,7 +101,7 @@ export default defineConfig(async env => ({
         { name: 'sentinel-js', relativeModule: './dist/sentinel.umd.js' },
         { name: '@babel/standalone', relativeModule: './babel.min.js' },
         { name: 'react', relativeModule: './umd/react.production.min.js' },
-        { name: 'react-dom', relativeModule: './umd/react-dom.production.min.js' },
+        { name: 'react-dom', relativeModule: './umd/react-dom.production.min.js', aliases: ['client'] },
         { name: 'jotai', relativeModule: './umd/index.production.js', spare: ['umd/vanilla.production.js', 'umd/react.production.js'] }
       ],
       transform() {
