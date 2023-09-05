@@ -84,6 +84,9 @@
     min-width: 0;
     max-width: 0;
   }
+  .ppd-editor-zone__menu-switch:not(.is-active) ~ &.centered > &__header {
+    padding-left: 28px;
+  }
   &.popout {
     position: absolute;
     left: 46px;
