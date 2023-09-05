@@ -8,7 +8,10 @@
   "license": "MIT",
   "workspaces": [
     "core",
-    "vite-plugins/*"
+    "vite-plugins/*",
+    "external/zodui/packages/core",
+    "external/zodui/packages/react",
+    "external/zodui/packages/plugins/*"
   ],
   "scripts": {
     "serve": "vite",

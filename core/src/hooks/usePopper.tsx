@@ -77,6 +77,11 @@ export const usePopper = (props: UsePopperProps) => {
   return {
     visible,
     changeVisible,
+    clickOther: useCallback((event: MouseEvent) => {
+      if (popperElement && !popperElement.contains(event.target as Node)) {
+        changeVisible(false)
+      }
+    }, [changeVisible, popperElement]),
     popper: (
       visible ? true : display
     ) && createPortal(<div
