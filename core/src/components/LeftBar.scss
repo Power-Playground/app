@@ -1,4 +1,5 @@
 .ppd-left-bar {
+  z-index: 2;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -10,7 +11,12 @@
       color-mix(in srgb, var(--primary), var(--bg-cr) 40%) 80%,
       color-mix(in srgb, var(--primary), var(--bg-cr) 80%)
   );
+  box-shadow: 0 0 4px #333;
+  overflow: hidden;
   transition: .1s;
+  html[theme-mode="dark"] & {
+    box-shadow: 0 0 6px #111;
+  }
   &__bottom, &__top {
     display: flex;
     flex-direction: column;

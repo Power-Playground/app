@@ -18,6 +18,7 @@ import { classnames, isMacOS } from '../utils'
 
 import { Popover } from './base/Popover'
 import { BottomStatus } from './BottomStatus'
+import { DrawerPanel } from './DrawerPanel'
 import { displayLeftBarAtom } from './EditorZoneShareAtoms'
 import { LeftBar } from './LeftBar'
 import type { ResizableProps } from './Resizable'
@@ -210,6 +211,7 @@ export default function EditorZone(props: EditorZoneProps) {
             padding: displayLeftBar ? undefined : 0
           }}
         />
+        <DrawerPanel />
         <div className={`${prefix}__container`}>
           <TopBar
             className={enableMenuSwitch && displayLeftBar ? 'is-active' : undefined}
