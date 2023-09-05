@@ -1,0 +1,63 @@
+.ppd-popper {
+  z-index: 114514;
+  background-color: var(--vscode-dropdown-background) !important;
+  border: 1px solid var(--vscode-dropdown-border);
+  box-shadow: 0 0 4px var(--vscode-widget-shadow);
+  border-radius: 4px;
+  padding: 4px 8px;
+
+  transition: .2s;
+
+  visibility: hidden;
+  opacity: 0;
+  &[data-show=true] {
+    visibility: visible;
+    opacity: 1;
+  }
+  &-arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    &::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 6px solid transparent;
+      pointer-events: none;
+    }
+    &[data-position^=top]::before, &[data-position^=bottom]::before {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    &[data-position^=left]::before, &[data-position^=right]::before {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &[data-position^=top] {
+      bottom: 0;
+    }
+    &[data-position^=top]::before {
+      border-top-color: var(--vscode-dropdown-background);
+    }
+    &[data-position^=bottom] {
+      top: -12px;
+    }
+    &[data-position^=bottom]::before {
+      border-bottom-color: var(--vscode-dropdown-background);
+    }
+    &[data-position^=left] {
+      right: 0;
+    }
+    &[data-position^=left]::before {
+      border-left-color: var(--vscode-dropdown-background);
+    }
+    &[data-position^=right] {
+      left: -12px;
+    }
+    &[data-position^=right]::before {
+      border-right-color: var(--vscode-dropdown-background);
+    }
+  }
+  kbd { color: gray; }
+}
