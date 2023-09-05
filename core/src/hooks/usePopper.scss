@@ -10,6 +10,9 @@
 
   visibility: hidden;
   opacity: 0;
+  &:focus-visible {
+    outline: none;
+  }
   &[data-show=true] {
     visibility: visible;
     opacity: 1;
