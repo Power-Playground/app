@@ -118,3 +118,18 @@ export const usePopper = (props: UsePopperProps) => {
     </div>, document.body, `popper-${popoverId}`)
   }
 }
+
+export const createPointVEle = (x: number, y: number): VirtualElement => ({
+  getBoundingClientRect: () => ({
+    y: y,
+    x: x,
+    top: y,
+    left: x,
+    bottom: y,
+    right: x,
+    width: 0,
+    height: 0,
+    toJSON: () => ({})
+  })
+})
+
