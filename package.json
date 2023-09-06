@@ -17,7 +17,7 @@
     "serve": "vite",
     "build": "vite build",
     "build:watch": "vite build --watch",
-    "build:replacer":"yarn --cwd vite-plugins/replacer build",
+    "build:replacer": "yarn --cwd vite-plugins/replacer build",
     "preview": "vite preview",
     "bootstrap": "node scripts/bootstrap.mjs"
   },
@@ -41,6 +41,7 @@
     "eslint-plugin-react-refresh": "^0.4.3",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "fast-glob": "^3.3.1",
+    "nolyfill": "^1.0.21",
     "react-toastify": "^9.1.3",
     "rollup-plugin-visualizer": "^5.9.2",
     "sass": "^1.64.0",
