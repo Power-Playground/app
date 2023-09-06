@@ -2161,11 +2161,6 @@ node-releases@^2.0.13:
   resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.13.tgz#d5ed1627c23e3461e819b02e57b75e4899b1c81d"
   integrity sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==
 
-nolyfill@^1.0.21:
-  version "1.0.21"
-  resolved "https://registry.npmjs.org/nolyfill/-/nolyfill-1.0.21.tgz#de56330fb4aa1f2744ee3f70b30f534e637f98e9"
-  integrity sha512-1g/c2vvPNF+zKV8xOUo9ezfKjAVvRqdcBS1GEY/vgAckQ/58k7ZjHL06ftQcqI5e3v7W2B99UUeRLFKdFROrgg==
-
 normalize-path@^3.0.0, normalize-path@~3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/normalize-path/-/normalize-path-3.0.0.tgz#0dcd69ff23a1c9b11fd0978316644a0388216a65"
