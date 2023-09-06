@@ -6,6 +6,7 @@ import { classnames } from '@power-playground/core'
 import { Menu } from './base/Menu'
 import { Popover } from './base/Popover'
 import { useDrawerPanelController } from './drawerPanelCreator'
+import { Resizable } from '@power-playground/core/components/Resizable.tsx'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
 export function DrawerPanel() {
@@ -21,7 +22,7 @@ export function DrawerPanel() {
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
-  return <div
+  return <Resizable
     ref={panelRef}
     className={classnames(
       prefix,
@@ -29,7 +30,14 @@ export function DrawerPanel() {
       menuIsOpen && `${prefix}--menu-open`,
       windowMode
     )}
+    style={{
+      '--border-width': '2px',
+      width: '300px',
+      minWidth: '200px',
+      maxWidth: '50vw'
+    }}
     tabIndex={0}
+    resizable={{ right: true }}
     onKeyDown={e => {
       if (e.key === 'Escape') {
         e.stopPropagation()
@@ -106,5 +114,5 @@ export function DrawerPanel() {
         {activePanel?.content}
       </div>
     </>}
-  </div>
+  </Resizable>
 }
