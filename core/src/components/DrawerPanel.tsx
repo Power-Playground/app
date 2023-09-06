@@ -2,13 +2,15 @@ import './DrawerPanel.scss'
 
 import { useEffect, useRef, useState } from 'react'
 import { classnames } from '@power-playground/core'
+import { useDebouncedValue } from 'foxact/use-debounced-value'
 
 import { Menu } from './base/Menu'
 import { Popover } from './base/Popover'
 import { useDrawerPanelController } from './drawerPanelCreator'
-import { Resizable } from '@power-playground/core/components/Resizable.tsx'
+import { Resizable } from './Resizable'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
+DrawerPanel.delay = 200
 export function DrawerPanel() {
   const { prefix } = DrawerPanel
   const panelRef = useRef<HTMLDivElement>(null)
@@ -19,6 +21,7 @@ export function DrawerPanel() {
       panelRef.current?.focus()
     }
   }, [activePanel?.id])
+  const displayActivePanel = useDebouncedValue(!!activePanel, DrawerPanel.delay)
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
@@ -40,7 +43,9 @@ export function DrawerPanel() {
       }
     }}
     >
-    {activePanel && <>
+    {(
+      activePanel ? true : displayActivePanel
+    ) && <>
       <div className={`${prefix}__header`}>
         <div className={`${prefix}__header__title`}>
           <h3>
@@ -99,7 +104,7 @@ export function DrawerPanel() {
               <kbd>Esc</kbd>
             </>}
             placement='right'>
-            <button onClick={() => closePanel(activePanel.id)}>
+            <button onClick={() => activePanel && closePanel(activePanel?.id)}>
               <span className='cldr codicon codicon-remove' />
             </button>
           </Popover>
