@@ -111,13 +111,13 @@
     &__top {
       top: calc(-1 * var(--inner-border-width));
       &:hover {
-        transform: translateY(calc(1 * var(--inner-border-trans) * var(--inner-border-width)));
+        transform: translateY(calc(-1 * var(--inner-border-trans) * var(--inner-border-width)));
       }
     }
     &__bottom {
       bottom: calc(-1 * var(--inner-border-width));
       &:hover {
-        transform: translateY(calc(-1 * var(--inner-border-trans) * var(--inner-border-width)));
+        transform: translateY(calc(1 * var(--inner-border-trans) * var(--inner-border-width)));
       }
     }
   }
