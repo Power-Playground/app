@@ -12,7 +12,7 @@
   color: var(--pr-fr-cr);
 
   box-shadow: 0 0 4px #333;
-  overflow: hidden;
+  border-right-width: 0 !important;
   transition: .2s;
   html[theme-mode="dark"] & {
     box-shadow: 0 0 6px #111;
@@ -23,6 +23,9 @@
   &--active {
     min-width: 250px !important;
     max-width: 50vw !important;
+
+    border-right-width: var(--inner-border-width) !important;
+
     opacity: 1;
     transform: translateX(0%);
   }

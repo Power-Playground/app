@@ -30,10 +30,7 @@ export function DrawerPanel() {
       menuIsOpen && `${prefix}--menu-open`,
       windowMode
     )}
-    style={{
-      '--border-width': '2px',
-      width: '300px'
-    }}
+    style={{ width: '300px' }}
     tabIndex={0}
     resizable={{ right: true }}
     onKeyDown={e => {
