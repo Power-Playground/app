@@ -21,10 +21,6 @@
     flex-direction: column;
     > .ppd-resizable-border.ppd-resizable-border__right {
       z-index: 1000;
-      background-color: transparent;
-      &:hover {
-        background-color: inherit;
-      }
     }
     > .ppd-search-box {
       z-index: 100;
