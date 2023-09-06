@@ -32,9 +32,7 @@ export function DrawerPanel() {
     )}
     style={{
       '--border-width': '2px',
-      width: '300px',
-      minWidth: '200px',
-      maxWidth: '50vw'
+      width: '300px'
     }}
     tabIndex={0}
     resizable={{ right: true }}

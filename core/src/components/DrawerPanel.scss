@@ -7,7 +7,7 @@
   flex-direction: column;
 
   height: 100%;
-  min-width: 300px;
+  min-width: 250px;
   background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 10%);
   color: var(--pr-fr-cr);
 
@@ -21,8 +21,8 @@
     outline: none;
   }
   &--active {
-    min-width: 300px !important;
-    max-width: inherit !important;
+    min-width: 250px !important;
+    max-width: 50vw !important;
     opacity: 1;
     transform: translateX(0%);
   }

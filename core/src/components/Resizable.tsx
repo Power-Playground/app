@@ -122,6 +122,7 @@ function mountResize(
     registerResizeFuncs.push(_resize)
     document.addEventListener('mousemove', _resize, false)
     ele.style.userSelect = 'none'
+    ele.style.transition = 'none'
     e.stopPropagation()
   }
   function onGlobalMouseUp() {
@@ -129,8 +130,9 @@ function mountResize(
       .forEach(f => document.removeEventListener('mousemove', f, false))
     document
       .querySelectorAll('iframe')
-      .forEach(e => e.style.pointerEvents = 'auto')
-    ele.style.userSelect = 'auto'
+      .forEach(e => e.style.pointerEvents = '')
+    ele.style.userSelect = ''
+    ele.style.transition = ''
   }
 
   ele.addEventListener('mousedown', elMouseDown, false)
