@@ -136,8 +136,7 @@ export const HistoryDialog = forwardRef<DialogRef, HistoryDialogProps>(function 
       style={{
         width: '45%',
         minWidth: '40%',
-        maxWidth: '80%',
-        '--border-width': '1px'
+        maxWidth: '80%'
       }}
       resizable={{ right: true }}
     >

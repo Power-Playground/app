@@ -9,6 +9,7 @@ export interface ResizableProps {
   className?: string
   style?: CSSProperties & {
     '--border-width'?: string
+    '--border-scale'?: string | number
   }
   children?: React.ReactNode
 
