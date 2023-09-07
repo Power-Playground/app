@@ -37,7 +37,13 @@ export const useDrawerPanelController = (): DrawerPanelController => {
   return {
     activePanel,
     addPanel: useCallback(panel => {
-      setPanelsRef(panels => [...panels, panel])
+      setPanelsRef(panels => {
+        if (panels.some(p => p.id === panel.id)) {
+          console.warn(`Panel with id "${panel.id}" already exists.`)
+          return panels
+        }
+        return [...panels, panel]
+      })
     }, [setPanelsRef]),
     removePanel: useCallback(id => {
       setPanelsRef(panels => panels.filter(panel => panel.id !== id))
