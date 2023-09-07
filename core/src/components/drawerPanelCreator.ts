@@ -13,6 +13,7 @@ export interface DrawerPanel {
 export interface DrawerPanelController {
   activePanel: DrawerPanel | null
   addPanel(panel: DrawerPanel): void
+  setPanel(panel: DrawerPanel): void
   removePanel(id: string): void
   openPanel(id: string): void
   closePanel(id: string): void
@@ -43,6 +44,16 @@ export const useDrawerPanelController = (): DrawerPanelController => {
           return panels
         }
         return [...panels, panel]
+      })
+    }, [setPanelsRef]),
+    setPanel: useCallback(panel => {
+      setPanelsRef(panels => {
+        const index = panels.findIndex(p => p.id === panel.id)
+        if (index === -1) {
+          return panels.concat(panel)
+        }
+        panels[index] = panel
+        return [...panels]
       })
     }, [setPanelsRef]),
     removePanel: useCallback(id => {

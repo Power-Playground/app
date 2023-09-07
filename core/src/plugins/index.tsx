@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom/client'
 import type * as MonacoEditor from 'monaco-editor'
 import { equals } from 'ramda'
 
+import type { DrawerPanel } from '../components/drawerPanelCreator'
 import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
 import type { PluginConfigureIds, PluginConfigures } from './configure'
@@ -193,10 +194,20 @@ export type Editor<X extends {
     monaco: typeof MonacoEditor
   ) => Dispose | void | Dispose[]
 
-  topbar?: React.ComponentType<BarItemProps<X['ExtShareState']>>[]
+  topbar?: React.ComponentType<
+    BarItemProps<X['ExtShareState']>
+  >[]
   statusbar?: React.ComponentType<
     BarItemProps<X['ExtShareState']>
   >[]
+  leftbar?: {
+    id: string
+    icon: string | React.ReactNode
+    /** @default 'top' */
+    placement?: 'top' | 'bottom'
+  }[]
+
+  drawerPanels?: DrawerPanel[]
 }
 
 export type Devtools = {

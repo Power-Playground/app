@@ -1,8 +1,10 @@
 import './DrawerPanel.scss'
 
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { classnames } from '@power-playground/core'
 import { useDebouncedValue } from 'foxact/use-debounced-value'
+
+import { ExtensionContext } from '../contextes/Extension'
 
 import { Menu } from './base/Menu'
 import { Popover } from './base/Popover'
@@ -15,7 +17,22 @@ export function DrawerPanel() {
   const { prefix } = DrawerPanel
   const panelRef = useRef<HTMLDivElement>(null)
 
-  const { activePanel, closePanel } = useDrawerPanelController()
+  const { plugins } = useContext(ExtensionContext)
+
+  const drawerPanels = useMemo(() => plugins
+    .filter(plugin => plugin.editor?.drawerPanels)
+    .flatMap(plugin => plugin.editor?.drawerPanels ?? []), [plugins])
+  const {
+    activePanel,
+    setPanel,
+    removePanel,
+    closePanel
+  } = useDrawerPanelController()
+  useEffect(() => {
+    drawerPanels.forEach(panel => setPanel(panel))
+    return () => drawerPanels.forEach(panel => removePanel(panel.id))
+  }, [setPanel, removePanel, drawerPanels])
+
   useEffect(() => {
     if (activePanel?.id) {
       panelRef.current?.focus()
