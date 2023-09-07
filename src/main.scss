@@ -14,9 +14,20 @@ body {
   -webkit-text-size-adjust: 100%;
 
   --primary: #365eb4;
+  --primary-hover: #365eb422;
+  --primary-active: #365eb488;
+  --primary-active-border: #365eb4cc;
+  --primary-hover-fc: #fff;
+  --border-color: #cccccc;
+
   --fr-cr: #000;
   --pr-fr-cr: #fff;
   --bg-cr: #efefef;
+
+  --popup-bg: var(--bg-cr);
+  --popup-fr-cr: var(--fr-cr);
+  --popup-fc-when-pr-as-bg: var(--pr-fr-cr);
+
   --icon-cr: #fff;
   html[theme-mode=dark] & {
     --primary: #263c6e;

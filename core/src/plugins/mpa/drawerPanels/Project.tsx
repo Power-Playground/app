@@ -1,3 +1,5 @@
+import './Project.scss'
+
 import { messenger } from '@power-playground/core'
 
 import { List } from '../../../components/base/List'
@@ -5,7 +7,7 @@ import type { DrawerPanel } from '../../../components/drawerPanelCreator'
 import { NotImplemented } from '../../../components/NotImplemented'
 
 export default {
-  id: 'directory',
+  id: 'project',
   icon: 'project',
   title: <>
     <span style={{
