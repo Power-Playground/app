@@ -49,7 +49,7 @@ export function DrawerPanel() {
       activePanel && `${prefix}--active`,
       menuIsOpen && `${prefix}--menu-open`,
       windowMode,
-      activePanel?.id
+      activePanel?.id && `${prefix}--${activePanel?.id}`
     )}
     style={{ width: '300px' }}
     tabIndex={0}

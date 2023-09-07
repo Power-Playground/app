@@ -1,3 +1,5 @@
+import './List.scss'
+
 import { forwardRefWithStatic } from './forwardRefWithStatic'
 
 export interface ListProps {
@@ -12,7 +14,26 @@ export const List = forwardRefWithStatic<{
 
   console.log('List', props, ref)
   return <div className={prefix}>
-    Hi
+    <div tabIndex={0} className={`${prefix}-item clickable selected`}>
+      <span className={`${prefix}-item__icon cldr codicon codicon-chevron-right`} />
+      <code className={`${prefix}-item__label`}>Item 0</code>
+    </div>
+    <div tabIndex={0} className={`${prefix}-item clickable`}>
+      <span className={`${prefix}-item__icon cldr codicon codicon-beaker`} />
+      <code className={`${prefix}-item__label`}>Item 1</code>
+    </div>
+    <div tabIndex={0} className={`${prefix}-item clickable`}>
+      <span className={`${prefix}-item__icon cldr codicon codicon-file`} />
+      <code className={`${prefix}-item__label`}>Item 2</code>
+    </div>
+    <div tabIndex={0} className={`${prefix}-item clickable active selected`}>
+      <span className={`${prefix}-item__icon cldr codicon codicon-file`} />
+      <code className={`${prefix}-item__label`}>Item 3</code>
+    </div>
+    <div className={`${prefix}-item`}>
+      <span className={`${prefix}-item__icon cldr codicon codicon-file-media`} />
+      <code className={`${prefix}-item__label`}>Item 4</code>
+    </div>
   </div>
 })
 Object.defineProperty(List, 'prefix', {

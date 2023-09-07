@@ -1,0 +1,48 @@
+.ppd-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  &-item {
+    --br-0: 4px;
+    --br-1: 4px;
+    --br-2: 4px;
+    --br-3: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px;
+    width: calc(100% - 8px);
+    border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
+    border: 2px solid transparent;
+
+    user-select: none;
+    transition: .1s;
+    &:hover {
+      z-index: 10;
+      color: var(--primary-hover-fc);
+      background-color: var(--primary-hover);
+      box-shadow: 0 0 5px #0005;
+    }
+    &.selected, &:focus, &:focus-visible {
+      outline: none;
+      border: 2px solid var(--primary-active-border);
+      & + & {
+        --br-0: 0;
+        --br-1: 0;
+        border-top: 0 solid var(--primary-active-border);
+      }
+      &:has( + &) {
+        --br-2: 0;
+        --br-3: 0;
+        border-bottom: 0 solid var(--primary-active-border);
+      }
+    }
+    &.clickable {
+      cursor: pointer;
+    }
+    &.active, &.selected, &:focus, &:focus-visible {
+      background-color: var(--primary-active);
+    }
+  }
+}
