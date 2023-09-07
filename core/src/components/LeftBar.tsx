@@ -5,6 +5,7 @@ import { classnames, messenger } from '@power-playground/core'
 
 import PP from '../../../resources/PP_P.svg'
 
+import { List } from './base/List'
 import { useDrawerPanelController } from './drawerPanelCreator'
 import { NotImplemented } from './NotImplemented'
 
@@ -27,7 +28,18 @@ export function LeftBar(props: LeftBarProps) {
     addPanel({
       id: 'directory',
       icon: 'project',
-      title: 'Project',
+      title: <>
+        <span style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3px',
+          cursor: 'pointer',
+          userSelect: 'none'
+        }}>
+          Project
+          <span className='cldr codicon codicon-chevron-down' />
+        </span>
+      </>,
       actions: <>
         <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
           <span className='cldr codicon codicon-add'></span>
@@ -35,7 +47,8 @@ export function LeftBar(props: LeftBarProps) {
         <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
           <span className='cldr codicon codicon-compass-dot'></span>
         </button>
-      </>
+      </>,
+      content: <List />
     })
     return () => {
       removePanel('directory')

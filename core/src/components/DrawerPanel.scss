@@ -96,7 +96,7 @@
   }
   &__body {
     flex-grow: 1;
-    padding: 16px;
+    padding: 4px 8px;
     background-color: color-mix(in srgb, var(--primary), #fff0 50%);
     backdrop-filter: blur(5px);
   }

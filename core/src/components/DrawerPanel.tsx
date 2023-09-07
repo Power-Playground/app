@@ -31,7 +31,8 @@ export function DrawerPanel() {
       prefix,
       activePanel && `${prefix}--active`,
       menuIsOpen && `${prefix}--menu-open`,
-      windowMode
+      windowMode,
+      activePanel?.id
     )}
     style={{ width: '300px' }}
     tabIndex={0}
