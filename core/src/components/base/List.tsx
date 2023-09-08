@@ -101,6 +101,7 @@ export const List = forwardRefWithStatic<{
           let prevIndexIsSelected = false
           let nextIndexIsSelected = false
           do {
+            // TODO select prev/next by prev step select item index
             if (!prevIndexIsSelected && prevSelectedIndex - 1 >= 0) {
               const temp = selectedIds.includes(items[prevSelectedIndex - 1].id)
               if (!temp) {
