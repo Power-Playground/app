@@ -38,7 +38,13 @@ export function DrawerPanel() {
       panelRef.current?.focus()
     }
   }, [activePanel?.id])
-  const displayActivePanel = useDebouncedValue(!!activePanel, DrawerPanel.delay)
+  const debouncedActivePanel = useDebouncedValue(activePanel, DrawerPanel.delay)
+  const memoActivePanel = useMemo(() => activePanel
+    ? activePanel
+    : debouncedActivePanel, [
+    activePanel,
+    debouncedActivePanel
+  ])
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
@@ -61,20 +67,18 @@ export function DrawerPanel() {
       }
     }}
     >
-    {(
-      activePanel ? true : displayActivePanel
-    ) && <>
+    {memoActivePanel && <>
       <div className={`${prefix}__header`}>
         <div className={`${prefix}__header__title`}>
           <h3>
-            {typeof activePanel?.icon === 'string'
-              ? <span className={`cldr codicon codicon-${activePanel.icon}`}></span>
-              : activePanel?.icon}
-            {activePanel?.title}
+            {typeof memoActivePanel?.icon === 'string'
+              ? <span className={`cldr codicon codicon-${memoActivePanel.icon}`}></span>
+              : memoActivePanel?.icon}
+            {memoActivePanel?.title}
           </h3>
         </div>
         <div className={`${prefix}__header__actions`}>
-          {activePanel?.actions}
+          {memoActivePanel?.actions}
           <Menu
            items={[
              { id: 'switch-drawer-mode', content: <span style={{
@@ -122,14 +126,14 @@ export function DrawerPanel() {
               <kbd>Esc</kbd>
             </>}
             placement='right'>
-            <button onClick={() => activePanel && closePanel(activePanel?.id)}>
+            <button onClick={() => memoActivePanel && closePanel(memoActivePanel?.id)}>
               <span className='cldr codicon codicon-remove' />
             </button>
           </Popover>
         </div>
       </div>
       <div className={`${prefix}__body`}>
-        {activePanel?.content}
+        {memoActivePanel?.content}
       </div>
     </>}
   </Resizable>

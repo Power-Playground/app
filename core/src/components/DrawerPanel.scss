@@ -1,5 +1,7 @@
 .ppd-drawer-panel {
-  opacity: 0;
+  --transition-time: .2s;
+
+  visibility: hidden;
   z-index: 1;
   transform: translateX(-100%);
 
@@ -11,11 +13,11 @@
   color: var(--pr-fr-cr);
 
   box-shadow: 0 0 12px #3338;
-  border-right-width: 0 !important;
-  transition: .2s;
   html[theme-mode="dark"] & {
     box-shadow: 0 0 12px #1118;
   }
+  border-right-width: 0 !important;
+  transition: var(--transition-time);
   &:focus-visible {
     outline: none;
   }
@@ -25,7 +27,7 @@
 
     border-right-width: var(--inner-border-width) !important;
 
-    opacity: 1;
+    visibility: visible;
     transform: translateX(0%);
   }
   &__header {
@@ -41,7 +43,7 @@
     html[theme-mode="dark"] & {
       box-shadow: 1px 1px 12px #1118;
     }
-    transition: .1s;
+    transition: var(--transition-time);
     h1, h2, h3, h4, h5, h6 {
       margin: 0;
       display: flex;
@@ -86,6 +88,7 @@
   &--menu-open &__header__actions {
     opacity: 1;
   }
+
   &.centered {
     min-width: 0;
     max-width: 0;
@@ -93,6 +96,7 @@
   .ppd-editor-zone__menu-switch:not(.is-active) ~ &.centered > &__header {
     padding-left: 28px;
   }
+
   &.popout {
     position: absolute;
     left: 46px;
@@ -100,9 +104,9 @@
   &__body {
     flex-grow: 1;
     padding: 4px 8px;
-    background-color: rgba(var(--bg-cr-rgb), .8);
+    background-color: var(--bg-cr-o0);
     backdrop-filter: blur(14px);
-    transition: .1s;
+    transition: var(--transition-time);
   }
   &.centered &__body {
     background-color: var(--bg-cr);
