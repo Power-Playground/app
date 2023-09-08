@@ -30,6 +30,7 @@ body {
   // TODO replace to --primary-active-fc
   --pr-fr-cr: #fff;
   --bg-cr: #efefef;
+  --bg-cr-o0: #efefef55;
 
   --popup-bg: var(--bg-cr);
   --popup-fr-cr: var(--fr-cr);
@@ -48,6 +49,7 @@ body {
     --fr-cr-placholder: rgba(255, 255, 255, 0.26);
 
     --bg-cr: #242424;
+    --bg-cr-o0: #24242488;
     --icon-cr: #fff;
   }
 }
