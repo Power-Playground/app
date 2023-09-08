@@ -29,5 +29,5 @@ export default {
       <span className='cldr codicon codicon-compass-dot'></span>
     </button>
   </>,
-  content: <List />
+  content: <List selectable />
 } as DrawerPanel

@@ -35,11 +35,15 @@
         --br-0: 0;
         --br-1: 0;
         border-top: 0 solid var(--primary-active-border);
+        transition-delay: .15s;
+        transition-property: border-top;
       }
       &:has( + &) {
         --br-2: 0;
         --br-3: 0;
         border-bottom: 0 solid var(--primary-active-border);
+        transition-delay: .15s;
+        transition-property: border-bottom;
       }
       .ppd-list-item__icon {
         color: var(--primary-active-fc);
@@ -53,6 +57,10 @@
     }
     &.clickable {
       cursor: pointer;
+    }
+    &.disabled {
+      cursor: not-allowed;
+      opacity: .5;
     }
     &.active, &.selected, &:focus, &:focus-visible {
       background-color: var(--primary-active);

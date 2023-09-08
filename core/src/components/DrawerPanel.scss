@@ -100,7 +100,11 @@
   &__body {
     flex-grow: 1;
     padding: 4px 8px;
-    background-color: color-mix(in srgb, var(--primary), #fff0 50%);
-    backdrop-filter: blur(12px);
+    background-color: rgba(var(--bg-cr-rgb), .8);
+    backdrop-filter: blur(14px);
+    transition: .1s;
+  }
+  &.centered &__body {
+    background-color: var(--bg-cr);
   }
 }
