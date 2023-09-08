@@ -2,6 +2,11 @@ import './List.scss'
 
 import { forwardRefWithStatic } from './forwardRefWithStatic'
 
+export interface ListItem {
+  icon?: string | React.ReactNode
+  label: string | React.ReactNode
+  placeholder?: string | React.ReactNode
+}
 export interface ListProps {
 }
 export interface ListRef {
@@ -17,10 +22,12 @@ export const List = forwardRefWithStatic<{
     <div tabIndex={0} className={`${prefix}-item clickable selected`}>
       <span className={`${prefix}-item__icon cldr codicon codicon-chevron-right`} />
       <code className={`${prefix}-item__label`}>Item 0</code>
+      <code className={`${prefix}-item__placeholder`}>Placehold------------------------------------------er</code>
     </div>
     <div tabIndex={0} className={`${prefix}-item clickable`}>
       <span className={`${prefix}-item__icon cldr codicon codicon-beaker`} />
       <code className={`${prefix}-item__label`}>Item 1</code>
+      <code className={`${prefix}-item__placeholder`}>Placehold------------------------------------------er</code>
     </div>
     <div tabIndex={0} className={`${prefix}-item clickable`}>
       <span className={`${prefix}-item__icon cldr codicon codicon-file`} />

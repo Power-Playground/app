@@ -14,13 +14,19 @@ body {
   -webkit-text-size-adjust: 100%;
 
   --primary: #365eb4;
+
   --primary-hover: #365eb422;
+  --primary-hover-fc: #fff;
+
   --primary-active: #365eb488;
   --primary-active-border: #365eb4cc;
-  --primary-hover-fc: #fff;
+  --primary-active-fc: rgba(255, 255, 255, 0.9);
+  --primary-active-placholder:rgba(255, 255, 255, 0.6);
+
   --border-color: #cccccc;
 
-  --fr-cr: #000;
+  --fr-cr: rgba(0, 0, 0, 0.9);
+  --fr-cr-placholder: rgba(0, 0, 0, 0.26);
   --pr-fr-cr: #fff;
   --bg-cr: #efefef;
 
@@ -31,7 +37,12 @@ body {
   --icon-cr: #fff;
   html[theme-mode=dark] & {
     --primary: #263c6e;
-    --fr-cr: #fff;
+    --primary-active-fc: rgba(200, 200, 200, 0.9);
+    --primary-active-placholder:rgba(200, 200, 200, 0.6);
+
+    --fr-cr: rgba(255, 255, 255, 0.9);
+    --fr-cr-placholder: rgba(255, 255, 255, 0.26);
+
     --bg-cr: #242424;
     --icon-cr: #fff;
   }
