@@ -49,6 +49,15 @@ export const List = forwardRefWithStatic<{
       label: 'Item 3' },
     { icon: 'folder-library',
       id: 'node_modules',
+      label: 'node_modules' },
+    { icon: 'folder-library',
+      id: 'node_modules0',
+      label: 'node_modules' },
+    { icon: 'folder-library',
+      id: 'node_modules1',
+      label: 'node_modules' },
+    { icon: 'folder-library',
+      id: 'node_modules2',
       label: 'node_modules' }
   ]
   return <div
@@ -59,33 +68,84 @@ export const List = forwardRefWithStatic<{
       ref={el => el && (itemsRef.current[index] = el)}
       key={item.id}
       tabIndex={item.disabled ? undefined : 0}
+      onClick={e => {
+        e.stopPropagation()
+        if (!selectable || item.disabled) return
+
+        const withCtrlOrMeta = e.ctrlKey || e.metaKey
+        const withShift = e.shiftKey
+
+        setSelectedIds(selectedIds => {
+          if (!withCtrlOrMeta && !withShift) {
+            return [item.id]
+          }
+
+          const findIndex = selectedIds.indexOf(item.id)
+          if (withCtrlOrMeta) {
+            if (findIndex === -1) {
+              return [...selectedIds, item.id]
+            } else {
+              setTimeout(() => itemsRef.current[index].blur(), 10)
+              return [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
+            }
+          }
+
+          if (findIndex !== -1) {
+            setTimeout(() => itemsRef.current[index].blur(), 10)
+            return selectedIds
+              .filter(id => id !== item.id)
+          }
+
+          let prevSelectedIndex = index
+          let nextSelectedIndex = index
+          let prevIndexIsSelected = false
+          let nextIndexIsSelected = false
+          do {
+            if (!prevIndexIsSelected && prevSelectedIndex - 1 >= 0) {
+              const temp = selectedIds.includes(items[prevSelectedIndex - 1].id)
+              if (!temp) {
+                prevSelectedIndex--
+              } else {
+                prevIndexIsSelected = temp
+                break
+              }
+            }
+            if (!nextIndexIsSelected && nextSelectedIndex + 1 < items.length) {
+              const temp = selectedIds.includes(items[nextSelectedIndex + 1].id)
+              if (!temp) {
+                nextSelectedIndex++
+              } else {
+                nextIndexIsSelected = temp
+                break
+              }
+            }
+          } while (
+            (
+              prevSelectedIndex - 1 >= 0
+            ) || (
+              nextSelectedIndex + 1 < items.length
+            )
+          )
+          const range = [index, index]
+          if (prevIndexIsSelected && prevSelectedIndex >= 0) {
+            range[0] = prevSelectedIndex
+          }
+          if (nextIndexIsSelected && nextSelectedIndex < items.length) {
+            range[1] = nextSelectedIndex
+          }
+          const rangeIds = []
+          for (let i = range[0]; i <= range[1]; i++) {
+            rangeIds.push(items[i].id)
+          }
+          return selectedIds.concat(rangeIds.filter(id => !selectedIds.includes(id)))
+        })
+      }}
       className={classnames(
         `${prefix}-item`,
         selectable && !item.disabled && 'clickable',
         item.disabled && 'disabled',
         selectedIds.includes(item.id) && 'selected'
       )}
-      onClick={e => {
-        e.stopPropagation()
-        if (!selectable || item.disabled) return
-
-        const withCtrl = e.ctrlKey || e.metaKey
-        const withShift = e.shiftKey
-
-        setSelectedIds(selectedIds => {
-          if (!withCtrl && !withShift) {
-            return [item.id]
-          }
-
-          const findIndex = selectedIds.indexOf(item.id)
-          if (findIndex === -1) {
-            return [...selectedIds, item.id]
-          } else {
-            setTimeout(() => itemsRef.current[index].blur(), 10)
-            return [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
-          }
-        })
-      }}
       >
       {item.icon && typeof item.icon === 'string'
         ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
