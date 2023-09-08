@@ -38,8 +38,11 @@ body {
   --icon-cr: #fff;
   html[theme-mode=dark] & {
     --primary: #263c6e;
-    --primary-active-fc: rgba(200, 200, 200, 0.9);
-    --primary-active-placholder:rgba(200, 200, 200, 0.6);
+
+    --primary-hover: #263c6e99;
+
+    --primary-active-fc: rgba(230, 230, 230, 0.9);
+    --primary-active-placholder:rgba(140, 140, 140, 0.6);
 
     --fr-cr: rgba(255, 255, 255, 0.9);
     --fr-cr-placholder: rgba(255, 255, 255, 0.26);
