@@ -53,6 +53,9 @@
         color: var(--primary-active-placholder);
       }
     }
+    &:focus, &:focus-visible {
+      border: 2px dashed var(--primary-active-border);
+    }
     &.clickable {
       cursor: pointer;
     }
