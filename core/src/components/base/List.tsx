@@ -252,16 +252,25 @@ export const List = forwardRefWithStatic<{
     if (!enableSearch) return item.label
 
     const noRegExpChars = ['\\', '.', '*', '+', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|']
-    const noRegExpKeyword = noRegExpChars.reduce((prev, curr) => prev.replace(curr, `\\${curr}`), keyword)
+    const noRegExpKeyword = searchMode === 'regex'
+      ? keyword
+      : noRegExpChars.reduce((prev, curr) => prev.replace(curr, `\\${curr}`), keyword)
+
+    const regexpStr = !enableWordMatch
+      ? noRegExpKeyword
+      : `\\b${noRegExpKeyword}\\b`
     const parts = new RegExp(
-      !enableWordMatch
-        ? noRegExpKeyword
-        : `\\b${noRegExpKeyword}\\b`,
+      searchMode === 'strict'
+        ? `^${regexpStr}$`
+        : regexpStr,
       enableUpperKeywordsIgnore ? 'i' : ''
     ).exec(item.label)
     if (!parts) return item.label
+
     const index = parts.index
     const length = parts[0].length
+    if (index === -1 || length === 0) return item.label
+
     return <>
       {item.label.slice(0, index)}
       <b className={`${prefix}-item__label__keyword`}>
@@ -468,9 +477,6 @@ export const List = forwardRefWithStatic<{
       if (e.key.length === 1 && withoutAllNoShift) {
         e.preventDefault()
         e.stopPropagation()
-        if (keyword === '') {
-          setSearchMode('fuzzy')
-        }
         setKeyword(keyword => keyword + e.key)
         return
       }
