@@ -52,6 +52,10 @@
         &.ppd-list-searchbar--active::before {
           color: var(--inner-active-cr);
         }
+        &.ppd-list-searchbar--active::after {
+          z-index: -1;
+          background-color: #fffd;
+        }
       }
       &.codicon-whole-word {
         --active-cr: var(--match-span-cr);
