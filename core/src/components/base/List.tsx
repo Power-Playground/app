@@ -221,7 +221,7 @@ export const List = forwardRefWithStatic<{
         })}
         onClick={() => setEnableWordMatch(e => !e)}
       />
-      <code>{keyword}</code>
+      <code>{keyword.replace(/ /g, '␣')}</code>
     </>
   })
   useEffect(() => {
@@ -382,16 +382,32 @@ export const List = forwardRefWithStatic<{
       // ⌘ %      : switch fuzzy mode               |
         // ⌫        : delete last char              |
       if (keyword.length > 0) {
+        // ⎋
         if (e.key === 'Escape' && withoutAll) {
           e.preventDefault()
           e.stopPropagation()
           setKeyword('')
           return
         }
+        // ⌫
         if (e.key === 'Backspace' && withoutAll) {
           e.preventDefault()
           e.stopPropagation()
           setKeyword(keyword => keyword.slice(0, -1))
+          return
+        }
+        // ⌥ c
+        if (e.key === 'ç') {
+          e.preventDefault()
+          e.stopPropagation()
+          setEnableUpperKeywordsIgnore(e => !e)
+          return
+        }
+        // ⌥ w
+        if (e.key === '∑') {
+          e.preventDefault()
+          e.stopPropagation()
+          setEnableWordMatch(e => !e)
           return
         }
       }
