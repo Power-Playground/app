@@ -2,7 +2,7 @@ import './List.scss'
 
 import { useRef, useState } from 'react'
 
-import { classnames } from '../../utils'
+import { classnames, isMacOS } from '../../utils'
 
 import { forwardRefWithStatic } from './forwardRefWithStatic'
 
@@ -21,6 +21,35 @@ export interface ListProps {
 export interface ListRef {
 }
 
+enum KeyMapUnicodeEmoji {
+  Windows = '❖',
+  Control = '^',
+  Option = '⌥',
+  Command = '⌘',
+  Shift = '⇧',
+  Backspace = '⌫',
+  Delete = '⌦',
+  Return = '⏎',
+  Escape = '⎋',
+  Clear = '⌧',
+  Eject = '⌽',
+  Power = '⏏',
+  ContextMenu = '⌶',
+  Space = '␣',
+  Execute = '⎄',
+  Enter = '⌤',
+  Insert = '⌅',
+  Tab = '⇥',
+  PageUp = '⇞',
+  PageDown = '⇟',
+  Home = '⇱',
+  End = '⇲',
+  ArrowLeft = '⇠',
+  ArrowUp = '⇡',
+  ArrowRight = '⇢',
+  ArrowDown = '⇣'
+}
+
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
 }, ListRef, ListProps>((props, ref) => {
@@ -29,9 +58,22 @@ export const List = forwardRefWithStatic<{
   } = props
   const { prefix } = List
 
+  const listRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<HTMLDivElement[]>([])
   const [keyword, setKeyword] = useState<string>('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1)
+  function focusTo(index: number) {
+    if (index < 0 || index >= itemsRef.current.length) return
+    itemsRef.current[index].focus()
+  }
+  function focusItem(index: number) {
+    if (index >= itemsRef.current.length) return
+    const realIndex = index !== -1 ? index : items.length - 1
+    setFocusedIndex(realIndex)
+    focusTo(realIndex)
+  }
 
   const items: ListItem[] = [
     { icon: 'file',
@@ -60,14 +102,101 @@ export const List = forwardRefWithStatic<{
       id: 'node_modules2',
       label: 'node_modules' }
   ]
+  // noinspection GrazieInspection,StructuralWrap
   return <div
+    ref={listRef}
+    tabIndex={0}
     className={prefix}
     onClick={() => setSelectedIds([])}
+    onFocus={() => focusTo(focusedIndex)}
+    onKeyDown={e => {
+      const withCtrlOrMeta = e.ctrlKey || (
+        isMacOS && e.metaKey
+      )
+      const withShift = e.shiftKey
+      const withAlt = e.altKey
+      // ⇡/⇣     : change focus
+      // ⌘ ⇡/⇣   : forward ⇞/⇟
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        e.preventDefault()
+        e.stopPropagation()
+        const direction = e.key === 'ArrowUp' ? -1 : 1
+        if (!withShift && !withAlt) {
+          let index: number
+          if (withCtrlOrMeta) {
+            index = direction === -1 ? 0 : items.length - 1
+          } else
+            if (focusedIndex === -1) {
+              index = direction === -1 ? items.length - 1 : 0
+            } else {
+              index = listRef.current === document.activeElement
+                ? focusedIndex
+                : (focusedIndex + direction) % items.length
+            }
+          focusItem(index)
+          return
+        }
+        if (withShift) {
+        }
+        return
+      }
+      // ⇧ ⇡/⇣   : change focus and select
+      // ⌘ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
+      // ⌥ ⇡/⇣   : forward ⇱/⇲ and select
+      // ⌥ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
+      // ⇞/⇟     : focus visible first/last
+      // ⇱/⇲     : focus first/last
+
+      // ⇠/⇢      : [open]|[close]
+      // ⇧ ⇠/⇢    : [open]|[close] and select
+
+      // ⌘ a      : select all
+      // ⌘ r      : reveal
+      // ⌘ z      : undo
+      // ⌘ v      : change view mode
+      // ⌘ +      : fold selected
+      // ⌘ -      : unfold selected
+      // ⌘ ⇧ +    : fold all
+      // ⌘ ⇧ -    : unfold all
+
+      // ⌘ f      : lower find                      |
+      // ⌘ ⇧ f    : higher find                     |
+        // ^ ⌥ c  : toggle upper/lower ignore case  |
+        // ^ ⌥ w  : toggle word match               |
+        // ^ ⌥ f  : configure filers                |-- ⎋ : exit find mode
+      // ⌘ g      : find by glob expression         |
+      // /        : find by regex                   |
+      // %        : find by fuzzy                   |
+      // ⌘ /      : switch start with mode          |
+
+      // ?        : get help
+
+      // \\       : find start with \
+      // \/       : find start with /
+      // \%       : find start with %
+      // \?       : find start with ?
+      // any char : find
+
+      // ⎋   : clear selection
+      // ␣   : [select]
+      // ⏎   : [select]|[open]
+      // ⌘ ⏎ : [open]|[open in new tab]
+      // ⇥   : focus next
+      console.log(e.key, e.keyCode, e.ctrlKey, e.metaKey, e.shiftKey)
+      e.preventDefault()
+      e.stopPropagation()
+    }}
     >
     {items.map((item, index) => <div
       ref={el => el && (itemsRef.current[index] = el)}
       key={item.id}
       tabIndex={item.disabled ? undefined : 0}
+      className={classnames(
+        `${prefix}-item`,
+        selectable && !item.disabled && 'clickable',
+        item.disabled && 'disabled',
+        selectedIds.includes(item.id) && 'selected'
+      )}
       onClick={e => {
         e.stopPropagation()
         if (!selectable || item.disabled) return
@@ -141,12 +270,10 @@ export const List = forwardRefWithStatic<{
           return selectedIds.concat(rangeIds.filter(id => !selectedIds.includes(id)))
         })
       }}
-      className={classnames(
-        `${prefix}-item`,
-        selectable && !item.disabled && 'clickable',
-        item.disabled && 'disabled',
-        selectedIds.includes(item.id) && 'selected'
-      )}
+      onFocus={e => {
+        e.stopPropagation()
+        setFocusedIndex(index)
+      }}
       >
       {item.icon && typeof item.icon === 'string'
         ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
