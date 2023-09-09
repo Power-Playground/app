@@ -9,7 +9,7 @@ export interface ResizableProps extends Omit<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
   'ref' | 'style' | 'className' | 'children'
 > {
-  ref?: React.RefCallback<HTMLDivElement> | React.RefObject<HTMLDivElement> | null
+  _ref?: React.RefCallback<HTMLDivElement> | React.RefObject<HTMLDivElement> | null
   className?: string
   style?: CSSProperties & {
     '--border-width'?: string
@@ -147,7 +147,7 @@ export function Resizable({
   className,
   style,
   children,
-  ref,
+  _ref,
   resizable,
   onBorderBtnClick,
   ...props
@@ -184,11 +184,11 @@ export function Resizable({
     )}
     style={style}
     ref={async ele => {
-      if (typeof ref === 'function') {
-        ref(ele)
-      } else if (ref) {
+      if (typeof _ref === 'function') {
+        _ref(ele)
+      } else if (_ref) {
         // @ts-ignore
-        props.ref.current = ele
+        _ref.current = ele
       }
       if (!ele) {
         dispose.current?.()

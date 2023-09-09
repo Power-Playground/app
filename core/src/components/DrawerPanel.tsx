@@ -49,7 +49,7 @@ export function DrawerPanel() {
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
   return <Resizable
-    ref={panelRef}
+    _ref={panelRef}
     className={classnames(
       prefix,
       activePanel && `${prefix}--active`,
