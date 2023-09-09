@@ -220,12 +220,14 @@ export const List = forwardRefWithStatic<{
           [`${prefix}-searchbar--active`]: enableUpperKeywordsIgnore
         })}
         onClick={() => setEnableUpperKeywordsIgnore(e => !e)}
+        title='Toggle Upper/Lower Ignore Case'
       />
       <span
         className={classnames('cldr codicon codicon-whole-word clickable', {
           [`${prefix}-searchbar--active`]: enableWordMatch
         })}
         onClick={() => setEnableWordMatch(e => !e)}
+        title='Toggle Word Match'
       />
       <code>{keyword.replace(/ /g, '␣')}</code>
     </>
