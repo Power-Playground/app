@@ -116,10 +116,6 @@ export const List = forwardRefWithStatic<{
       setVisibleItems(computeVisibleItems())
     }, 200) as unknown as number)
   }, [computeVisibleItems, scrollRetimer])
-  useEffect(() => {
-    console.log(visibleItems.map(([id]) => id))
-    console.log(visibleItems)
-  }, [visibleItems])
 
   const [keyword, setKeyword] = useState<string>('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
@@ -304,22 +300,17 @@ export const List = forwardRefWithStatic<{
 
           const withCtrlOrMeta = e.ctrlKey || e.metaKey
           const withShift = e.shiftKey
+          if (!withCtrlOrMeta && !withShift) {
+            setSelectedIds([item.id])
+            return
+          }
+          if (withCtrlOrMeta) {
+            toggleSelectedId(item.id)
+            return
+          }
 
           setSelectedIds(selectedIds => {
-            if (!withCtrlOrMeta && !withShift) {
-              return [item.id]
-            }
-
             const findIndex = selectedIds.indexOf(item.id)
-            if (withCtrlOrMeta) {
-              if (findIndex === -1) {
-                return [...selectedIds, item.id]
-              } else {
-                setTimeout(() => itemsRef.current[index].blur(), 10)
-                return [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
-              }
-            }
-
             if (findIndex !== -1) {
               setTimeout(() => itemsRef.current[index].blur(), 10)
               return selectedIds
@@ -350,13 +341,11 @@ export const List = forwardRefWithStatic<{
                   break
                 }
               }
-            } while (
-              (
-                prevSelectedIndex - 1 >= 0
-              ) || (
-                nextSelectedIndex + 1 < items.length
-              )
-              )
+            } while ((
+              prevSelectedIndex - 1 >= 0
+            ) || (
+              nextSelectedIndex + 1 < items.length
+            ))
             const range = [index, index]
             if (prevIndexIsSelected && prevSelectedIndex >= 0) {
               range[0] = prevSelectedIndex
