@@ -220,11 +220,14 @@ export const List = forwardRefWithStatic<{
     arrowVisible: false,
     referenceElement: listRef.current,
     content: <>
-      <span className={classnames('cldr codicon', {
-        strict: 'codicon-search',
-        regex: 'codicon-regex',
-        fuzzy: 'codicon-search-fuzzy'
-      }[searchMode])} />
+      <span
+        className={classnames('cldr codicon', {
+          strict: 'codicon-search',
+          regex: 'codicon-regex',
+          fuzzy: 'codicon-search-fuzzy'
+        }[searchMode])}
+        title={`Search by "${searchMode}" mode.(press "/" switch to regex mode, press "⌘ f" switch to strict mode, press any char switch to fuzzy mode)`}
+      />
       <span
         className={classnames('cldr codicon codicon-text-size clickable', {
           [`${prefix}-searchbar--active`]: enableUpperKeywordsIgnore
