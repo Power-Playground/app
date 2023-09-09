@@ -291,8 +291,24 @@ export const List = forwardRefWithStatic<{
       // ⇠/⇢      : [open]|[close]
       // ⇧ ⇠/⇢    : [open]|[close] and select
 
-      // ⌘ a      : select all
-      // ⌘ r      : reveal
+      // ⌘ a : select all
+      if (e.key === 'a' && withCtrlOrMeta && !withShift && !withAlt) {
+        e.preventDefault()
+        e.stopPropagation()
+        setSelectedIds(items.map(({ id }) => id))
+        return
+      }
+      // ⌘ r : reveal
+      if (e.key === 'r' && withCtrlOrMeta && !withShift && !withAlt) {
+        e.preventDefault()
+        e.stopPropagation()
+        const el = itemsRef.current[focusedIndex]
+        listRef.current?.scrollTo({
+          top: el.offsetTop - listRef.current.clientHeight * 0.382,
+          behavior: 'smooth'
+        })
+        return
+      }
       // ⌘ z      : undo
       // ⌘ v      : change view mode
       // ⌘ +      : fold selected
