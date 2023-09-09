@@ -117,6 +117,9 @@ export const List = forwardRefWithStatic<{
       )
       const withShift = e.shiftKey
       const withAlt = e.altKey
+
+      const withoutAll = !withCtrlOrMeta && !withShift && !withAlt
+
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault()
         e.stopPropagation()
@@ -187,13 +190,19 @@ export const List = forwardRefWithStatic<{
       // any char : find
 
       // ⎋   : clear selection
-      if (e.key === 'Escape' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+      if (e.key === 'Escape' && withoutAll) {
         e.preventDefault()
         e.stopPropagation()
         setSelectedIds([])
         return
       }
-      // ␣   : [select]
+      // ␣ : toggle select
+      if (e.key === ' ' && withoutAll) {
+        e.preventDefault()
+        e.stopPropagation()
+        toggleSelectedId(items[focusedIndex]?.id)
+        return
+      }
       // ⏎   : [select]|[open]
       // ⌘ ⏎ : [open]|[open in new tab]
       // ⇥   : focus next
