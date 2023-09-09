@@ -78,6 +78,12 @@ export const List = forwardRefWithStatic<{
     { icon: 'file',
       id: 'tsconfig.json',
       label: 'tsconfig.json' },
+    { icon: 'file',
+      id: '0',
+      label: 'foo bar.js' },
+    { icon: 'file',
+      id: '1',
+      label: 'foobar.js' },
     ...[...Array(100)].map((_, i) => ({
       icon: 'file',
       id: `item-${i}`,
