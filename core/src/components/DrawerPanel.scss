@@ -105,6 +105,7 @@
     flex-grow: 1;
     height: 0;
     padding: 4px 8px;
+    overflow: hidden;
     background-color: var(--bg-cr-o0);
     backdrop-filter: blur(14px);
     transition: var(--transition-time);
