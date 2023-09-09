@@ -248,7 +248,7 @@ export const List = forwardRefWithStatic<{
   useEffect(() => {
     searchbarPopper.changeVisible(enableSearch)
   }, [enableSearch, searchbarPopper])
-  function labelMatcher(item: ListItem) {
+  const labelMatcher = useCallback((item: ListItem) => {
     if (!enableSearch) return null
 
     const noRegExpChars = ['\\', '.', '*', '+', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|']
@@ -259,13 +259,19 @@ export const List = forwardRefWithStatic<{
     const regexpStr = !enableWordMatch
       ? noRegExpKeyword
       : `\\b${noRegExpKeyword}\\b`
-    return new RegExp(
-      searchMode === 'strict'
-        ? `^${regexpStr}$`
-        : regexpStr,
-      enableUpperKeywordsIgnore ? 'i' : ''
-    ).exec(item.label)
-  }
+    try {
+      const reg = new RegExp(
+        searchMode === 'strict'
+          ? `^${regexpStr}$`
+          : regexpStr,
+        enableUpperKeywordsIgnore ? 'i' : ''
+      )
+      return reg.exec(item.label)
+    } catch (e) {
+      console.error(e)
+      return null
+    }
+  }, [enableSearch, enableUpperKeywordsIgnore, enableWordMatch, keyword, searchMode])
   function labelContentRender(item: ListItem) {
     const parts = labelMatcher(item)
     if (!parts) return item.label
