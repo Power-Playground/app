@@ -1,6 +1,7 @@
 import './List.scss'
 
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRetimer } from 'foxact/use-retimer'
 
 import { classnames, isMacOS } from '../../utils'
 
@@ -50,6 +51,13 @@ enum KeyMapUnicodeEmoji {
   ArrowDown = '⇣'
 }
 
+function inVisibleArea(el: HTMLElement, container: HTMLElement) {
+  const elRect = el.getBoundingClientRect()
+  const containerRect = container.getBoundingClientRect()
+  return elRect.top >= containerRect.top
+    && elRect.bottom <= containerRect.bottom
+}
+
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
 }, ListRef, ListProps>((props, ref) => {
@@ -57,32 +65,6 @@ export const List = forwardRefWithStatic<{
     selectable = false
   } = props
   const { prefix } = List
-
-  const listRef = useRef<HTMLDivElement>(null)
-  const itemsRef = useRef<HTMLDivElement[]>([])
-  const [keyword, setKeyword] = useState<string>('')
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  function pushId(id?: string) {
-    if (!id) return
-
-    setSelectedIds(selectedIds => {
-      const findIndex = selectedIds.indexOf(id)
-      return findIndex !== -1 ? selectedIds : [...selectedIds, id]
-    })
-  }
-
-  const [focusedIndex, setFocusedIndex] = useState<number>(-1)
-  function focusTo(index: number) {
-    if (index < 0 || index >= itemsRef.current.length) return
-    itemsRef.current[index].focus()
-  }
-  function focusItem(index: number) {
-    if (index >= itemsRef.current.length) return
-    const realIndex = index !== -1 ? index : items.length - 1
-    setFocusedIndex(realIndex)
-    focusTo(realIndex)
-  }
-
   const items: ListItem[] = [
     { icon: 'file',
       id: 'index.ts',
@@ -104,6 +86,74 @@ export const List = forwardRefWithStatic<{
       id: 'node_modules',
       label: 'node_modules' }
   ]
+
+  const listRef = useRef<HTMLDivElement>(null)
+  const itemsRef = useRef<HTMLDivElement[]>([])
+  const [visibleItems, setVisibleItems] = useState<[
+    id: string,
+    el: HTMLDivElement
+  ][]>([])
+
+  const computeVisibleItems = useCallback(() => {
+    const visibleItems: [
+      id: string,
+      el: HTMLDivElement
+    ][] = []
+    itemsRef.current.forEach(el => {
+      if (listRef.current && inVisibleArea(el, listRef.current)) {
+        visibleItems.push([el.dataset.id!, el])
+      }
+    })
+    return visibleItems
+  }, [])
+  useEffect(() => {
+    setVisibleItems(computeVisibleItems())
+  }, [computeVisibleItems])
+
+  const scrollRetimer = useRetimer()
+  const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    scrollRetimer(setTimeout(() => {
+      setVisibleItems(computeVisibleItems())
+    }, 200) as unknown as number)
+  }, [computeVisibleItems, scrollRetimer])
+  useEffect(() => {
+    console.log(visibleItems.map(([id]) => id))
+    console.log(visibleItems)
+  }, [visibleItems])
+
+  const [keyword, setKeyword] = useState<string>('')
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  function pushSelectedId(id?: string) {
+    if (!id) return
+
+    setSelectedIds(selectedIds => {
+      const findIndex = selectedIds.indexOf(id)
+      return findIndex !== -1 ? selectedIds : [...selectedIds, id]
+    })
+  }
+  function toggleSelectedId(id?: string) {
+    if (!id) return
+
+    setSelectedIds(selectedIds => {
+      const findIndex = selectedIds.indexOf(id)
+      return findIndex !== -1
+        ? [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
+        : [...selectedIds, id]
+    })
+  }
+
+  const [focusedIndex, setFocusedIndex] = useState<number>(-1)
+  function focusTo(index: number) {
+    if (index < 0 || index >= itemsRef.current.length) return
+    itemsRef.current[index].focus()
+  }
+  function focusItem(index: number) {
+    if (index >= itemsRef.current.length) return
+    const realIndex = index !== -1 ? index : items.length - 1
+    setFocusedIndex(realIndex)
+    focusTo(realIndex)
+  }
+
   // noinspection GrazieInspection,StructuralWrap
   return <div
     ref={listRef}
@@ -119,6 +169,30 @@ export const List = forwardRefWithStatic<{
       const withAlt = e.altKey
 
       const withoutAll = !withCtrlOrMeta && !withShift && !withAlt
+
+      function pageUpOrDown(direction: 1 | -1, _visibleItems = visibleItems) {
+        const [targetId, el] = _visibleItems[
+          direction === -1 ? 0 : _visibleItems.length - 1
+          ]
+        const tmpIndex = items.findIndex(({ id }) => id === targetId)
+        if (tmpIndex === focusedIndex) {
+          if (listRef.current) {
+            if (direction === -1) {
+              listRef.current.scrollTo({
+                top: el.offsetTop - listRef.current.offsetHeight + el.offsetHeight + 16,
+                behavior: 'instant'
+              })
+            } else {
+              listRef.current.scrollTo({
+                top: el.offsetTop - 8,
+                behavior: 'instant'
+              })
+            }
+            return pageUpOrDown(direction, computeVisibleItems())
+          }
+        }
+        return tmpIndex
+      }
 
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault()
@@ -141,14 +215,14 @@ export const List = forwardRefWithStatic<{
         }
         // ⌥ ⇡/⇣ : forward ⇞/⇟
         if (withAlt) {
-          index = direction === -1 ? 0 : items.length - 1
+          index = pageUpOrDown(direction)
         }
         focusItem(index)
         if (withShift) {
           // ⇧ ⇡/⇣ : change focus and select
           if (!withAlt && !withCtrlOrMeta) {
-            pushId(items[index]?.id)
-            pushId(items[focusedIndex]?.id)
+            pushSelectedId(items[index]?.id)
+            pushSelectedId(items[focusedIndex]?.id)
             return
           }
           // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
@@ -210,12 +284,14 @@ export const List = forwardRefWithStatic<{
       e.preventDefault()
       e.stopPropagation()
     }}
+    onScroll={onScroll}
     >
     <div className={`${prefix}-wrap`}>
       {items.map((item, index) => <div
         ref={el => el && (itemsRef.current[index] = el)}
         key={item.id}
         tabIndex={item.disabled ? undefined : 0}
+        data-id={item.id}
         className={classnames(
           `${prefix}-item`,
           selectable && !item.disabled && 'clickable',
