@@ -11,6 +11,8 @@
     --br-1: 4px;
     --br-2: 4px;
     --br-3: 4px;
+
+    position: relative;
     display: flex;
     align-items: center;
     gap: 5px;
@@ -54,7 +56,17 @@
       }
     }
     &:focus, &:focus-visible {
-      border: 2px dashed var(--primary-active-border);
+      border: 2px dashed transparent;
+      &::after {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
+        border: 2px dashed var(--primary-active-border);
+      }
     }
     &.clickable {
       cursor: pointer;
