@@ -187,6 +187,12 @@ export const List = forwardRefWithStatic<{
       // any char : find
 
       // ⎋   : clear selection
+      if (e.key === 'Escape' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+        e.preventDefault()
+        e.stopPropagation()
+        setSelectedIds([])
+        return
+      }
       // ␣   : [select]
       // ⏎   : [select]|[open]
       // ⌘ ⏎ : [open]|[open in new tab]
