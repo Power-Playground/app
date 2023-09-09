@@ -103,6 +103,7 @@
   }
   &__body {
     flex-grow: 1;
+    height: 0;
     padding: 4px 8px;
     background-color: var(--bg-cr-o0);
     backdrop-filter: blur(14px);

@@ -62,6 +62,14 @@ export const List = forwardRefWithStatic<{
   const itemsRef = useRef<HTMLDivElement[]>([])
   const [keyword, setKeyword] = useState<string>('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  function pushId(id?: string) {
+    if (!id) return
+
+    setSelectedIds(selectedIds => {
+      const findIndex = selectedIds.indexOf(id)
+      return findIndex !== -1 ? selectedIds : [...selectedIds, id]
+    })
+  }
 
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
   function focusTo(index: number) {
@@ -79,27 +87,21 @@ export const List = forwardRefWithStatic<{
     { icon: 'file',
       id: 'index.ts',
       label: 'index.ts',
-      placeholder: '[entry]' },
+      placeholder: '[entry] very longerrrrrrrrrrrrrrrrrrrrrr placeholder' },
     { icon: 'beaker',
       id: 'index.spec.ts',
-      label: 'index.spec.ts' },
+      label: 'index.spec.ts',
+      placeholder: '[entry] test' },
     { icon: 'file',
       id: 'tsconfig.json',
       label: 'tsconfig.json' },
-    { icon: 'file',
-      id: 'item-3',
-      label: 'Item 3' },
+    ...[...Array(100)].map((_, i) => ({
+      icon: 'file',
+      id: `item-${i}`,
+      label: `Item ${i}`
+    })),
     { icon: 'folder-library',
       id: 'node_modules',
-      label: 'node_modules' },
-    { icon: 'folder-library',
-      id: 'node_modules0',
-      label: 'node_modules' },
-    { icon: 'folder-library',
-      id: 'node_modules1',
-      label: 'node_modules' },
-    { icon: 'folder-library',
-      id: 'node_modules2',
       label: 'node_modules' }
   ]
   // noinspection GrazieInspection,StructuralWrap
@@ -119,36 +121,37 @@ export const List = forwardRefWithStatic<{
         e.preventDefault()
         e.stopPropagation()
         const direction = e.key === 'ArrowUp' ? -1 : 1
-        if (!withShift) {
-          let index = -1
-          // ⇡/⇣ : change focus
-          if (!withAlt && !withCtrlOrMeta) {
-            if (focusedIndex === -1) {
-              index = direction === -1 ? items.length - 1 : 0
-            } else {
-              index = listRef.current === document.activeElement
-                ? focusedIndex
-                : (focusedIndex + direction) % items.length
-            }
+        let index = -1
+        // ⇡/⇣ : change focus
+        if (!withAlt && !withCtrlOrMeta) {
+          if (focusedIndex === -1) {
+            index = direction === -1 ? items.length - 1 : 0
+          } else {
+            index = listRef.current === document.activeElement
+              ? focusedIndex
+              : (focusedIndex + direction) % items.length
           }
-          // ⌘ ⇡/⇣ : forward ⇱/⇲
-          if (withCtrlOrMeta) {
-            index = direction === -1 ? 0 : items.length - 1
-          }
-          // ⌥ ⇡/⇣ : forward ⇞/⇟
-          if (withAlt) {
-            index = direction === -1 ? 0 : items.length - 1
-          }
-          focusItem(index)
-          return
         }
-        // ⇧ ⇡/⇣   : change focus and select
-        // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
-        // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
+        // ⌘ ⇡/⇣ : forward ⇱/⇲
+        if (withCtrlOrMeta) {
+          index = direction === -1 ? 0 : items.length - 1
+        }
+        // ⌥ ⇡/⇣ : forward ⇞/⇟
+        if (withAlt) {
+          index = direction === -1 ? 0 : items.length - 1
+        }
+        focusItem(index)
         if (withShift) {
+          // ⇧ ⇡/⇣ : change focus and select
+          if (!withAlt && !withCtrlOrMeta) {
+            pushId(items[index]?.id)
+            pushId(items[focusedIndex]?.id)
+            return
+          }
+          // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
+          // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
           return
         }
-        return
       }
       // ⇞/⇟     : focus visible first/last
       // ⇱/⇲     : focus first/last
@@ -193,106 +196,108 @@ export const List = forwardRefWithStatic<{
       e.stopPropagation()
     }}
     >
-    {items.map((item, index) => <div
-      ref={el => el && (itemsRef.current[index] = el)}
-      key={item.id}
-      tabIndex={item.disabled ? undefined : 0}
-      className={classnames(
-        `${prefix}-item`,
-        selectable && !item.disabled && 'clickable',
-        item.disabled && 'disabled',
-        selectedIds.includes(item.id) && 'selected'
-      )}
-      onClick={e => {
-        e.stopPropagation()
-        if (!selectable || item.disabled) return
+    <div className={`${prefix}-wrap`}>
+      {items.map((item, index) => <div
+        ref={el => el && (itemsRef.current[index] = el)}
+        key={item.id}
+        tabIndex={item.disabled ? undefined : 0}
+        className={classnames(
+          `${prefix}-item`,
+          selectable && !item.disabled && 'clickable',
+          item.disabled && 'disabled',
+          selectedIds.includes(item.id) && 'selected'
+        )}
+        onClick={e => {
+          e.stopPropagation()
+          if (!selectable || item.disabled) return
 
-        const withCtrlOrMeta = e.ctrlKey || e.metaKey
-        const withShift = e.shiftKey
+          const withCtrlOrMeta = e.ctrlKey || e.metaKey
+          const withShift = e.shiftKey
 
-        setSelectedIds(selectedIds => {
-          if (!withCtrlOrMeta && !withShift) {
-            return [item.id]
-          }
+          setSelectedIds(selectedIds => {
+            if (!withCtrlOrMeta && !withShift) {
+              return [item.id]
+            }
 
-          const findIndex = selectedIds.indexOf(item.id)
-          if (withCtrlOrMeta) {
-            if (findIndex === -1) {
-              return [...selectedIds, item.id]
-            } else {
+            const findIndex = selectedIds.indexOf(item.id)
+            if (withCtrlOrMeta) {
+              if (findIndex === -1) {
+                return [...selectedIds, item.id]
+              } else {
+                setTimeout(() => itemsRef.current[index].blur(), 10)
+                return [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
+              }
+            }
+
+            if (findIndex !== -1) {
               setTimeout(() => itemsRef.current[index].blur(), 10)
-              return [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
+              return selectedIds
+                .filter(id => id !== item.id)
             }
-          }
 
-          if (findIndex !== -1) {
-            setTimeout(() => itemsRef.current[index].blur(), 10)
-            return selectedIds
-              .filter(id => id !== item.id)
-          }
-
-          let prevSelectedIndex = index
-          let nextSelectedIndex = index
-          let prevIndexIsSelected = false
-          let nextIndexIsSelected = false
-          do {
-            // TODO select prev/next by prev step select item index
-            if (!prevIndexIsSelected && prevSelectedIndex - 1 >= 0) {
-              const temp = selectedIds.includes(items[prevSelectedIndex - 1].id)
-              if (!temp) {
-                prevSelectedIndex--
-              } else {
-                prevIndexIsSelected = temp
-                break
+            let prevSelectedIndex = index
+            let nextSelectedIndex = index
+            let prevIndexIsSelected = false
+            let nextIndexIsSelected = false
+            do {
+              // TODO select prev/next by prev step select item index
+              if (!prevIndexIsSelected && prevSelectedIndex - 1 >= 0) {
+                const temp = selectedIds.includes(items[prevSelectedIndex - 1].id)
+                if (!temp) {
+                  prevSelectedIndex--
+                } else {
+                  prevIndexIsSelected = temp
+                  break
+                }
               }
-            }
-            if (!nextIndexIsSelected && nextSelectedIndex + 1 < items.length) {
-              const temp = selectedIds.includes(items[nextSelectedIndex + 1].id)
-              if (!temp) {
-                nextSelectedIndex++
-              } else {
-                nextIndexIsSelected = temp
-                break
+              if (!nextIndexIsSelected && nextSelectedIndex + 1 < items.length) {
+                const temp = selectedIds.includes(items[nextSelectedIndex + 1].id)
+                if (!temp) {
+                  nextSelectedIndex++
+                } else {
+                  nextIndexIsSelected = temp
+                  break
+                }
               }
+            } while (
+              (
+                prevSelectedIndex - 1 >= 0
+              ) || (
+                nextSelectedIndex + 1 < items.length
+              )
+              )
+            const range = [index, index]
+            if (prevIndexIsSelected && prevSelectedIndex >= 0) {
+              range[0] = prevSelectedIndex
             }
-          } while (
-            (
-              prevSelectedIndex - 1 >= 0
-            ) || (
-              nextSelectedIndex + 1 < items.length
-            )
-          )
-          const range = [index, index]
-          if (prevIndexIsSelected && prevSelectedIndex >= 0) {
-            range[0] = prevSelectedIndex
-          }
-          if (nextIndexIsSelected && nextSelectedIndex < items.length) {
-            range[1] = nextSelectedIndex
-          }
-          const rangeIds = []
-          for (let i = range[0]; i <= range[1]; i++) {
-            rangeIds.push(items[i].id)
-          }
-          return selectedIds.concat(rangeIds.filter(id => !selectedIds.includes(id)))
-        })
-      }}
-      onFocus={e => {
-        e.stopPropagation()
-        setFocusedIndex(index)
-      }}
+            if (nextIndexIsSelected && nextSelectedIndex < items.length) {
+              range[1] = nextSelectedIndex
+            }
+            const rangeIds = []
+            for (let i = range[0]; i <= range[1]; i++) {
+              rangeIds.push(items[i].id)
+            }
+            return selectedIds.concat(rangeIds.filter(id => !selectedIds.includes(id)))
+          })
+        }}
+        onFocus={e => {
+          e.stopPropagation()
+          setFocusedIndex(index)
+        }}
       >
-      {item.icon && typeof item.icon === 'string'
-        ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
-        : item.icon}
-      {item.content
-        ? typeof item.content === 'function'
-          ? item.content(keyword, item)
-          : item.content
-        : <code className={`${prefix}-item__label`}>{item.label}</code>}
-      {item.placeholder && typeof item.placeholder === 'string'
-        ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
-        : item.placeholder}
-    </div>)}
+        {item.icon && typeof item.icon === 'string'
+          ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
+          : item.icon}
+        {item.content
+          ? typeof item.content === 'function'
+            ? item.content(keyword, item)
+            : item.content
+          : <code className={`${prefix}-item__label`}>{item.label}</code>}
+        {item.placeholder && typeof item.placeholder === 'string'
+          ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
+          : item.placeholder}
+      </div>)}
+    </div>
   </div>
 })
 Object.defineProperty(List, 'prefix', {

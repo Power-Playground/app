@@ -1,11 +1,11 @@
 .ppd-list {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-
   height: 100%;
-
   overflow: overlay;
+  &-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
   &-item {
     --br-0: 4px;
     --br-1: 4px;
