@@ -115,17 +115,14 @@ export const List = forwardRefWithStatic<{
       )
       const withShift = e.shiftKey
       const withAlt = e.altKey
-      // ⇡/⇣     : change focus
-      // ⌘ ⇡/⇣   : forward ⇞/⇟
       if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
         e.preventDefault()
         e.stopPropagation()
         const direction = e.key === 'ArrowUp' ? -1 : 1
-        if (!withShift && !withAlt) {
-          let index: number
-          if (withCtrlOrMeta) {
-            index = direction === -1 ? 0 : items.length - 1
-          } else
+        if (!withShift) {
+          let index = -1
+          // ⇡/⇣ : change focus
+          if (!withAlt && !withCtrlOrMeta) {
             if (focusedIndex === -1) {
               index = direction === -1 ? items.length - 1 : 0
             } else {
@@ -133,17 +130,26 @@ export const List = forwardRefWithStatic<{
                 ? focusedIndex
                 : (focusedIndex + direction) % items.length
             }
+          }
+          // ⌘ ⇡/⇣ : forward ⇱/⇲
+          if (withCtrlOrMeta) {
+            index = direction === -1 ? 0 : items.length - 1
+          }
+          // ⌥ ⇡/⇣ : forward ⇞/⇟
+          if (withAlt) {
+            index = direction === -1 ? 0 : items.length - 1
+          }
           focusItem(index)
           return
         }
+        // ⇧ ⇡/⇣   : change focus and select
+        // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
+        // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
         if (withShift) {
+          return
         }
         return
       }
-      // ⇧ ⇡/⇣   : change focus and select
-      // ⌘ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
-      // ⌥ ⇡/⇣   : forward ⇱/⇲ and select
-      // ⌥ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
       // ⇞/⇟     : focus visible first/last
       // ⇱/⇲     : focus first/last
 
