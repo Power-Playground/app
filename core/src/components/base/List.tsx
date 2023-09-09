@@ -188,6 +188,7 @@ export const List = forwardRefWithStatic<{
                 behavior: 'instant'
               })
             }
+            // TODO performance
             return pageUpOrDown(direction, computeVisibleItems())
           }
         }
