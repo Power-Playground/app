@@ -1,6 +1,6 @@
 import './List.scss'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRetimer } from 'foxact/use-retimer'
 
 import { usePopper } from '../../hooks/usePopper'
@@ -206,6 +206,12 @@ export const List = forwardRefWithStatic<{
 
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
   const [enableWordMatch, setEnableWordMatch] = useState(false)
+  const [searchMode, setSearchMode] = useState<'strict' | 'regex' | 'fuzzy'>('fuzzy')
+  const enableSearch = useMemo(() => (
+    keyword.length > 0
+  ) || (
+    searchMode !== 'fuzzy'
+  ), [searchMode, keyword])
 
   const searchbarPopper = usePopper({
     className: `${prefix}-searchbar`,
@@ -214,7 +220,11 @@ export const List = forwardRefWithStatic<{
     arrowVisible: false,
     referenceElement: listRef.current,
     content: <>
-      <span className='cldr codicon codicon-search' />
+      <span className={classnames('cldr codicon', {
+        strict: 'codicon-search',
+        regex: 'codicon-regex',
+        fuzzy: 'codicon-search-fuzzy'
+      }[searchMode])} />
       <span
         className={classnames('cldr codicon codicon-text-size clickable', {
           [`${prefix}-searchbar--active`]: enableUpperKeywordsIgnore
@@ -233,10 +243,10 @@ export const List = forwardRefWithStatic<{
     </>
   })
   useEffect(() => {
-    searchbarPopper.changeVisible(keyword.length > 0)
-  }, [keyword, searchbarPopper])
+    searchbarPopper.changeVisible(enableSearch)
+  }, [enableSearch, searchbarPopper])
   function labelContentRender(keyword: string, item: ListItem) {
-    if (keyword.length === 0) return item.label
+    if (!enableSearch) return item.label
 
     const noRegExpChars = ['\\', '.', '*', '+', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|']
     const noRegExpKeyword = noRegExpChars.reduce((prev, curr) => prev.replace(curr, `\\${curr}`), keyword)
@@ -378,6 +388,14 @@ export const List = forwardRefWithStatic<{
       // ⌘ ⇧ +    : fold all
       // ⌘ ⇧ -    : unfold all
 
+      // ␣ : toggle select
+      if (e.key === ' ' && withoutAll && !enableSearch) {
+        e.preventDefault()
+        e.stopPropagation()
+        toggleSelectedId(items[focusedIndex]?.id)
+        return
+      }
+
       // ⌘ f      : lower find                      |
       // ⌘ ⇧ f    : higher find                     |
         // ⌥ c    : toggle upper/lower ignore case  |
@@ -389,12 +407,22 @@ export const List = forwardRefWithStatic<{
       // ⌘ /      : switch start with mode          |
       // ⌘ %      : switch fuzzy mode               |
         // ⌫        : delete last char              |
-      if (keyword.length > 0) {
+      if (e.key === 'f' && withCtrlOrMeta && !withShift && !withAlt) {
+        e.preventDefault()
+        e.stopPropagation()
+        setSearchMode('strict')
+        setKeyword('')
+        return
+      }
+      if (enableSearch) {
         // ⎋
         if (e.key === 'Escape' && withoutAll) {
           e.preventDefault()
           e.stopPropagation()
           setKeyword('')
+          if (searchMode !== 'fuzzy') {
+            setSearchMode('fuzzy')
+          }
           return
         }
         // ⌫
@@ -418,6 +446,13 @@ export const List = forwardRefWithStatic<{
           setEnableWordMatch(e => !e)
           return
         }
+      } else {
+        if (e.key === '/' && withoutAll) {
+          e.preventDefault()
+          e.stopPropagation()
+          setSearchMode('regex')
+          return
+        }
       }
 
       // ?        : get help
@@ -426,10 +461,13 @@ export const List = forwardRefWithStatic<{
       // \/       : find start with /
       // \%       : find start with %
       // \?       : find start with ?
-      // any char : find
+      // any char : fuzzy find
       if (e.key.length === 1 && withoutAllNoShift) {
         e.preventDefault()
         e.stopPropagation()
+        if (keyword === '') {
+          setSearchMode('fuzzy')
+        }
         setKeyword(keyword => keyword + e.key)
         return
       }
@@ -439,13 +477,6 @@ export const List = forwardRefWithStatic<{
         e.preventDefault()
         e.stopPropagation()
         setSelectedIds([])
-        return
-      }
-      // ␣ : toggle select
-      if (e.key === ' ' && withoutAll) {
-        e.preventDefault()
-        e.stopPropagation()
-        toggleSelectedId(items[focusedIndex]?.id)
         return
       }
       // ⏎   : [select]|[open]
