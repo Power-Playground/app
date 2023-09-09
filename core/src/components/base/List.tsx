@@ -161,7 +161,7 @@ export const List = forwardRefWithStatic<{
     className={prefix}
     onClick={() => setSelectedIds([])}
     onFocus={() => focusTo(focusedIndex)}
-    onKeyDown={e => {
+    onKeyDown={async e => {
       const withCtrlOrMeta = e.ctrlKey || (
         isMacOS && e.metaKey
       )
@@ -170,7 +170,7 @@ export const List = forwardRefWithStatic<{
 
       const withoutAll = !withCtrlOrMeta && !withShift && !withAlt
 
-      function pageUpOrDown(direction: 1 | -1, _visibleItems = visibleItems) {
+      async function pageUpOrDown(direction: 1 | -1, _visibleItems = visibleItems) {
         const [targetId, el] = _visibleItems[
           direction === -1 ? 0 : _visibleItems.length - 1
           ]
@@ -227,7 +227,7 @@ export const List = forwardRefWithStatic<{
         }
         // ⌥ ⇡/⇣ : focus visible first/last
         if (isPagination) {
-          index = pageUpOrDown(direction)
+          index = await pageUpOrDown(direction)
         }
         focusItem(index)
         if (withShift) {
