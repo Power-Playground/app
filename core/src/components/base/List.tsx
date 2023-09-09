@@ -248,8 +248,8 @@ export const List = forwardRefWithStatic<{
   useEffect(() => {
     searchbarPopper.changeVisible(enableSearch)
   }, [enableSearch, searchbarPopper])
-  function labelContentRender(keyword: string, item: ListItem) {
-    if (!enableSearch) return item.label
+  function labelMatcher(item: ListItem) {
+    if (!enableSearch) return null
 
     const noRegExpChars = ['\\', '.', '*', '+', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|']
     const noRegExpKeyword = searchMode === 'regex'
@@ -259,12 +259,15 @@ export const List = forwardRefWithStatic<{
     const regexpStr = !enableWordMatch
       ? noRegExpKeyword
       : `\\b${noRegExpKeyword}\\b`
-    const parts = new RegExp(
+    return new RegExp(
       searchMode === 'strict'
         ? `^${regexpStr}$`
         : regexpStr,
       enableUpperKeywordsIgnore ? 'i' : ''
     ).exec(item.label)
+  }
+  function labelContentRender(item: ListItem) {
+    const parts = labelMatcher(item)
     if (!parts) return item.label
 
     const index = parts.index
@@ -539,7 +542,7 @@ export const List = forwardRefWithStatic<{
           ? typeof item.content === 'function'
             ? item.content(keyword, item)
             : item.content
-          : <code className={`${prefix}-item__label`}>{labelContentRender(keyword, item)}</code>}
+          : <code className={`${prefix}-item__label`}>{labelContentRender(item)}</code>}
         {item.placeholder && typeof item.placeholder === 'string'
           ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
           : item.placeholder}
