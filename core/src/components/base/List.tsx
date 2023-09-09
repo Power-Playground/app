@@ -3,6 +3,7 @@ import './List.scss'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRetimer } from 'foxact/use-retimer'
 
+import { usePopper } from '../../hooks/usePopper'
 import { classnames, isMacOS } from '../../utils'
 
 import { forwardRefWithStatic } from './forwardRefWithStatic'
@@ -197,6 +198,58 @@ export const List = forwardRefWithStatic<{
     focusTo(realIndex)
   }
 
+  const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
+  const [enableWordMatch, setEnableWordMatch] = useState(false)
+
+  const searchbarPopper = usePopper({
+    className: `${prefix}-searchbar`,
+    placement: 'top-start',
+    offset: [8, 0],
+    arrowVisible: false,
+    referenceElement: listRef.current,
+    content: <>
+      <span className='cldr codicon codicon-search' />
+      <span
+        className={classnames('cldr codicon codicon-text-size clickable', {
+          [`${prefix}-searchbar--active`]: enableUpperKeywordsIgnore
+        })}
+        onClick={() => setEnableUpperKeywordsIgnore(e => !e)}
+      />
+      <span
+        className={classnames('cldr codicon codicon-whole-word clickable', {
+          [`${prefix}-searchbar--active`]: enableWordMatch
+        })}
+        onClick={() => setEnableWordMatch(e => !e)}
+      />
+      <code>{keyword}</code>
+    </>
+  })
+  useEffect(() => {
+    searchbarPopper.changeVisible(keyword.length > 0)
+  }, [keyword, searchbarPopper])
+  function labelContentRender(keyword: string, item: ListItem) {
+    if (keyword.length === 0) return item.label
+
+    const noRegExpChars = ['\\', '.', '*', '+', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|']
+    const noRegExpKeyword = noRegExpChars.reduce((prev, curr) => prev.replace(curr, `\\${curr}`), keyword)
+    const parts = new RegExp(
+      !enableWordMatch
+        ? noRegExpKeyword
+        : `\\b${noRegExpKeyword}\\b`,
+      enableUpperKeywordsIgnore ? 'i' : ''
+    ).exec(item.label)
+    if (!parts) return item.label
+    const index = parts.index
+    const length = parts[0].length
+    return <>
+      {item.label.slice(0, index)}
+      <b className={`${prefix}-item__label__keyword`}>
+        {item.label.slice(index, index + length)}
+      </b>
+      {item.label.slice(index + length)}
+    </>
+  }
+
   // noinspection GrazieInspection,StructuralWrap
   return <div
     ref={listRef}
@@ -212,6 +265,7 @@ export const List = forwardRefWithStatic<{
       const withAlt = e.altKey
 
       const withoutAll = !withCtrlOrMeta && !withShift && !withAlt
+      const withoutAllNoShift = !withCtrlOrMeta && !withAlt
 
       async function pageUpOrDown(direction: 1 | -1, _visibleItems = visibleItems) {
         const [targetId, el] = _visibleItems[
@@ -318,13 +372,29 @@ export const List = forwardRefWithStatic<{
 
       // ⌘ f      : lower find                      |
       // ⌘ ⇧ f    : higher find                     |
-        // ^ ⌥ c  : toggle upper/lower ignore case  |
-        // ^ ⌥ w  : toggle word match               |
-        // ^ ⌥ f  : configure filers                |-- ⎋ : exit find mode
+        // ⌥ c    : toggle upper/lower ignore case  |
+        // ⌥ w    : toggle word match               |
+        // ⌥ f    : configure filers                |-- ⎋ : exit find mode
       // ⌘ g      : find by glob expression         |
       // /        : find by regex                   |
       // %        : find by fuzzy                   |
       // ⌘ /      : switch start with mode          |
+      // ⌘ %      : switch fuzzy mode               |
+        // ⌫        : delete last char              |
+      if (keyword.length > 0) {
+        if (e.key === 'Escape' && withoutAll) {
+          e.preventDefault()
+          e.stopPropagation()
+          setKeyword('')
+          return
+        }
+        if (e.key === 'Backspace' && withoutAll) {
+          e.preventDefault()
+          e.stopPropagation()
+          setKeyword(keyword => keyword.slice(0, -1))
+          return
+        }
+      }
 
       // ?        : get help
 
@@ -333,6 +403,12 @@ export const List = forwardRefWithStatic<{
       // \%       : find start with %
       // \?       : find start with ?
       // any char : find
+      if (e.key.length === 1 && withoutAllNoShift) {
+        e.preventDefault()
+        e.stopPropagation()
+        setKeyword(keyword => keyword + e.key)
+        return
+      }
 
       // ⎋   : clear selection
       if (e.key === 'Escape' && withoutAll) {
@@ -357,6 +433,7 @@ export const List = forwardRefWithStatic<{
     }}
     onScroll={onScroll}
     >
+    {searchbarPopper.popper}
     <div className={`${prefix}-wrap`}>
       {items.map((item, index) => <div
         ref={el => el && (itemsRef.current[index] = el)}
@@ -398,7 +475,7 @@ export const List = forwardRefWithStatic<{
           ? typeof item.content === 'function'
             ? item.content(keyword, item)
             : item.content
-          : <code className={`${prefix}-item__label`}>{item.label}</code>}
+          : <code className={`${prefix}-item__label`}>{labelContentRender(keyword, item)}</code>}
         {item.placeholder && typeof item.placeholder === 'string'
           ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
           : item.placeholder}
