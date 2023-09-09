@@ -46,14 +46,16 @@ export const usePopper = (props: UsePopperProps) => {
       popper.current = createPopper(referenceElement, popperElement, { placement })
       return () => popper.current?.destroy()
     }
-  }, [referenceElement, popperElement, placement, offset])
+  }, [referenceElement, popperElement, placement])
   useEffect(() => {
-    if (popper.current && arrowElement) {
+    if (popper.current) {
       popper.current.setOptions({
         placement,
         modifiers: [
           { name: 'offset', options: { offset } },
-          { name: 'arrow', options: { element: arrowElement } }
+          ...(arrowElement
+            ? [{ name: 'arrow', options: { element: arrowElement } }]
+            : [])
         ]
       })
     }
