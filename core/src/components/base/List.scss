@@ -32,7 +32,7 @@
     }
     &.selected, &:focus, &:focus-visible {
       outline: none;
-      border: 2px solid var(--primary-active-border);
+      border: 2px solid var(--bg-cr);
       & + & {
         --br-0: 0;
         --br-1: 0;
@@ -56,17 +56,19 @@
       }
     }
     &:focus, &:focus-visible {
-      border: 2px dashed transparent;
       &::after {
         content: "";
         position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
         border: 2px dashed var(--primary-active-border);
       }
+    }
+    &.selected {
+      border: 2px solid var(--primary-active-border);
     }
     &.clickable {
       cursor: pointer;
