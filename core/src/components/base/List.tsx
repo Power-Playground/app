@@ -283,6 +283,7 @@ export const List = forwardRefWithStatic<{
           }
           // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
           // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
+          toggleRangeSelectedId(items[index]?.id)
           return
         }
       }
