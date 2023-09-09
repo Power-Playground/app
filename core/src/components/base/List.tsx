@@ -119,22 +119,26 @@ export const List = forwardRefWithStatic<{
 
   const [keyword, setKeyword] = useState<string>('')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  function pushSelectedId(id?: string) {
+  function pushSelectedId(id?: string, isUnshift = false) {
     if (!id) return
 
     setSelectedIds(selectedIds => {
       const findIndex = selectedIds.indexOf(id)
-      return findIndex !== -1 ? selectedIds : [...selectedIds, id]
+      return findIndex !== -1 ? selectedIds : isUnshift
+        ? [id, ...selectedIds]
+        : [...selectedIds, id]
     })
   }
-  function toggleSelectedId(id?: string) {
+  function toggleSelectedId(id?: string, isUnshift = false) {
     if (!id) return
 
     setSelectedIds(selectedIds => {
       const findIndex = selectedIds.indexOf(id)
       return findIndex !== -1
         ? [...selectedIds.slice(0, findIndex), ...selectedIds.slice(findIndex + 1)]
-        : [...selectedIds, id]
+        : isUnshift
+          ? [id, ...selectedIds]
+          : [...selectedIds, id]
     })
   }
 
@@ -309,55 +313,44 @@ export const List = forwardRefWithStatic<{
             return
           }
 
-          setSelectedIds(selectedIds => {
-            const findIndex = selectedIds.indexOf(item.id)
-            if (findIndex !== -1) {
-              setTimeout(() => itemsRef.current[index].blur(), 10)
-              return selectedIds
-                .filter(id => id !== item.id)
-            }
+          setSelectedIds(_selectedIds => {
+            if (_selectedIds.length === 0) return [item.id]
+            const selectedIds = [..._selectedIds]
 
-            let prevSelectedIndex = index
-            let nextSelectedIndex = index
-            let prevIndexIsSelected = false
-            let nextIndexIsSelected = false
-            do {
-              // TODO select prev/next by prev step select item index
-              if (!prevIndexIsSelected && prevSelectedIndex - 1 >= 0) {
-                const temp = selectedIds.includes(items[prevSelectedIndex - 1].id)
-                if (!temp) {
-                  prevSelectedIndex--
-                } else {
-                  prevIndexIsSelected = temp
-                  break
-                }
+            const findIndex = items.findIndex(({ id }) => id === item.id)
+            const prevSelectedId = selectedIds[selectedIds.length - 1]
+            const prevSelectedIndex = items.findIndex(({ id }) => id === prevSelectedId)
+
+            const range = findIndex < prevSelectedIndex
+              ? [findIndex, prevSelectedIndex - 1]
+              : [prevSelectedIndex + 1, findIndex]
+            let i = range[0]
+            for (let j = i - 1; selectedIds.includes(items[j]?.id) && j >= 0; j--) {
+              if (j === prevSelectedIndex) continue
+
+              const item = items[j]
+              const index = selectedIds.indexOf(item.id)
+              if (!item.disabled && index !== -1) {
+                selectedIds.splice(index, 1)
               }
-              if (!nextIndexIsSelected && nextSelectedIndex + 1 < items.length) {
-                const temp = selectedIds.includes(items[nextSelectedIndex + 1].id)
-                if (!temp) {
-                  nextSelectedIndex++
-                } else {
-                  nextIndexIsSelected = temp
-                  break
-                }
+            }
+            for (; i <= range[1]; i++) {
+              const item = items[i]
+              const index = selectedIds.indexOf(item.id)
+              if (!item.disabled && index === -1) {
+                selectedIds.unshift(item.id)
               }
-            } while ((
-              prevSelectedIndex - 1 >= 0
-            ) || (
-              nextSelectedIndex + 1 < items.length
-            ))
-            const range = [index, index]
-            if (prevIndexIsSelected && prevSelectedIndex >= 0) {
-              range[0] = prevSelectedIndex
             }
-            if (nextIndexIsSelected && nextSelectedIndex < items.length) {
-              range[1] = nextSelectedIndex
+            for (; selectedIds.includes(items[i]?.id) && i < items.length; i++) {
+              if (i === prevSelectedIndex) continue
+
+              const item = items[i]
+              const index = selectedIds.indexOf(item.id)
+              if (!item.disabled && index !== -1) {
+                selectedIds.splice(index, 1)
+              }
             }
-            const rangeIds = []
-            for (let i = range[0]; i <= range[1]; i++) {
-              rangeIds.push(items[i].id)
-            }
-            return selectedIds.concat(rangeIds.filter(id => !selectedIds.includes(id)))
+            return selectedIds
           })
         }}
         onFocus={e => {
