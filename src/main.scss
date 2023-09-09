@@ -40,8 +40,9 @@ body {
   html[theme-mode=dark] & {
     --primary: #263c6e;
 
-    --primary-hover: #263c6e99;
+    --primary-hover: #263c6e44;
 
+    --primary-active: #263c6e66;
     --primary-active-fc: rgba(230, 230, 230, 0.9);
     --primary-active-placholder:rgba(140, 140, 140, 0.6);
 
