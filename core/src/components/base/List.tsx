@@ -141,6 +141,49 @@ export const List = forwardRefWithStatic<{
           : [...selectedIds, id]
     })
   }
+  function toggleRangeSelectedId(id?: string) {
+    if (!id) return
+
+    setSelectedIds(_selectedIds => {
+      if (_selectedIds.length === 0) return [id]
+      const selectedIds = [..._selectedIds]
+
+      const findIndex = items.findIndex(({ id: iid }) => iid === id)
+      const prevSelectedId = selectedIds[selectedIds.length - 1]
+      const prevSelectedIndex = items.findIndex(({ id }) => id === prevSelectedId)
+
+      const range = findIndex < prevSelectedIndex
+        ? [findIndex, prevSelectedIndex - 1]
+        : [prevSelectedIndex + 1, findIndex]
+      let i = range[0]
+      for (let j = i - 1; selectedIds.includes(items[j]?.id) && j >= 0; j--) {
+        if (j === prevSelectedIndex) continue
+
+        const item = items[j]
+        const index = selectedIds.indexOf(item.id)
+        if (!item.disabled && index !== -1) {
+          selectedIds.splice(index, 1)
+        }
+      }
+      for (; i <= range[1]; i++) {
+        const item = items[i]
+        const index = selectedIds.indexOf(item.id)
+        if (!item.disabled && index === -1) {
+          selectedIds.unshift(item.id)
+        }
+      }
+      for (; selectedIds.includes(items[i]?.id) && i < items.length; i++) {
+        if (i === prevSelectedIndex) continue
+
+        const item = items[i]
+        const index = selectedIds.indexOf(item.id)
+        if (!item.disabled && index !== -1) {
+          selectedIds.splice(index, 1)
+        }
+      }
+      return selectedIds
+    })
+  }
 
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
   function focusTo(index: number) {
@@ -324,45 +367,7 @@ export const List = forwardRefWithStatic<{
             return
           }
 
-          setSelectedIds(_selectedIds => {
-            if (_selectedIds.length === 0) return [item.id]
-            const selectedIds = [..._selectedIds]
-
-            const findIndex = items.findIndex(({ id }) => id === item.id)
-            const prevSelectedId = selectedIds[selectedIds.length - 1]
-            const prevSelectedIndex = items.findIndex(({ id }) => id === prevSelectedId)
-
-            const range = findIndex < prevSelectedIndex
-              ? [findIndex, prevSelectedIndex - 1]
-              : [prevSelectedIndex + 1, findIndex]
-            let i = range[0]
-            for (let j = i - 1; selectedIds.includes(items[j]?.id) && j >= 0; j--) {
-              if (j === prevSelectedIndex) continue
-
-              const item = items[j]
-              const index = selectedIds.indexOf(item.id)
-              if (!item.disabled && index !== -1) {
-                selectedIds.splice(index, 1)
-              }
-            }
-            for (; i <= range[1]; i++) {
-              const item = items[i]
-              const index = selectedIds.indexOf(item.id)
-              if (!item.disabled && index === -1) {
-                selectedIds.unshift(item.id)
-              }
-            }
-            for (; selectedIds.includes(items[i]?.id) && i < items.length; i++) {
-              if (i === prevSelectedIndex) continue
-
-              const item = items[i]
-              const index = selectedIds.indexOf(item.id)
-              if (!item.disabled && index !== -1) {
-                selectedIds.splice(index, 1)
-              }
-            }
-            return selectedIds
-          })
+          toggleRangeSelectedId(item.id)
         }}
         onFocus={e => {
           e.stopPropagation()
