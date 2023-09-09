@@ -194,13 +194,25 @@ export const List = forwardRefWithStatic<{
         return tmpIndex
       }
 
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      // ⇱/⇲ : forward to ⌘ ⇡/⇣
+      // ⇞/⇟ : forward to ⌥ ⇡/⇣
+      if (
+        ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)
+      ) {
         e.preventDefault()
         e.stopPropagation()
-        const direction = e.key === 'ArrowUp' ? -1 : 1
+        const direction = [
+          'ArrowUp',
+          'PageUp',
+          'Home'
+        ].includes(e.key) ? -1 : 1
+
+        const isPagination = withAlt || e.key === 'PageUp' || e.key === 'PageDown'
+        const isJump = withCtrlOrMeta || e.key === 'Home' || e.key === 'End'
+
         let index = -1
         // ⇡/⇣ : change focus
-        if (!withAlt && !withCtrlOrMeta) {
+        if (!isPagination && !isJump) {
           if (focusedIndex === -1) {
             index = direction === -1 ? items.length - 1 : 0
           } else {
@@ -209,18 +221,18 @@ export const List = forwardRefWithStatic<{
               : (focusedIndex + direction) % items.length
           }
         }
-        // ⌘ ⇡/⇣ : forward ⇱/⇲
-        if (withCtrlOrMeta) {
+        // ⌘ ⇡/⇣ : focus first/last
+        if (isJump) {
           index = direction === -1 ? 0 : items.length - 1
         }
-        // ⌥ ⇡/⇣ : forward ⇞/⇟
-        if (withAlt) {
+        // ⌥ ⇡/⇣ : focus visible first/last
+        if (isPagination) {
           index = pageUpOrDown(direction)
         }
         focusItem(index)
         if (withShift) {
           // ⇧ ⇡/⇣ : change focus and select
-          if (!withAlt && !withCtrlOrMeta) {
+          if (!isPagination && !isJump) {
             pushSelectedId(items[index]?.id)
             pushSelectedId(items[focusedIndex]?.id)
             return
@@ -230,8 +242,6 @@ export const List = forwardRefWithStatic<{
           return
         }
       }
-      // ⇞/⇟     : focus visible first/last
-      // ⇱/⇲     : focus first/last
 
       // ⇠/⇢      : [open]|[close]
       // ⇧ ⇠/⇢    : [open]|[close] and select
