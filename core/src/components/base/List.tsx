@@ -189,6 +189,23 @@ export const List = forwardRefWithStatic<{
 
   const [foldedIds, setFoldedIds] = useState<string[]>([])
   const [hidedIds, setHidedIds] = useState<string[]>([])
+  const getChildren = useCallback((id: string) => {
+    const children: ListItem[] = []
+    const index = items.findIndex(({ id: iid }) => iid === id)
+    const indent = items[index]?.indent ?? 0
+    for (let i = index + 1; i < items.length; i++) {
+      const item = items[i]
+      const iindent = item.indent ?? 0
+      if (iindent > indent) {
+        children.push(item)
+      }
+      if (iindent <= indent) {
+        break
+      }
+    }
+    return children
+  }, [items])
+  // TODO rename to foldId
   function foldedId(id: string, isFolded?: boolean) {
     setFoldedIds(foldedIds => {
       const index = foldedIds.indexOf(id)
@@ -201,6 +218,25 @@ export const List = forwardRefWithStatic<{
         return [...foldedIds.slice(0, index), ...foldedIds.slice(index + 1)]
       }
     })
+  }
+  function toggleFoldAll(isFolded?: boolean) {
+    // TODO performance
+    if (isFolded) {
+      const hidedIds = new Set<string>()
+      const foldedIds = items.reduce((acc, item) => {
+        const children = getChildren(item.id)
+        if (children.length > 0) {
+          children.map(({ id }) => hidedIds.add(id))
+          acc.push(item.id)
+        }
+        return acc
+      }, [] as string[])
+      setFoldedIds(foldedIds)
+      setHidedIds([...hidedIds])
+    } else {
+      setFoldedIds([])
+      setHidedIds([])
+    }
   }
 
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
@@ -335,23 +371,6 @@ export const List = forwardRefWithStatic<{
       return acc
     }, [] as [index: number, item: ListItem][])
   }, [enableSearch, items, labelMatcher])
-
-  const getChildren = useCallback((id: string) => {
-    const children: ListItem[] = []
-    const index = items.findIndex(({ id: iid }) => iid === id)
-    const indent = items[index]?.indent ?? 0
-    for (let i = index + 1; i < items.length; i++) {
-      const item = items[i]
-      const iindent = item.indent ?? 0
-      if (iindent > indent) {
-        children.push(item)
-      }
-      if (iindent <= indent) {
-        break
-      }
-    }
-    return children
-  }, [items])
   // noinspection GrazieInspection,StructuralWrap
   return <div
     ref={listRef}
@@ -478,16 +497,38 @@ export const List = forwardRefWithStatic<{
       }
 
       // ⇠/⇢ : [open]|[close]
-      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+      // ⌘ + : fold selected
+      // ⌘ - : unfold selected
+      // ⌘ ⇧ +    : fold all
+      // ⌘ ⇧ -    : unfold all
+      if ([
+        'ArrowLeft',
+        'ArrowRight',
+        '-',
+        '='
+      ].includes(e.key)) {
+        const direction = [
+          'ArrowLeft',
+          '-'
+        ].includes(e.key) ? -1 : 1
+        const isMinusOrEqual = ['-', '='].includes(e.key)
+        if (isMinusOrEqual && !withCtrlOrMeta) return
+
+        if (!withShift) {
+          const item = items[focusedIndex]
+          if (item) {
+            foldedId(item.id, direction === -1)
+          }
+        } else {
+          if (isMinusOrEqual) {
+            toggleFoldAll(direction === -1)
+          } else {
+            // TODO
+            //   ⇧ ⇠/⇢ : [open]|[close] and select
+          }
+        }
         e.preventDefault()
         e.stopPropagation()
-        const direction = e.key === 'ArrowLeft' ? -1 : 1
-        const item = items[focusedIndex]
-        if (item) {
-          foldedId(item.id, direction === -1)
-        }
-        // TODO
-        //   ⇧ ⇠/⇢ : [open]|[close] and select
         return
       }
 
@@ -512,10 +553,6 @@ export const List = forwardRefWithStatic<{
       }
       // ⌘ z      : undo
       // ⌘ v      : change view mode
-      // ⌘ +      : fold selected
-      // ⌘ -      : unfold selected
-      // ⌘ ⇧ +    : fold all
-      // ⌘ ⇧ -    : unfold all
 
       // ␣ : toggle select, (support quick preview?)
       if (e.key === ' ' && withoutAll && !enableSearch) {
