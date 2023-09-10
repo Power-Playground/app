@@ -3,6 +3,8 @@
 ![Power Playground Icon-Light](./resources/PP_cover_light.svg#gh-light-mode-only)
 ![Power Playground Icon-Dark](./resources/PP_cover_dark.svg#gh-dark-mode-only)
 
+[![wakatime](https://wakatime.com/badge/user/aed75b57-20cc-4365-9914-0f5e77255daf/project/72348222-3426-403a-8ed5-5cc6dcd8e718.svg)](https://wakatime.com/badge/user/aed75b57-20cc-4365-9914-0f5e77255daf/project/72348222-3426-403a-8ed5-5cc6dcd8e718)
+
 |[zh-Hans](./resources/README.zh-Hans.md)
 |en-US
 
