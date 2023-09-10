@@ -510,7 +510,7 @@ export const List = forwardRefWithStatic<{
       // /        : find by regex                   |
       // ⌘ g      : find by glob expression         |
       // ⌘ /      : switch start with mode          |
-      // ⌘ %(⇧ 5) : switch fuzzy mode               |
+      // ⌘ %(5)   : switch fuzzy mode               |
         // ⌫      : delete last char                |
       if (e.key === 'f' && withCtrlOrMeta && !withShift && !withAlt) {
         e.preventDefault()
@@ -578,6 +578,15 @@ export const List = forwardRefWithStatic<{
         if (searchMode !== 'start-with') {
           setSearchMode('start-with')
         } else {
+          setSearchMode('fuzzy')
+        }
+        return
+      }
+      // ⌘ %(5)
+      if (e.key === '5' && withCtrlOrMeta && !withShift && !withAlt) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (searchMode !== 'fuzzy') {
           setSearchMode('fuzzy')
         }
         return
