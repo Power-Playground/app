@@ -1,35 +1,65 @@
 import './DrawerPanel.scss'
 
-import { useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { classnames } from '@power-playground/core'
+import { useDebouncedValue } from 'foxact/use-debounced-value'
+
+import { ExtensionContext } from '../contextes/Extension'
 
 import { Menu } from './base/Menu'
 import { Popover } from './base/Popover'
 import { useDrawerPanelController } from './drawerPanelCreator'
+import { Resizable } from './Resizable'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
+DrawerPanel.delay = 200
 export function DrawerPanel() {
   const { prefix } = DrawerPanel
   const panelRef = useRef<HTMLDivElement>(null)
 
-  const { activePanel, closePanel } = useDrawerPanelController()
+  const { plugins } = useContext(ExtensionContext)
+
+  const drawerPanels = useMemo(() => plugins
+    .filter(plugin => plugin.editor?.drawerPanels)
+    .flatMap(plugin => plugin.editor?.drawerPanels ?? []), [plugins])
+  const {
+    activePanel,
+    setPanel,
+    removePanel,
+    closePanel
+  } = useDrawerPanelController()
+  useEffect(() => {
+    drawerPanels.forEach(panel => setPanel(panel))
+    return () => drawerPanels.forEach(panel => removePanel(panel.id))
+  }, [setPanel, removePanel, drawerPanels])
+
   useEffect(() => {
     if (activePanel?.id) {
       panelRef.current?.focus()
     }
   }, [activePanel?.id])
+  const debouncedActivePanel = useDebouncedValue(activePanel, DrawerPanel.delay)
+  const memoActivePanel = useMemo(() => activePanel
+    ? activePanel
+    : debouncedActivePanel, [
+    activePanel,
+    debouncedActivePanel
+  ])
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
-  return <div
-    ref={panelRef}
+  return <Resizable
+    _ref={panelRef}
     className={classnames(
       prefix,
       activePanel && `${prefix}--active`,
       menuIsOpen && `${prefix}--menu-open`,
-      windowMode
+      windowMode,
+      activePanel?.id && `${prefix}--${activePanel?.id}`
     )}
+    style={{ width: '300px' }}
     tabIndex={0}
+    resizable={{ right: true }}
     onKeyDown={e => {
       if (e.key === 'Escape') {
         e.stopPropagation()
@@ -37,18 +67,18 @@ export function DrawerPanel() {
       }
     }}
     >
-    {activePanel && <>
+    {memoActivePanel && <>
       <div className={`${prefix}__header`}>
         <div className={`${prefix}__header__title`}>
           <h3>
-            {typeof activePanel?.icon === 'string'
-              ? <span className={`cldr codicon codicon-${activePanel.icon}`}></span>
-              : activePanel?.icon}
-            {activePanel?.title}
+            {typeof memoActivePanel?.icon === 'string'
+              ? <span className={`cldr codicon codicon-${memoActivePanel.icon}`}></span>
+              : memoActivePanel?.icon}
+            {memoActivePanel?.title}
           </h3>
         </div>
         <div className={`${prefix}__header__actions`}>
-          {activePanel?.actions}
+          {memoActivePanel?.actions}
           <Menu
            items={[
              { id: 'switch-drawer-mode', content: <span style={{
@@ -96,15 +126,15 @@ export function DrawerPanel() {
               <kbd>Esc</kbd>
             </>}
             placement='right'>
-            <button onClick={() => closePanel(activePanel.id)}>
+            <button onClick={() => memoActivePanel && closePanel(memoActivePanel?.id)}>
               <span className='cldr codicon codicon-remove' />
             </button>
           </Popover>
         </div>
       </div>
       <div className={`${prefix}__body`}>
-        {activePanel?.content}
+        {memoActivePanel?.content}
       </div>
     </>}
-  </div>
+  </Resizable>
 }

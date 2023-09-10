@@ -19,12 +19,10 @@
   .history__list {
     display: flex;
     flex-direction: column;
+
+    height: 100% !important;
     > .ppd-resizable-border.ppd-resizable-border__right {
       z-index: 1000;
-      background-color: transparent;
-      &:hover {
-        background-color: inherit;
-      }
     }
     > .ppd-search-box {
       z-index: 100;

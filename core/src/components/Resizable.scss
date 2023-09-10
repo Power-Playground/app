@@ -1,5 +1,7 @@
 .ppd-resizable {
-  --inner-border-width: var(--border-width, 5px);
+  --inner-border-scale: var(--border-scale, 5);
+  --inner-border-trans: calc((var(--inner-border-scale) - 1) / 2);
+  --inner-border-width: var(--border-width, 1px);
 
   position: relative;
   border: 0 solid black;
@@ -22,6 +24,9 @@
     transition: .1s;
     html[theme-mode=dark] & {
       background-color: #494c50;
+      &:hover {
+        background-color: #fff5;
+      }
     }
     &__btns {
       display: flex;
@@ -62,6 +67,10 @@
     &:hover &__btns {
       opacity: 1;
     }
+    &:hover {
+      z-index: 10;
+      background-color: #0008;
+    }
     &__top > &__btns, &__bottom > &__btns {
       flex-direction: row;
       > button {
@@ -75,7 +84,7 @@
       height: 100%;
       cursor: ew-resize;
       &:hover {
-        width: calc(var(--inner-border-width) * 1.6);
+        width: calc(var(--inner-border-width) * var(--inner-border-scale));
       }
     }
     &__top, &__bottom {
@@ -83,34 +92,33 @@
       width: 100%;
       height: var(--inner-border-width);
       cursor: ns-resize;
+      &:hover {
+        height: calc(var(--inner-border-width) * var(--inner-border-scale));
+      }
     }
     &__left {
       left: calc(-1 * var(--inner-border-width));
       &:hover {
-        transform: translateX(calc(-0.3 * var(--inner-border-width)));
+        transform: translateX(calc(-1 * var(--inner-border-trans) * var(--inner-border-width)));
       }
     }
     &__right {
       right: calc(-1 * var(--inner-border-width));
       &:hover {
-        transform: translateX(calc(0.3 * var(--inner-border-width)));
+        transform: translateX(calc(1 * var(--inner-border-trans) * var(--inner-border-width)));
       }
     }
     &__top {
       top: calc(-1 * var(--inner-border-width));
       &:hover {
-        height: calc(var(--inner-border-width) * -1.6);
+        transform: translateY(calc(-1 * var(--inner-border-trans) * var(--inner-border-width)));
       }
     }
     &__bottom {
       bottom: calc(-1 * var(--inner-border-width));
       &:hover {
-        height: calc(var(--inner-border-width) * 1.6);
+        transform: translateY(calc(1 * var(--inner-border-trans) * var(--inner-border-width)));
       }
-    }
-    &:hover {
-      z-index: 10;
-      background-color: #777;
     }
   }
 }

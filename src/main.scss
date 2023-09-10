@@ -14,14 +14,45 @@ body {
   -webkit-text-size-adjust: 100%;
 
   --primary: #365eb4;
-  --fr-cr: #000;
+  --match-span-cr: #ff950b;
+
+  --primary-hover: #365eb422;
+  --primary-hover-fc: #fff;
+
+  --primary-active: #365eb444;
+  --primary-active-border: #365eb4cc;
+  --primary-active-fc: color-mix(in srgb, var(--fr-cr), var(--primary) 20%);
+  --primary-active-placholder:rgba(255, 255, 255, 0.6);
+
+  --border-color: #cccccc;
+
+  --fr-cr: rgba(0, 0, 0, 0.9);
+  --fr-cr-placholder: rgba(0, 0, 0, 0.26);
+  // TODO replace to --primary-active-fc
   --pr-fr-cr: #fff;
   --bg-cr: #efefef;
+  --bg-cr-o0: #efefef55;
+
+  --popup-bg: var(--bg-cr);
+  --popup-fr-cr: var(--fr-cr);
+  --popup-fc-when-pr-as-bg: var(--pr-fr-cr);
+
   --icon-cr: #fff;
   html[theme-mode=dark] & {
     --primary: #263c6e;
-    --fr-cr: #fff;
+    --match-span-cr: #e38520;
+
+    --primary-hover: #263c6e44;
+
+    --primary-active: #263c6e66;
+    --primary-active-fc: rgba(230, 230, 230, 0.9);
+    --primary-active-placholder:rgba(140, 140, 140, 0.6);
+
+    --fr-cr: rgba(255, 255, 255, 0.9);
+    --fr-cr-placholder: rgba(255, 255, 255, 0.26);
+
     --bg-cr: #242424;
+    --bg-cr-o0: #24242488;
     --icon-cr: #fff;
   }
 }

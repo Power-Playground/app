@@ -5,10 +5,15 @@ import { useEffect, useRef } from 'react'
 
 import { classnames } from '../utils'
 
-export interface ResizableProps {
+export interface ResizableProps extends Omit<
+  React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,
+  'ref' | 'style' | 'className' | 'children'
+> {
+  _ref?: React.RefCallback<HTMLDivElement> | React.RefObject<HTMLDivElement> | null
   className?: string
   style?: CSSProperties & {
     '--border-width'?: string
+    '--border-scale'?: string | number
   }
   children?: React.ReactNode
 
@@ -117,14 +122,17 @@ function mountResize(
     registerResizeFuncs.push(_resize)
     document.addEventListener('mousemove', _resize, false)
     ele.style.userSelect = 'none'
+    ele.style.transition = 'none'
+    e.stopPropagation()
   }
   function onGlobalMouseUp() {
     registerResizeFuncs
       .forEach(f => document.removeEventListener('mousemove', f, false))
     document
       .querySelectorAll('iframe')
-      .forEach(e => e.style.pointerEvents = 'auto')
-    ele.style.userSelect = 'auto'
+      .forEach(e => e.style.pointerEvents = '')
+    ele.style.userSelect = ''
+    ele.style.transition = ''
   }
 
   ele.addEventListener('mousedown', elMouseDown, false)
@@ -139,17 +147,20 @@ export function Resizable({
   className,
   style,
   children,
+  _ref,
+  resizable,
+  onBorderBtnClick,
   ...props
 }: ResizableProps) {
   const resizableDivRef = useRef<HTMLDivElement>(null)
-  const [left, right, top, bottom] = resolveResizable(props.resizable)
+  const [left, right, top, bottom] = resolveResizable(resizable)
   useEffect(() => {
     if (resizableDivRef.current === null) return
 
     if (top === false || bottom === false) {
       resizableDivRef.current.style.height = typeof style?.height === 'number'
         ? style.height + 'px'
-        : style?.height ?? 'auto'
+        : style?.height ?? 'inherit'
     }
   }, [top, bottom, style?.height])
   useEffect(() => {
@@ -158,7 +169,7 @@ export function Resizable({
     if (left === false || right === false) {
       resizableDivRef.current.style.width = typeof style?.width === 'number'
         ? style.width + 'px'
-        : style?.width ?? 'auto'
+        : style?.width ?? 'inherit'
     }
   }, [left, right, style?.width])
 
@@ -173,6 +184,12 @@ export function Resizable({
     )}
     style={style}
     ref={async ele => {
+      if (typeof _ref === 'function') {
+        _ref(ele)
+      } else if (_ref) {
+        // @ts-ignore
+        _ref.current = ele
+      }
       if (!ele) {
         dispose.current?.()
         return
@@ -181,13 +198,15 @@ export function Resizable({
       // @ts-ignore
       resizableDivRef.current = ele
       dispose.current = mountResize(ele)
-    }}>
+    }}
+    {...props}
+    >
     {children}
     {left && <div
       className={`${prefix}-border ${prefix}-border__left`}
     >
-      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
-        <button onClick={e => props.onBorderBtnClick?.(
+      {onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => onBorderBtnClick?.(
           'left', e, {
             type: 'full'
           })}>
@@ -198,8 +217,8 @@ export function Resizable({
     {right && <div
       className={`${prefix}-border ${prefix}-border__right`}
     >
-      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
-        <button onClick={e => props.onBorderBtnClick?.(
+      {onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => onBorderBtnClick?.(
           'right', e, {
             type: 'full'
           })}>
@@ -210,8 +229,8 @@ export function Resizable({
     {top && <div
       className={`${prefix}-border ${prefix}-border__top`}
     >
-      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
-        <button onClick={e => props.onBorderBtnClick?.(
+      {onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => onBorderBtnClick?.(
           'top', e, {
             type: 'full'
           })}>
@@ -222,8 +241,8 @@ export function Resizable({
     {bottom && <div
       className={`${prefix}-border ${prefix}-border__bottom`}
     >
-      {props.onBorderBtnClick && <div className={`${prefix}-border__btns`}>
-        <button onClick={e => props.onBorderBtnClick?.(
+      {onBorderBtnClick && <div className={`${prefix}-border__btns`}>
+        <button onClick={e => onBorderBtnClick?.(
           'bottom', e, {
             type: 'full'
           })}>

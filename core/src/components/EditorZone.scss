@@ -65,6 +65,26 @@
       height: 0 !important;
       > div > div.monaco-editor {
         padding-left: 5px;
+        div[widgetid="editor.contrib.quickInputWidget"] {
+          --vscode-list-hoverBackground: #0001;
+          html[theme-mode="dark"] & {
+            --vscode-list-hoverBackground: #fff1;
+          }
+          z-index: 1000;
+          position: fixed !important;
+          top: 51px !important;
+          > .quick-input-widget {
+            width: 800px !important;
+            margin-left: -400px !important;
+            box-shadow: 0 8px 16px var(--vscode-widget-shadow) !important;
+            border: 1px solid gray !important;
+            border-top: none !important;
+            border-radius: 0 0 8px 8px !important;
+            .monaco-list-row {
+              transition: .3s;
+            }
+          }
+        }
       }
     }
   }

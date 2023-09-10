@@ -1,0 +1,12 @@
+.ppd-drawer-panel--project {
+  .ppd-drawer-panel__body {
+    padding: 0;
+    > .ppd-list {
+      padding: 8px;
+      width: calc(100% - 16px);
+      > .ppd-list-wrap {
+        padding-bottom: 16px;
+      }
+    }
+  }
+}

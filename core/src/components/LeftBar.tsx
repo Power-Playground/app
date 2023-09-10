@@ -1,10 +1,11 @@
 import './LeftBar.scss'
 
-import { useEffect } from 'react'
+import { useContext, useMemo } from 'react'
 import { classnames, messenger } from '@power-playground/core'
 import { useSetAtom } from 'jotai'
 
 import PP from '../../../resources/PP_P.svg'
+import { ExtensionContext } from '../contextes/Extension'
 
 import { useDrawerPanelController } from './drawerPanelCreator'
 import { isVimModeAtom } from './EditorZoneShareAtoms'
@@ -20,40 +21,36 @@ export interface LeftBarProps {
 export function LeftBar(props: LeftBarProps) {
   const {
     activePanel,
-    addPanel,
-    removePanel,
     togglePanel
   } = useDrawerPanelController()
 
-  useEffect(() => {
-    addPanel({
-      id: 'directory',
-      icon: 'project',
-      title: 'Project',
-      actions: <>
-        <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
-          <span className='cldr codicon codicon-add'></span>
-        </button>
-        <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
-          <span className='cldr codicon codicon-compass-dot'></span>
-        </button>
-      </>
-    })
-    return () => {
-      removePanel('directory')
-    }
-  }, [addPanel, removePanel])
+  const { plugins } = useContext(ExtensionContext)
+
+  const leftbarItems = useMemo(() => plugins
+    .filter(plugin => plugin.editor?.leftbar)
+    .flatMap(plugin => plugin.editor?.leftbar ?? []), [plugins])
+  const topItems = useMemo(() => leftbarItems.filter(item => (
+    item.placement === undefined ||
+    item.placement === 'top'
+  )), [leftbarItems])
+  const bottomItems = useMemo(() => leftbarItems.filter(item => (
+    item.placement === 'bottom'
+  )), [leftbarItems])
+  const buildElements = (items: typeof leftbarItems) => items.map(({ id, icon }) => <button
+    key={id}
+    className={classnames({ active: activePanel?.id === id })}
+    onClick={() => togglePanel(id)}
+    >
+    {typeof icon === 'string'
+      ? <span className={`cldr codicon codicon-${icon}`}></span>
+      : icon}
+  </button>)
   const toggleVimMode = useSetAtom(isVimModeAtom)
+
   return <div className={classnames(prefix, props.className)}
               style={props.style}>
     <div className={`${prefix}__top`}>
-      <button
-        className={classnames({ active: activePanel?.id === 'directory' })}
-        onClick={() => togglePanel('directory')}
-      >
-        <span className='cldr codicon codicon-folder'></span>
-        {/* TODO multiple files plugin */}
-      </button>
+      {buildElements(topItems)}
       <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
         <span className='cldr codicon codicon-heart'></span>
         {/* TODO snippets */}
@@ -76,6 +73,7 @@ export function LeftBar(props: LeftBarProps) {
       <button onClick={() => toggleVimMode(mode => !mode)}>
         Vim Mode
       </button> 
+      {buildElements(bottomItems)}
       <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
         <span className='cldr codicon codicon-account'></span>
       </button>

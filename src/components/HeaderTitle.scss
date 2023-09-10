@@ -16,12 +16,12 @@
     filter: drop-shadow(0 0 8px #00000047) brightness(1.1);
   }
   > .highlight {
-    color: color-mix(in srgb, var(--primary), #fff 80%);
+    color: #fff;
     font-weight: bold;
     transition: .3s;
   }
   > .secondary {
-    color: color-mix(in srgb, var(--primary), #fff 70%);
+    color: color-mix(in srgb, #fff 80%, var(--primary));
     transition: .3s;
   }
   > .highlight, > .secondary {

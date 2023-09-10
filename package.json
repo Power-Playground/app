@@ -17,7 +17,7 @@
     "serve": "vite",
     "build": "vite build",
     "build:watch": "vite build --watch",
-    "build:replacer":"yarn --cwd vite-plugins/replacer build",
+    "build:replacer": "yarn --cwd vite-plugins/replacer build",
     "preview": "vite preview",
     "bootstrap": "node scripts/bootstrap.mjs"
   },
