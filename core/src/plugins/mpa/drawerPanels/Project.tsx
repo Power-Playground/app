@@ -53,7 +53,7 @@ export default {
         id: '2',
         label: 'bar.js' },
       ...[...Array(100)].map((_, i) => ({
-        icon: 'file',
+        icon: i % 3 !== 2 ? 'folder' : 'file',
         id: `item-${i}`,
         label: `Item ${i}`,
 

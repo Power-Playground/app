@@ -318,7 +318,7 @@ export const List = forwardRefWithStatic<{
       }
       return acc
     }, [] as [index: number, item: ListItem][])
-  }, [enableSearch, labelMatcher])
+  }, [enableSearch, items, labelMatcher])
 
   // noinspection GrazieInspection,StructuralWrap
   return <div
