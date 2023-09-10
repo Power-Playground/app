@@ -205,8 +205,7 @@ export const List = forwardRefWithStatic<{
     }
     return children
   }, [items])
-  // TODO rename to foldId
-  function foldedId(id: string, isFolded?: boolean) {
+  function foldId(id: string, isFolded?: boolean) {
     setFoldedIds(foldedIds => {
       const index = foldedIds.indexOf(id)
       const children = getChildren(id)
@@ -521,7 +520,7 @@ export const List = forwardRefWithStatic<{
         if (!withShift) {
           const item = items[focusedIndex]
           if (item) {
-            foldedId(item.id, direction === -1)
+            foldId(item.id, direction === -1)
           }
         } else {
           if (isMinusOrEqual) {
@@ -747,7 +746,7 @@ export const List = forwardRefWithStatic<{
             }}
             onClick={e => {
               e.stopPropagation()
-              foldedId(item.id)
+              foldId(item.id)
             }}
           />
           : <span className={`${prefix}-item__icon cldr space`} />}
