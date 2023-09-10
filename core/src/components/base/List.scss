@@ -88,13 +88,13 @@
     padding: var(--padding);
     padding-left: var(--inner-padding-left);
     min-width: calc(100% - var(--inner-padding-left) - var(--padding) - 4px);
+    max-height: calc(18px + var(--padding) * 2 + 4px);
     border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
     border: 2px solid transparent;
 
     user-select: none;
     transition:
-            var(--inner-duration) height,
-            var(--inner-duration) padding,
+            var(--inner-duration) max-height,
             var(--inner-duration) background-color,
             var(--inner-duration) color,
             var(--inner-duration) border-color,
@@ -155,7 +155,7 @@
       opacity: .5;
     }
     &.hided {
-      height: 0;
+      max-height: 0;
       padding: 0;
       border: none;
       overflow: hidden;
