@@ -4,9 +4,7 @@
     > .ppd-list {
       padding: 8px;
       width: calc(100% - 16px);
-      > .ppd-list-wrap {
-        padding-bottom: 16px;
-      }
+      height: calc(100% - 16px);
     }
   }
 }
