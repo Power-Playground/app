@@ -276,6 +276,7 @@ export const List = forwardRefWithStatic<{
     if (!enableSearch) return null
 
     if (searchMode === 'glob') {
+      // TODO refactor by https://github.com/micromatch/micromatch ?
       const regexpStr = keyword
         .replace(/\*/g, '[^/]*')
         .replace(/\*\*/g, '.*')
