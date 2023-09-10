@@ -16,9 +16,11 @@
 
     font-size: 12px;
     user-select: none;
-    span.cldr {
+    .cldr {
       position: relative;
       font-size: 12px;
+      width: 12px;
+      text-align: center;
       &:not(:first-child) {
         padding-left: 5px;
         border-left: 1px solid var(--fr-cr);

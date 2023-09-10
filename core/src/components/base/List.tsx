@@ -77,6 +77,9 @@ const items: ListItem[] = [
   { icon: 'file',
     id: '1',
     label: 'foobar.js' },
+  { icon: 'file',
+    id: '2',
+    label: 'bar.js' },
   ...[...Array(100)].map((_, i) => ({
     icon: 'file',
     id: `item-${i}`,
@@ -207,12 +210,23 @@ export const List = forwardRefWithStatic<{
 
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
   const [enableWordMatch, setEnableWordMatch] = useState(false)
-  const [searchMode, setSearchMode] = useState<'strict' | 'regex' | 'fuzzy'>('fuzzy')
+  const [searchMode, setSearchMode] = useState<
+    | 'strict'
+    | 'regex'
+    | 'fuzzy'
+    | 'glob'
+    | 'start-with'
+  >('fuzzy')
   const enableSearch = useMemo(() => (
     keyword.length > 0
   ) || (
     searchMode !== 'fuzzy'
   ), [searchMode, keyword])
+  const searchbarTooltip = useMemo(() =>
+    `Search by "${
+      searchMode
+    }" mode.(press "/" switch to regex mode, press "⌘ f" switch to strict mode, press any char switch to fuzzy mode)`,
+  [searchMode])
 
   const searchbarPopper = usePopper({
     className: `${prefix}-searchbar`,
@@ -221,14 +235,18 @@ export const List = forwardRefWithStatic<{
     arrowVisible: false,
     referenceElement: listRef.current,
     content: <>
-      <span
-        className={classnames('cldr codicon', {
-          strict: 'codicon-search',
-          regex: 'codicon-regex',
-          fuzzy: 'codicon-search-fuzzy'
-        }[searchMode])}
-        title={`Search by "${searchMode}" mode.(press "/" switch to regex mode, press "⌘ f" switch to strict mode, press any char switch to fuzzy mode)`}
-      />
+      {searchMode === 'glob'
+        ? <code className='cldr codicon' title={searchbarTooltip}>G</code>
+        : searchMode === 'start-with'
+          ? <code className='cldr codicon' title={searchbarTooltip}>/</code>
+          : <span
+            className={classnames('cldr codicon', {
+              strict: 'codicon-search',
+              regex: 'codicon-regex',
+              fuzzy: 'codicon-search-fuzzy'
+            }[searchMode])}
+            title={searchbarTooltip}
+          />}
       <span
         className={classnames('cldr codicon codicon-text-size clickable', {
           [`${prefix}-searchbar--active`]: enableUpperKeywordsIgnore
@@ -264,7 +282,9 @@ export const List = forwardRefWithStatic<{
       const reg = new RegExp(
         searchMode === 'strict'
           ? `^${regexpStr}$`
-          : regexpStr,
+          : searchMode === 'start-with'
+            ? `^${regexpStr}`
+            : noRegExpKeyword,
         enableUpperKeywordsIgnore ? 'i' : ''
       )
       return reg.exec(item.label)
@@ -433,6 +453,7 @@ export const List = forwardRefWithStatic<{
       if (e.key === 'a' && withCtrlOrMeta && !withShift && !withAlt) {
         e.preventDefault()
         e.stopPropagation()
+        // TODO support filtered items select all
         setSelectedIds(items.map(({ id }) => id))
         return
       }
@@ -467,12 +488,11 @@ export const List = forwardRefWithStatic<{
         // ⌥ c    : toggle upper/lower ignore case  |
         // ⌥ w    : toggle word match               |
         // ⌥ f    : configure filers                |-- ⎋ : exit find mode
-      // ⌘ g      : find by glob expression         |
       // /        : find by regex                   |
-      // %        : find by fuzzy                   |
+      // ⌘ g      : find by glob expression         |
       // ⌘ /      : switch start with mode          |
-      // ⌘ %      : switch fuzzy mode               |
-        // ⌫        : delete last char              |
+      // ⌘ %(⇧ 5) : switch fuzzy mode               |
+        // ⌫      : delete last char                |
       if (e.key === 'f' && withCtrlOrMeta && !withShift && !withAlt) {
         e.preventDefault()
         e.stopPropagation()
@@ -496,6 +516,7 @@ export const List = forwardRefWithStatic<{
           e.preventDefault()
           e.stopPropagation()
           setKeyword(keyword => keyword.slice(0, -1))
+          // TODO when keyword is empty, exit search mode
           return
         }
         // ⌥ c
@@ -520,18 +541,46 @@ export const List = forwardRefWithStatic<{
           return
         }
       }
+      // ⌘ g
+      if (e.key === 'g' && withCtrlOrMeta && !withShift && !withAlt) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (searchMode !== 'glob') {
+          setSearchMode('glob')
+        } else {
+          setSearchMode('fuzzy')
+        }
+        return
+      }
+      // ⌘ /
+      if (e.key === '/' && withCtrlOrMeta && !withShift && !withAlt) {
+        e.preventDefault()
+        e.stopPropagation()
+        if (searchMode !== 'start-with') {
+          setSearchMode('start-with')
+        } else {
+          setSearchMode('fuzzy')
+        }
+        return
+      }
 
       // ?        : get help
 
-      // \\       : find start with \
-      // \/       : find start with /
-      // \%       : find start with %
-      // \?       : find start with ?
       // any char : fuzzy find
       if (e.key.length === 1 && withoutAllNoShift) {
         e.preventDefault()
         e.stopPropagation()
-        setKeyword(keyword => keyword + e.key)
+        // \/ : find /
+        // \? : find ?
+        setKeyword(keyword => {
+          if (keyword === '\\' && (
+            e.key === '/' ||
+            e.key === '?'
+          )) {
+            return e.key
+          } else
+            return keyword + e.key
+        })
         return
       }
 
