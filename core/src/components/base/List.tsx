@@ -122,7 +122,7 @@ export const List = forwardRefWithStatic<{
   }, [computeVisibleItems])
 
   const scrollRetimer = useRetimer()
-  const onScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+  const onScroll = useCallback(() => {
     scrollRetimer(setTimeout(() => {
       setVisibleItems(computeVisibleItems())
     }, 200) as unknown as number)
