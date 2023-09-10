@@ -142,6 +142,7 @@
         bottom: 0;
         border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
         border: 2px dashed var(--primary-active-border);
+        pointer-events: none;
       }
     }
     &.selected {
