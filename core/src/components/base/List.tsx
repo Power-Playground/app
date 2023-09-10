@@ -189,6 +189,19 @@ export const List = forwardRefWithStatic<{
 
   const [foldedIds, setFoldedIds] = useState<string[]>([])
   const [hidedIds, setHidedIds] = useState<string[]>([])
+  function foldedId(id: string, isFolded?: boolean) {
+    setFoldedIds(foldedIds => {
+      const index = foldedIds.indexOf(id)
+      const children = getChildren(id)
+      if (index === -1 && isFolded !== false) {
+        setHidedIds(hidedIds => [...hidedIds, ...children.map(({ id }) => id)])
+        return [...foldedIds, id]
+      } else {
+        setHidedIds(hidedIds => hidedIds.filter(id => !children.map(({ id }) => id).includes(id)))
+        return [...foldedIds.slice(0, index), ...foldedIds.slice(index + 1)]
+      }
+    })
+  }
 
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
   const [enableWordMatch, setEnableWordMatch] = useState(false)
@@ -464,7 +477,17 @@ export const List = forwardRefWithStatic<{
         }
       }
 
-      // ⇠/⇢      : [open]|[close]
+      // ⇠/⇢ : [open]|[close]
+      if (['ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        e.preventDefault()
+        e.stopPropagation()
+        const direction = e.key === 'ArrowLeft' ? -1 : 1
+        const item = items[focusedIndex]
+        if (item) {
+          foldedId(item.id, direction === -1)
+        }
+        return
+      }
       // ⇧ ⇠/⇢    : [open]|[close] and select
 
       // ⌘ a : select all
@@ -682,14 +705,7 @@ export const List = forwardRefWithStatic<{
             }}
             onClick={e => {
               e.stopPropagation()
-              const children = getChildren(item.id)
-              if (foldedIds.includes(item.id)) {
-                setHidedIds(hidedIds => hidedIds.filter(id => !children.map(({ id }) => id).includes(id)))
-                setFoldedIds(foldedIds => foldedIds.filter(id => id !== item.id))
-              } else {
-                setHidedIds(hidedIds => [...hidedIds, ...children.map(({ id }) => id)])
-                setFoldedIds(foldedIds => [...foldedIds, item.id])
-              }
+              foldedId(item.id)
             }}
           />
           : <span className={`${prefix}-item__icon cldr space`} />}
