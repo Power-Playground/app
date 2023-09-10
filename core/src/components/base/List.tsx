@@ -379,12 +379,12 @@ export const List = forwardRefWithStatic<{
             if (direction === -1) {
               listRef.current.scrollTo({
                 top: el.offsetTop - listRef.current.offsetHeight + el.offsetHeight + 16,
-                behavior: 'instant'
+                behavior: 'auto'
               })
             } else {
               listRef.current.scrollTo({
                 top: el.offsetTop - 8,
-                behavior: 'instant'
+                behavior: 'auto'
               })
             }
             // TODO performance
@@ -486,9 +486,10 @@ export const List = forwardRefWithStatic<{
         if (item) {
           foldedId(item.id, direction === -1)
         }
+        // TODO
+        //   ⇧ ⇠/⇢ : [open]|[close] and select
         return
       }
-      // ⇧ ⇠/⇢    : [open]|[close] and select
 
       // ⌘ a : select all
       if (e.key === 'a' && withCtrlOrMeta && !withShift && !withAlt) {
