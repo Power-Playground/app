@@ -23,10 +23,13 @@ export default {
   </>,
   actions: <>
     <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
-      <span className='cldr codicon codicon-add'></span>
+      <span className='cldr codicon codicon-expand-all' />
     </button>
     <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
-      <span className='cldr codicon codicon-compass-dot'></span>
+      <span className='cldr codicon codicon-collapse-all' />
+    </button>
+    <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
+      <span className='cldr codicon codicon-compass-dot' />
     </button>
   </>,
   content: <List
