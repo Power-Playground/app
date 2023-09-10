@@ -9,6 +9,9 @@ import { classnames, isMacOS } from '../../utils'
 import { forwardRefWithStatic } from './forwardRefWithStatic'
 
 export interface ListItem {
+  /** @default 0 */
+  indent?: number
+
   icon?: string | React.ReactNode
   id: string
   label: string
@@ -83,7 +86,9 @@ const items: ListItem[] = [
   ...[...Array(100)].map((_, i) => ({
     icon: 'file',
     id: `item-${i}`,
-    label: `Item ${i}`
+    label: `Item ${i}`,
+
+    indent: i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2
   })),
   { icon: 'folder-library',
     id: 'node_modules',
@@ -647,6 +652,10 @@ export const List = forwardRefWithStatic<{
           item.disabled && 'disabled',
           selectedIds.includes(item.id) && 'selected'
         )}
+        style={{
+          // @ts-ignore
+          '--indent-level': item.indent ?? 0
+        }}
         onClick={e => {
           e.stopPropagation()
           if (!selectable || item.disabled) return
@@ -669,6 +678,9 @@ export const List = forwardRefWithStatic<{
           setFocusedIndex(index)
         }}
       >
+        {(items[index + 1]?.indent ?? 0) > (item?.indent ?? 0)
+          ? <span className={`${prefix}-item__icon cldr codicon codicon-chevron-right`} />
+          : <span className={`${prefix}-item__icon cldr space`} />}
         {item.icon && typeof item.icon === 'string'
           ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
           : item.icon}

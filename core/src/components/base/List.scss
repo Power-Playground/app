@@ -1,4 +1,6 @@
 .ppd-list {
+  --indent-size: 20px;
+
   height: 100%;
   overflow: overlay;
   &-wrap {
@@ -73,19 +75,28 @@
     --br-1: 4px;
     --br-2: 4px;
     --br-3: 4px;
+    --padding: 4px;
+    --inner-padding-left: calc(var(--padding) + var(--indent-level) * var(--indent-size));
+    --indent-level: 0;
+    --inner-duration: .1s;
 
     position: relative;
     display: flex;
     align-items: center;
     gap: 5px;
 
-    padding: 4px;
-    min-width: calc(100% - 12px);
+    padding: var(--padding);
+    padding-left: var(--inner-padding-left);
+    min-width: calc(100% - var(--inner-padding-left) - var(--padding) - 4px);
     border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
     border: 2px solid transparent;
 
     user-select: none;
-    transition: .1s;
+    transition:
+            var(--inner-duration) background-color,
+            var(--inner-duration) color,
+            var(--inner-duration) border-color,
+            var(--inner-duration) box-shadow;
     &:hover {
       z-index: 10;
       color: var(--primary-hover-fc);
@@ -99,13 +110,15 @@
         --br-0: 0;
         --br-1: 0;
 
-        border-top: 0 solid var(--primary-active-border);
+        border-top: none;
+        padding-top: calc(var(--padding) + 2px);
       }
       &:has( + &) {
         --br-2: 0;
         --br-3: 0;
 
-        border-bottom: 0 solid var(--primary-active-border);
+        border-bottom: none;
+        padding-bottom: calc(var(--padding) + 2px);
       }
       .ppd-list-item__icon {
         color: var(--primary-active-fc);
@@ -149,6 +162,9 @@
     }
     &__icon {
       color: var(--fr-cr);
+      &.space {
+        width: 16px;
+      }
     }
     &__label {
       color: var(--fr-cr);
@@ -162,7 +178,6 @@
       }
     }
     &__placeholder {
-      margin-left: 20px;
       color: var(--fr-cr-placholder);
     }
   }
