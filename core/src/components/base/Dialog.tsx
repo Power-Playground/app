@@ -79,9 +79,9 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
     onClick={() => setOpen(false)}
     >
     <div className={`${prefix}__container`} onClick={e => e.stopPropagation()}>
-      <div className={`${prefix}__title`}>
+      {title && <div className={`${prefix}__title`}>
         <h1>{title}</h1>
-      </div>
+      </div>}
       <div className={`${prefix}__content`}>
         {open && <>{children}</>}
       </div>
