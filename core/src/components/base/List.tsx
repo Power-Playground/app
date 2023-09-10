@@ -439,6 +439,10 @@ export const List = forwardRefWithStatic<{
               ? focusedIndex
               : (focusedIndex + direction) % items.length
           }
+          // skip item when it is hided
+          while (hidedIds.length > 0 && hidedIds.includes(items[index]?.id)) {
+            index = (index + direction) % items.length
+          }
           if (enableSearch) {
             if (filteredItemsWithIndex.length === 0) return
             // original 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
