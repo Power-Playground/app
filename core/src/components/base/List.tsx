@@ -536,7 +536,12 @@ export const List = forwardRefWithStatic<{
           e.preventDefault()
           e.stopPropagation()
           setKeyword(keyword => keyword.slice(0, -1))
-          // TODO when keyword is empty, exit search mode
+          if (keyword.length <= 1) {
+            setKeyword('')
+            if (searchMode !== 'fuzzy') {
+              setSearchMode('fuzzy')
+            }
+          }
           return
         }
         // ⌥ c
