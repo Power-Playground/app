@@ -687,9 +687,6 @@ export const List = forwardRefWithStatic<{
       // ⏎   : [select]|[open]
       // ⌘ ⏎ : [open]|[open in new tab]
       // ⇥   : focus next
-      console.log(e.key, e.keyCode, e.ctrlKey, e.metaKey, e.shiftKey)
-      e.preventDefault()
-      e.stopPropagation()
     }}
     onScroll={onScroll}
     >
