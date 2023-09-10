@@ -225,7 +225,12 @@ export const List = forwardRefWithStatic<{
   const searchbarTooltip = useMemo(() =>
     `Search by "${
       searchMode
-    }" mode.(press "/" switch to regex mode, press "⌘ f" switch to strict mode, press any char switch to fuzzy mode)`,
+    }" mode.`
+      + '\npress `/` switch to regex mode.'
+      + '\npress `⌘ f` switch to strict mode.'
+      + '\npress `⌘ g` switch to glob mode.'
+      + '\npress `⌘ /` switch to start with mode.'
+      + '\npress any char switch to trigger fuzzy mode.',
   [searchMode])
 
   const searchbarPopper = usePopper({
@@ -269,6 +274,20 @@ export const List = forwardRefWithStatic<{
   }, [enableSearch, searchbarPopper])
   const labelMatcher = useCallback((item: ListItem) => {
     if (!enableSearch) return null
+
+    if (searchMode === 'glob') {
+      const regexpStr = keyword
+        .replace(/\*/g, '[^/]*')
+        .replace(/\*\*/g, '.*')
+        .replace(/\?/g, '[^/]')
+      try {
+        const reg = new RegExp(regexpStr, enableUpperKeywordsIgnore ? 'i' : '')
+        return reg.exec(item.label)
+      } catch (e) {
+        console.error(e)
+        return null
+      }
+    }
 
     const noRegExpChars = ['\\', '.', '*', '+', '?', '^', '$', '(', ')', '[', ']', '{', '}', '|']
     const noRegExpKeyword = searchMode === 'regex'
