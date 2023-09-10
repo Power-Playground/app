@@ -187,6 +187,8 @@ export const List = forwardRefWithStatic<{
     focusTo(realIndex)
   }
 
+  const [foldedIds, setFoldedIds] = useState<string[]>([])
+
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
   const [enableWordMatch, setEnableWordMatch] = useState(false)
   const [searchMode, setSearchMode] = useState<
@@ -320,6 +322,7 @@ export const List = forwardRefWithStatic<{
     }, [] as [index: number, item: ListItem][])
   }, [enableSearch, items, labelMatcher])
 
+  const [parentIds, parentIndents] = [[''], [-1]]
   // noinspection GrazieInspection,StructuralWrap
   return <div
     ref={listRef}
@@ -615,60 +618,87 @@ export const List = forwardRefWithStatic<{
     >
     {searchbarPopper.popper}
     <div className={`${prefix}-wrap`}>
-      {items.map((item, index) => <div
-        ref={el => el && (itemsRef.current[index] = el)}
-        key={item.id}
-        tabIndex={item.disabled ? undefined : 0}
-        data-id={item.id}
-        className={classnames(
-          `${prefix}-item`,
-          selectable && !item.disabled && 'clickable',
-          item.disabled && 'disabled',
-          selectedIds.includes(item.id) && 'selected'
-        )}
-        style={{
-          // @ts-ignore
-          '--indent-level': item.indent ?? 0
-        }}
-        onClick={e => {
-          e.stopPropagation()
-          if (!selectable || item.disabled) return
-
-          const withCtrlOrMeta = e.ctrlKey || e.metaKey
-          const withShift = e.shiftKey
-          if (!withCtrlOrMeta && !withShift) {
-            setSelectedIds([item.id])
-            return
+      {items.map((item, index) => {
+        const latestParentId = parentIds[parentIds.length - 1]
+        const latestParentIndent = parentIndents[parentIndents.length - 1]
+        if (item.indent !== latestParentIndent) {
+          if (item.indent === latestParentIndent + 1) {
+            parentIds.push(latestParentId)
+            parentIndents.push(latestParentIndent + 1)
           }
-          if (withCtrlOrMeta) {
-            toggleSelectedId(item.id)
-            return
+          if (item.indent === latestParentIndent - 1) {
+            parentIds.pop()
+            parentIndents.pop()
           }
+        }
+        return <div
+          ref={el => el && (itemsRef.current[index] = el)}
+          key={item.id}
+          tabIndex={item.disabled ? undefined : 0}
+          data-id={item.id}
+          className={classnames(
+            `${prefix}-item`,
+            selectable && !item.disabled && 'clickable',
+            item.disabled && 'disabled',
+            selectedIds.includes(item.id) && 'selected'
+          )}
+          style={{
+            // @ts-ignore
+            '--indent-level': item.indent ?? 0
+          }}
+          onClick={e => {
+            e.stopPropagation()
+            if (!selectable || item.disabled) return
 
-          toggleRangeSelectedId(item.id)
-        }}
-        onFocus={e => {
-          e.stopPropagation()
-          setFocusedIndex(index)
-        }}
-      >
-        {(items[index + 1]?.indent ?? 0) > (item?.indent ?? 0)
-          ? <span
-            className={`${prefix}-item__icon cldr codicon codicon-chevron-right`}
-          />
-          : <span className={`${prefix}-item__icon cldr space`} />}
-        {item.icon && typeof item.icon === 'string'
-          ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
-          : item.icon}
-        {item.content
-          ? typeof item.content === 'function'
-            ? item.content(keyword, item)
-            : item.content
-          : <code className={`${prefix}-item__label`}>{labelContentRender(item)}</code>}
-        {item.placeholder && typeof item.placeholder === 'string'
-          ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
-          : item.placeholder}
-      </div>)}
+            const withCtrlOrMeta = e.ctrlKey || e.metaKey
+            const withShift = e.shiftKey
+            if (!withCtrlOrMeta && !withShift) {
+              setSelectedIds([item.id])
+              return
+            }
+            if (withCtrlOrMeta) {
+              toggleSelectedId(item.id)
+              return
+            }
+
+            toggleRangeSelectedId(item.id)
+          }}
+          onFocus={e => {
+            e.stopPropagation()
+            setFocusedIndex(index)
+          }}
+        >
+          {(items[index + 1]?.indent ?? 0) > (item?.indent ?? 0)
+            ? <button
+              className={`${prefix}-item__icon cldr codicon codicon-chevron-right`}
+              style={{
+                transform: foldedIds.includes(item.id)
+                  ? 'rotate(90deg)'
+                  : 'rotate(0deg)'
+              }}
+              onClick={e => {
+                e.stopPropagation()
+                if (foldedIds.includes(item.id)) {
+                  setFoldedIds(foldedIds => foldedIds.filter(id => id !== item.id))
+                } else {
+                  setFoldedIds(foldedIds => [...foldedIds, item.id])
+                }
+              }}
+            />
+            : <span className={`${prefix}-item__icon cldr space`} />}
+          {item.icon && typeof item.icon === 'string'
+            ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
+            : item.icon}
+          {item.content
+            ? typeof item.content === 'function'
+              ? item.content(keyword, item)
+              : item.content
+            : <code className={`${prefix}-item__label`}>{labelContentRender(item)}</code>}
+          {item.placeholder && typeof item.placeholder === 'string'
+            ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
+            : item.placeholder}
+        </div>
+      })}
     </div>
   </div>
 })
