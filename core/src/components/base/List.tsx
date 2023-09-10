@@ -496,11 +496,11 @@ export const List = forwardRefWithStatic<{
         }
       }
 
-      // ⇠/⇢ : [open]|[close]
-      // ⌘ + : fold selected
-      // ⌘ - : unfold selected
-      // ⌘ ⇧ +    : fold all
-      // ⌘ ⇧ -    : unfold all
+      // ⇠/⇢   : [open]|[close]
+      // ⌘ +   : fold selected
+      // ⌘ -   : unfold selected
+      // ⌘ ⇧ + : fold all
+      // ⌘ ⇧ - : unfold all
       if ([
         'ArrowLeft',
         'ArrowRight',
