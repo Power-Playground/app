@@ -444,9 +444,6 @@ export const List = forwardRefWithStatic<{
           }
           if (enableSearch) {
             if (filteredItemsWithIndex.length === 0) return
-            // original 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-            // filtered 3, 5, 6, 8, 9, 10
-            // TODO
             let [
               filteredItemsFindIndexForTarget,
               filteredItemsFindIndexForOrigin
