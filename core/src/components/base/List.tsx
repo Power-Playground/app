@@ -59,6 +59,34 @@ function inVisibleArea(el: HTMLElement, container: HTMLElement) {
     && elRect.bottom <= containerRect.bottom
 }
 
+const items: ListItem[] = [
+  { icon: 'file',
+    id: 'index.ts',
+    label: 'index.ts',
+    placeholder: '[entry] very longerrrrrrrrrrrrrrrrrrrrrr placeholder' },
+  { icon: 'beaker',
+    id: 'index.spec.ts',
+    label: 'index.spec.ts',
+    placeholder: '[entry] test' },
+  { icon: 'file',
+    id: 'tsconfig.json',
+    label: 'tsconfig.json' },
+  { icon: 'file',
+    id: '0',
+    label: 'foo bar.js' },
+  { icon: 'file',
+    id: '1',
+    label: 'foobar.js' },
+  ...[...Array(100)].map((_, i) => ({
+    icon: 'file',
+    id: `item-${i}`,
+    label: `Item ${i}`
+  })),
+  { icon: 'folder-library',
+    id: 'node_modules',
+    label: 'node_modules' }
+]
+
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
 }, ListRef, ListProps>((props, ref) => {
@@ -66,33 +94,6 @@ export const List = forwardRefWithStatic<{
     selectable = false
   } = props
   const { prefix } = List
-  const items: ListItem[] = [
-    { icon: 'file',
-      id: 'index.ts',
-      label: 'index.ts',
-      placeholder: '[entry] very longerrrrrrrrrrrrrrrrrrrrrr placeholder' },
-    { icon: 'beaker',
-      id: 'index.spec.ts',
-      label: 'index.spec.ts',
-      placeholder: '[entry] test' },
-    { icon: 'file',
-      id: 'tsconfig.json',
-      label: 'tsconfig.json' },
-    { icon: 'file',
-      id: '0',
-      label: 'foo bar.js' },
-    { icon: 'file',
-      id: '1',
-      label: 'foobar.js' },
-    ...[...Array(100)].map((_, i) => ({
-      icon: 'file',
-      id: `item-${i}`,
-      label: `Item ${i}`
-    })),
-    { icon: 'folder-library',
-      id: 'node_modules',
-      label: 'node_modules' }
-  ]
 
   const listRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<HTMLDivElement[]>([])
@@ -288,6 +289,17 @@ export const List = forwardRefWithStatic<{
       {item.label.slice(index + length)}
     </>
   }
+  const filteredItemsWithIndex = useMemo(() => {
+    if (!enableSearch) return []
+
+    return items.reduce((acc, item, index) => {
+      const parts = labelMatcher(item)
+      if (parts) {
+        acc.push([index, item])
+      }
+      return acc
+    }, [] as [index: number, item: ListItem][])
+  }, [enableSearch, labelMatcher])
 
   // noinspection GrazieInspection,StructuralWrap
   return <div
@@ -357,6 +369,39 @@ export const List = forwardRefWithStatic<{
               ? focusedIndex
               : (focusedIndex + direction) % items.length
           }
+          if (enableSearch) {
+            if (filteredItemsWithIndex.length === 0) return
+            // original 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+            // filtered 3, 5, 6, 8, 9, 10
+            // TODO
+            let [
+              filteredItemsFindIndexForTarget,
+              filteredItemsFindIndexForOrigin
+            ] = [-1, -1]
+            for (let i = 0; i < filteredItemsWithIndex.length; i++) {
+              const [_i] = filteredItemsWithIndex[i]
+              if (_i === index) {
+                filteredItemsFindIndexForTarget = i
+              }
+              if (_i === focusedIndex) {
+                filteredItemsFindIndexForOrigin = i
+              }
+              if (filteredItemsFindIndexForTarget !== -1 && filteredItemsFindIndexForOrigin !== -1) {
+                break
+              }
+            }
+            if (filteredItemsFindIndexForTarget === -1) {
+              if (filteredItemsFindIndexForOrigin !== -1) {
+                const nIndex = filteredItemsFindIndexForOrigin + direction
+                const [targetIndex] = filteredItemsWithIndex[
+                  nIndex < 0
+                    ? filteredItemsWithIndex.length - 1
+                    : nIndex % filteredItemsWithIndex.length
+                ]
+                index = targetIndex
+              }
+            }
+          }
         }
         // ⌘ ⇡/⇣ : focus first/last
         if (isJump) {
@@ -409,7 +454,7 @@ export const List = forwardRefWithStatic<{
       // ⌘ ⇧ +    : fold all
       // ⌘ ⇧ -    : unfold all
 
-      // ␣ : toggle select
+      // ␣ : toggle select, (support quick preview?)
       if (e.key === ' ' && withoutAll && !enableSearch) {
         e.preventDefault()
         e.stopPropagation()
