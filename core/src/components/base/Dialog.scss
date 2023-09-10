@@ -24,8 +24,8 @@ dialog.ppd-dialog {
   }
   &[open] {
     opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
+    pointer-events: unset;
+    visibility: unset;
     > .ppd-dialog__container {
       top: 50%;
     }
@@ -47,10 +47,14 @@ dialog.ppd-dialog {
     background-color: var(--bg-cr-o0);
     border: 1px solid var(--border-color);
     backdrop-filter: blur(12px);
-    box-shadow: 0 16px 32px #2224;
+    box-shadow: 0 0 32px #2224;
 
     overflow: overlay;
     transition: .5s;
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 20px 32px #2224;
+    }
     > .ppd-dialog__title {
       display: flex;
       align-items: center;
