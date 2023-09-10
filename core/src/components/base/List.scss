@@ -93,6 +93,8 @@
 
     user-select: none;
     transition:
+            var(--inner-duration) height,
+            var(--inner-duration) padding,
             var(--inner-duration) background-color,
             var(--inner-duration) color,
             var(--inner-duration) border-color,
@@ -151,6 +153,12 @@
     &.disabled {
       cursor: not-allowed;
       opacity: .5;
+    }
+    &.hided {
+      height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
     }
     &.active, &.selected, &:focus, &:focus-visible {
       background-color: var(--primary-active);
