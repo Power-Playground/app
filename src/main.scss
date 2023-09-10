@@ -19,9 +19,9 @@ body {
   --primary-hover: #365eb422;
   --primary-hover-fc: #fff;
 
-  --primary-active: #365eb488;
+  --primary-active: #365eb444;
   --primary-active-border: #365eb4cc;
-  --primary-active-fc: rgba(255, 255, 255, 0.9);
+  --primary-active-fc: color-mix(in srgb, var(--fr-cr), var(--primary) 20%);
   --primary-active-placholder:rgba(255, 255, 255, 0.6);
 
   --border-color: #cccccc;
