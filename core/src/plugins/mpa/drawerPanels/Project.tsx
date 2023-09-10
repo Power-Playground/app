@@ -29,5 +29,38 @@ export default {
       <span className='cldr codicon codicon-compass-dot'></span>
     </button>
   </>,
-  content: <List selectable />
+  content: <List
+    selectable
+    items={[
+      { icon: 'file',
+        id: 'index.ts',
+        label: 'index.ts',
+        placeholder: '[entry] very longerrrrrrrrrrrrrrrrrrrrrr placeholder' },
+      { icon: 'beaker',
+        id: 'index.spec.ts',
+        label: 'index.spec.ts',
+        placeholder: '[entry] test' },
+      { icon: 'file',
+        id: 'tsconfig.json',
+        label: 'tsconfig.json' },
+      { icon: 'file',
+        id: '0',
+        label: 'foo bar.js' },
+      { icon: 'file',
+        id: '1',
+        label: 'foobar.js' },
+      { icon: 'file',
+        id: '2',
+        label: 'bar.js' },
+      ...[...Array(100)].map((_, i) => ({
+        icon: 'file',
+        id: `item-${i}`,
+        label: `Item ${i}`,
+
+        indent: i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2
+      })),
+      { icon: 'folder-library',
+        id: 'node_modules',
+        label: 'node_modules' }
+    ]} />
 } as DrawerPanel

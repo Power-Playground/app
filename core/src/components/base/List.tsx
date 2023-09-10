@@ -22,6 +22,8 @@ export interface ListItem {
 }
 export interface ListProps {
   selectable?: boolean
+
+  items?: ListItem[]
 }
 export interface ListRef {
 }
@@ -62,38 +64,7 @@ function inVisibleArea(el: HTMLElement, container: HTMLElement) {
     && elRect.bottom <= containerRect.bottom
 }
 
-const items: ListItem[] = [
-  { icon: 'file',
-    id: 'index.ts',
-    label: 'index.ts',
-    placeholder: '[entry] very longerrrrrrrrrrrrrrrrrrrrrr placeholder' },
-  { icon: 'beaker',
-    id: 'index.spec.ts',
-    label: 'index.spec.ts',
-    placeholder: '[entry] test' },
-  { icon: 'file',
-    id: 'tsconfig.json',
-    label: 'tsconfig.json' },
-  { icon: 'file',
-    id: '0',
-    label: 'foo bar.js' },
-  { icon: 'file',
-    id: '1',
-    label: 'foobar.js' },
-  { icon: 'file',
-    id: '2',
-    label: 'bar.js' },
-  ...[...Array(100)].map((_, i) => ({
-    icon: 'file',
-    id: `item-${i}`,
-    label: `Item ${i}`,
-
-    indent: i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2
-  })),
-  { icon: 'folder-library',
-    id: 'node_modules',
-    label: 'node_modules' }
-]
+const EMPTY_LIST_ITEMS: ListItem[] = []
 
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
@@ -102,6 +73,9 @@ export const List = forwardRefWithStatic<{
     selectable = false
   } = props
   const { prefix } = List
+  const {
+    items = EMPTY_LIST_ITEMS
+  } = props
 
   const listRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<HTMLDivElement[]>([])
@@ -679,7 +653,9 @@ export const List = forwardRefWithStatic<{
         }}
       >
         {(items[index + 1]?.indent ?? 0) > (item?.indent ?? 0)
-          ? <span className={`${prefix}-item__icon cldr codicon codicon-chevron-right`} />
+          ? <span
+            className={`${prefix}-item__icon cldr codicon codicon-chevron-right`}
+          />
           : <span className={`${prefix}-item__icon cldr space`} />}
         {item.icon && typeof item.icon === 'string'
           ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
