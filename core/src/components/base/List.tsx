@@ -788,7 +788,6 @@ const SPLITTER = Symbol('SPLITTER')
 type KeymapSection = [
   description: string | {
     label: string
-    demoImg?: string
     description?: ReactNode
   },
   ...keys: (
@@ -822,7 +821,6 @@ const HelpDialog = forwardRefWithStatic<{
     Base: [
       [{
         label: 'Display help message dialog',
-        demoImg: helpDialogGifs['Display help message dialog'],
         description: 'It\'s essentially like entering a "?" isn\'t it?'
       }, KeyMapUnicodeEmoji.Shift, '/'],
       [{
