@@ -817,6 +817,7 @@ const HelpDialog = forwardRefWithStatic<{
   const [theme, setTheme] = useState<string>('light')
   useEffect(() => onThemeChange(setTheme), [])
 
+  const cachedRef = useRef<[(HTMLDivElement | null)?, KeymapSection[number][0]?]>([])
   const keymap: Record<string, KeymapSection> = {
     Base: [
       [{
@@ -828,7 +829,32 @@ const HelpDialog = forwardRefWithStatic<{
         description: <>
           Press any char to trigger fuzzy mode,
           but if you want to find <code>/</code> or <code>?</code>,
-          press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd> .
+          <span
+            onMouseEnter={e => {
+              e.stopPropagation()
+              demo.visible
+                ? toggleDemoPopper(true)
+                : demo.changeVisible(true)
+              cachedRef.current = [affixElement, hoverItem]
+              setAffixElement(
+                (e.target as HTMLElement)
+                  .closest('span') as HTMLDivElement
+              )
+              setHoverItem({
+                label: 'Search item with fuzzy mode.special'
+              })
+            }}
+            onMouseLeave={e => {
+              e.stopPropagation()
+              const [el, item] = cachedRef.current
+              if (el) {
+                setAffixElement(el)
+                setHoverItem(item)
+              }
+            }}
+            >
+            &nbsp;press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd> .
+          </span>
           <br />
           <code>\w</code> means you can enter any character to trigger the list search mode.
         </>
