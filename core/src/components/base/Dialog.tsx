@@ -3,6 +3,8 @@ import './Dialog.scss'
 import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import { useDocumentEventListener } from '../../hooks/useDocumentEventListener'
+
 export interface DialogRef {
   open: () => void
   hide: () => void
@@ -11,7 +13,7 @@ export interface DialogRef {
 export interface DialogProps {
   title?: React.ReactNode
   children?: React.ReactNode
-  binding?: (e: React.KeyboardEvent<HTMLDivElement>) => boolean
+  binding?: (e: KeyboardEvent) => boolean
   handleKeyUpOnOpen?: (e: React.KeyboardEvent<HTMLDivElement>, ref?: DialogRef) => void
   handleKeyDownOnOpen?: (e: React.KeyboardEvent<HTMLDivElement>, ref?: DialogRef) => void
 
@@ -52,6 +54,13 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
     open: () => toggle(true),
     hide: () => toggle(false)
   }), [toggle])
+  useDocumentEventListener('keydown', e => {
+    if (binding?.(e)) {
+      toggle(true)
+      e.stopPropagation()
+      e.preventDefault()
+    }
+  })
   return createPortal(<dialog
     open={open}
     className={`${prefix} ${className ?? ''}`}
@@ -79,11 +88,6 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
       }}
       onKeyDown={e => {
         if (!open) return
-        binding?.(e) && (
-          toggle(true),
-          e.stopPropagation(),
-          e.preventDefault()
-        )
         handleKeyDownOnOpen?.(e, {
           open: () => toggle(true),
           hide: () => toggle(false)
