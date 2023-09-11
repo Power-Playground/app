@@ -25,6 +25,9 @@ dialog.ppd-dialog {
     pointer-events: unset;
     visibility: unset;
     background-color: #00000020;
+    html[theme-mode=dark] & {
+      background-color: #00000040;
+    }
     > .ppd-dialog__container {
       top: 50%;
     }
