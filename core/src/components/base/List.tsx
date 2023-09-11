@@ -818,14 +818,17 @@ const HelpDialog = forwardRefWithStatic<{
     Base: [
       [{
         label: 'Display help message dialog',
-        demoImg: helpDialogGifs['Display help message dialog']
+        demoImg: helpDialogGifs['Display help message dialog'],
+        description: 'It\'s essentially like entering a "?" isn\'t it?'
       }, KeyMapUnicodeEmoji.Shift, '/'],
       [{
         label: 'Search item with fuzzy mode',
         description: <>
           Press any char to trigger fuzzy mode,
           but if you want to find <code>/</code> or <code>?</code>,
-          press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd>.
+          press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd> .
+          <br />
+          <code>\w</code> means you can enter any character to trigger the list search mode.
         </>
       }, '\\w']
     ],
