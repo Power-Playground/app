@@ -215,6 +215,7 @@
   &__description {
     margin-top: 5px;
     font-size: 12px;
+    padding-bottom: 5px;
     color: var(--fr-cr-placholder);
     code {
       font-weight: bold;
@@ -266,6 +267,7 @@
     pointer-events: none;
     &--is-object {
       padding: 0;
+
       background-color: var(--bg-cr-o0) !important;
       backdrop-filter: blur(12px);
     }
@@ -276,7 +278,7 @@
       border-bottom: 1px solid var(--border-color);
     }
     &__label {
-      padding-left: 5px;
+      padding: 0 8px;
 
       height: 36px;
       line-height: 36px;
@@ -287,7 +289,7 @@
     @include description;
     &__description {
       margin-top: 0;
-      padding: 5px;
+      padding: 5px 8px;
 
       border-top: 1px solid var(--border-color);
     }
@@ -331,6 +333,12 @@
         opacity: 1;
       }
       @include description;
+      &__description {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
     }
     &-item__label {
       flex-grow: 1;

@@ -798,6 +798,15 @@ type KeymapSection = [
   )[]
 ][]
 
+const helpDialogGifs = Object.entries(import.meta.glob(
+  '../../assets/list-help-dialog/*.gif',
+  { as: 'url', eager: true }
+)).reduce((acc, [key, value]) => {
+  const name = key.match(/\/([^/]+)\.gif$/)![1]
+  acc[name] = value
+  return acc
+}, {} as Record<string, string>)
+
 const HelpDialog = forwardRefWithStatic<{
   readonly prefix: 'ppd-help-dialog'
 }, DialogRef>((...[, ref]) => {
@@ -809,12 +818,7 @@ const HelpDialog = forwardRefWithStatic<{
     Base: [
       [{
         label: 'Display help message dialog',
-        demoImg: import.meta.glob('../../assets/CleanShot 2023-09-11 at 17.34.41.gif', {
-          as: 'url',
-          eager: true
-        })[
-          '../../assets/CleanShot 2023-09-11 at 17.34.41.gif'
-        ]
+        demoImg: helpDialogGifs['Display help message dialog']
       }, KeyMapUnicodeEmoji.Shift, '/'],
       [{
         label: 'Search item with fuzzy mode',
@@ -945,8 +949,9 @@ const HelpDialog = forwardRefWithStatic<{
                   : <kbd key={index}>{key}</kbd>)}
             </span>
           </div>
-          {typeof description !== 'string' &&
-            <div className={`${sectionPrefix}__content-item__description`}>
+          {typeof description !== 'string'
+            && !!description.description
+            && <div className={`${sectionPrefix}__content-item__description`}>
               {description.description}
             </div>}
         </div>)}
