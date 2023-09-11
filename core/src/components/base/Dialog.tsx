@@ -43,7 +43,9 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
       const nv = v ?? !open
       if (nv) {
         openActiveElement.current = document.activeElement as HTMLElement
-        setTimeout(() => containerRef.current?.focus(), 300)
+        setTimeout(() => containerRef.current?.focus({
+          preventScroll: true
+        }), 300)
       } else {
         openActiveElement.current?.focus()
       }
