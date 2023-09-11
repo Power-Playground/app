@@ -210,3 +210,75 @@
     }
   }
 }
+
+.ppd-help-dialog {
+  @at-root dialog#{&} .ppd-dialog__content {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+  }
+  &__section {
+    flex-grow: 1;
+  }
+  &__section__title {
+    margin-top: 10px;
+    font-size: 18px;
+  }
+  &__section__content {
+    display: flex;
+    flex-direction: column;
+    &-item {
+      display: flex;
+      align-items: center;
+
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--fr-cr-placholder);
+
+      font-size: 15px;
+    }
+    &-item__description {
+      flex-grow: 1;
+      font-size: 14px;
+    }
+    &-item__keys {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 5px;
+
+      font-size: 12px;
+
+      user-select: none;
+      &-splitter {
+        width: 3px;
+        text-align: center;
+      }
+      &-group {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+      }
+      kbd {
+        width: 32px;
+
+        text-align: center;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        box-shadow: 0 1px 0 1px #0003;
+        background-color: var(--bg-cr);
+
+        transition: .05s;
+        &:hover {
+          box-shadow: 0 1px 0 0 #0005;
+        }
+        html[theme-mode=dark] & {
+          box-shadow: 0 1px 0 1px #fffc;
+          &:hover {
+            box-shadow: 0 1px 0 0 #fff;
+          }
+        }
+      }
+    }
+  }
+}

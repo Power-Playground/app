@@ -6,6 +6,8 @@ import { useRetimer } from 'foxact/use-retimer'
 import { usePopper } from '../../hooks/usePopper'
 import { classnames, isMacOS } from '../../utils'
 
+import type { DialogRef } from './Dialog'
+import { Dialog } from './Dialog'
 import { forwardRefWithStatic } from './forwardRefWithStatic'
 
 export interface ListItem {
@@ -68,7 +70,7 @@ const EMPTY_LIST_ITEMS: ListItem[] = []
 
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
-}, ListRef, ListProps>((props, ref) => {
+}, ListRef, ListProps>((props) => {
   const {
     selectable = false
   } = props
@@ -76,6 +78,8 @@ export const List = forwardRefWithStatic<{
   const {
     items = EMPTY_LIST_ITEMS
   } = props
+
+  const helpDialogRef = useRef<DialogRef>(null)
 
   const listRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<HTMLDivElement[]>([])
@@ -371,395 +375,502 @@ export const List = forwardRefWithStatic<{
     }, [] as [index: number, item: ListItem][])
   }, [enableSearch, items, labelMatcher])
   // noinspection GrazieInspection,StructuralWrap
-  return <div
-    ref={listRef}
-    tabIndex={0}
-    className={prefix}
-    onClick={() => setSelectedIds([])}
-    onFocus={() => focusTo(focusedIndex)}
-    onKeyDown={async e => {
-      const withCtrlOrMeta = e.ctrlKey || (
-        isMacOS && e.metaKey
-      )
-      const withShift = e.shiftKey
-      const withAlt = e.altKey
+  return <>
+    {searchbarPopper.popper}
+    <HelpDialog ref={helpDialogRef} />
+    <div
+      ref={listRef}
+      tabIndex={0}
+      className={prefix}
+      onClick={() => setSelectedIds([])}
+      onFocus={() => focusTo(focusedIndex)}
+      onKeyDown={async e => {
+        const withCtrlOrMeta = e.ctrlKey || (
+          isMacOS && e.metaKey
+        )
+        const withShift = e.shiftKey
+        const withAlt = e.altKey
 
-      const withoutAll = !withCtrlOrMeta && !withShift && !withAlt
-      const withoutAllNoShift = !withCtrlOrMeta && !withAlt
+        const withoutAll = !withCtrlOrMeta && !withShift && !withAlt
+        const withoutAllNoShift = !withCtrlOrMeta && !withAlt
 
-      async function pageUpOrDown(direction: 1 | -1, _visibleItems = visibleItems) {
-        const [targetId, el] = _visibleItems[
-          direction === -1 ? 0 : _visibleItems.length - 1
-          ]
-        const tmpIndex = items.findIndex(({ id }) => id === targetId)
-        if (tmpIndex === focusedIndex) {
-          if (listRef.current) {
-            if (direction === -1) {
-              listRef.current.scrollTo({
-                top: el.offsetTop - listRef.current.offsetHeight + el.offsetHeight + 16,
-                behavior: 'auto'
-              })
-            } else {
-              listRef.current.scrollTo({
-                top: el.offsetTop - 8,
-                behavior: 'auto'
-              })
-            }
-            // TODO performance
-            return pageUpOrDown(direction, computeVisibleItems())
-          }
-        }
-        return tmpIndex
-      }
-
-      // ⇱/⇲ : forward to ⌘ ⇡/⇣
-      // ⇞/⇟ : forward to ⌥ ⇡/⇣
-      if (
-        ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)
-      ) {
-        e.preventDefault()
-        e.stopPropagation()
-        const direction = [
-          'ArrowUp',
-          'PageUp',
-          'Home'
-        ].includes(e.key) ? -1 : 1
-
-        const isPagination = withAlt || e.key === 'PageUp' || e.key === 'PageDown'
-        const isJump = withCtrlOrMeta || e.key === 'Home' || e.key === 'End'
-
-        let index = -1
-        // ⇡/⇣ : change focus
-        if (!isPagination && !isJump) {
-          if (focusedIndex === -1) {
-            index = direction === -1 ? items.length - 1 : 0
-          } else {
-            index = listRef.current === document.activeElement
-              ? focusedIndex
-              : (focusedIndex + direction) % items.length
-          }
-          // skip item when it is hided
-          while (hidedIds.length > 0 && hidedIds.includes(items[index]?.id)) {
-            index = (index + direction) % items.length
-          }
-          if (enableSearch) {
-            if (filteredItemsWithIndex.length === 0) return
-            let [
-              filteredItemsFindIndexForTarget,
-              filteredItemsFindIndexForOrigin
-            ] = [-1, -1]
-            for (let i = 0; i < filteredItemsWithIndex.length; i++) {
-              const [_i] = filteredItemsWithIndex[i]
-              if (_i === index) {
-                filteredItemsFindIndexForTarget = i
+        async function pageUpOrDown(direction: 1 | -1, _visibleItems = visibleItems) {
+          const [targetId, el] = _visibleItems[
+            direction === -1 ? 0 : _visibleItems.length - 1
+            ]
+          const tmpIndex = items.findIndex(({ id }) => id === targetId)
+          if (tmpIndex === focusedIndex) {
+            if (listRef.current) {
+              if (direction === -1) {
+                listRef.current.scrollTo({
+                  top: el.offsetTop - listRef.current.offsetHeight + el.offsetHeight + 16,
+                  behavior: 'auto'
+                })
+              } else {
+                listRef.current.scrollTo({
+                  top: el.offsetTop - 8,
+                  behavior: 'auto'
+                })
               }
-              if (_i === focusedIndex) {
-                filteredItemsFindIndexForOrigin = i
-              }
-              if (filteredItemsFindIndexForTarget !== -1 && filteredItemsFindIndexForOrigin !== -1) {
-                break
-              }
-            }
-            if (filteredItemsFindIndexForTarget === -1) {
-              if (filteredItemsFindIndexForOrigin !== -1) {
-                const nIndex = filteredItemsFindIndexForOrigin + direction
-                const [targetIndex] = filteredItemsWithIndex[
-                  nIndex < 0
-                    ? filteredItemsWithIndex.length - 1
-                    : nIndex % filteredItemsWithIndex.length
-                ]
-                index = targetIndex
-              }
+              // TODO performance
+              return pageUpOrDown(direction, computeVisibleItems())
             }
           }
+          return tmpIndex
         }
-        // ⌘ ⇡/⇣ : focus first/last
-        if (isJump) {
-          index = direction === -1 ? 0 : items.length - 1
-        }
-        // ⌥ ⇡/⇣ : focus visible first/last
-        if (isPagination) {
-          index = await pageUpOrDown(direction)
-        }
-        focusItem(index)
-        if (withShift) {
-          // ⇧ ⇡/⇣ : change focus and select
+
+        // ⇱/⇲ : forward to ⌘ ⇡/⇣
+        // ⇞/⇟ : forward to ⌥ ⇡/⇣
+        if (
+          ['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(e.key)
+        ) {
+          e.preventDefault()
+          e.stopPropagation()
+          const direction = [
+            'ArrowUp',
+            'PageUp',
+            'Home'
+          ].includes(e.key) ? -1 : 1
+
+          const isPagination = withAlt || e.key === 'PageUp' || e.key === 'PageDown'
+          const isJump = withCtrlOrMeta || e.key === 'Home' || e.key === 'End'
+
+          let index = -1
+          // ⇡/⇣ : change focus
           if (!isPagination && !isJump) {
-            pushSelectedId(items[index]?.id)
-            pushSelectedId(items[focusedIndex]?.id)
+            if (focusedIndex === -1) {
+              index = direction === -1 ? items.length - 1 : 0
+            } else {
+              index = listRef.current === document.activeElement
+                ? focusedIndex
+                : (focusedIndex + direction) % items.length
+            }
+            // skip item when it is hided
+            while (hidedIds.length > 0 && hidedIds.includes(items[index]?.id)) {
+              index = (index + direction) % items.length
+            }
+            if (enableSearch) {
+              if (filteredItemsWithIndex.length === 0) return
+              let [
+                filteredItemsFindIndexForTarget,
+                filteredItemsFindIndexForOrigin
+              ] = [-1, -1]
+              for (let i = 0; i < filteredItemsWithIndex.length; i++) {
+                const [_i] = filteredItemsWithIndex[i]
+                if (_i === index) {
+                  filteredItemsFindIndexForTarget = i
+                }
+                if (_i === focusedIndex) {
+                  filteredItemsFindIndexForOrigin = i
+                }
+                if (filteredItemsFindIndexForTarget !== -1 && filteredItemsFindIndexForOrigin !== -1) {
+                  break
+                }
+              }
+              if (filteredItemsFindIndexForTarget === -1) {
+                if (filteredItemsFindIndexForOrigin !== -1) {
+                  const nIndex = filteredItemsFindIndexForOrigin + direction
+                  const [targetIndex] = filteredItemsWithIndex[
+                    nIndex < 0
+                      ? filteredItemsWithIndex.length - 1
+                      : nIndex % filteredItemsWithIndex.length
+                    ]
+                  index = targetIndex
+                }
+              }
+            }
+          }
+          // ⌘ ⇡/⇣ : focus first/last
+          if (isJump) {
+            index = direction === -1 ? 0 : items.length - 1
+          }
+          // ⌥ ⇡/⇣ : focus visible first/last
+          if (isPagination) {
+            index = await pageUpOrDown(direction)
+          }
+          focusItem(index)
+          if (withShift) {
+            // ⇧ ⇡/⇣ : change focus and select
+            if (!isPagination && !isJump) {
+              pushSelectedId(items[index]?.id)
+              pushSelectedId(items[focusedIndex]?.id)
+              return
+            }
+            // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
+            // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
+            toggleRangeSelectedId(items[index]?.id)
             return
           }
-          // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
-          // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
-          toggleRangeSelectedId(items[index]?.id)
+        }
+
+        // ⇠/⇢   : [open]|[close]
+        // ⌘ +   : fold selected
+        // ⌘ -   : unfold selected
+        // ⌘ ⇧ + : fold all
+        // ⌘ ⇧ - : unfold all
+        if ([
+          'ArrowLeft',
+          'ArrowRight',
+          '-',
+          '='
+        ].includes(e.key)) {
+          const direction = [
+            'ArrowLeft',
+            '-'
+          ].includes(e.key) ? -1 : 1
+          const isMinusOrEqual = ['-', '='].includes(e.key)
+          if (isMinusOrEqual && !withCtrlOrMeta) return
+
+          if (!withShift) {
+            const item = items[focusedIndex]
+            if (item) {
+              foldId(item.id, direction === -1)
+            }
+          } else {
+            if (isMinusOrEqual) {
+              toggleFoldAll(direction === -1)
+            } else {
+              // TODO
+              //   ⇧ ⇠/⇢ : [open]|[close] and select
+            }
+          }
+          e.preventDefault()
+          e.stopPropagation()
           return
         }
-      }
 
-      // ⇠/⇢   : [open]|[close]
-      // ⌘ +   : fold selected
-      // ⌘ -   : unfold selected
-      // ⌘ ⇧ + : fold all
-      // ⌘ ⇧ - : unfold all
-      if ([
-        'ArrowLeft',
-        'ArrowRight',
-        '-',
-        '='
-      ].includes(e.key)) {
-        const direction = [
-          'ArrowLeft',
-          '-'
-        ].includes(e.key) ? -1 : 1
-        const isMinusOrEqual = ['-', '='].includes(e.key)
-        if (isMinusOrEqual && !withCtrlOrMeta) return
-
-        if (!withShift) {
-          const item = items[focusedIndex]
-          if (item) {
-            foldId(item.id, direction === -1)
-          }
-        } else {
-          if (isMinusOrEqual) {
-            toggleFoldAll(direction === -1)
-          } else {
-            // TODO
-            //   ⇧ ⇠/⇢ : [open]|[close] and select
-          }
+        // ⌘ a : select all
+        if (e.key === 'a' && withCtrlOrMeta && !withShift && !withAlt) {
+          e.preventDefault()
+          e.stopPropagation()
+          // TODO support filtered items select all
+          setSelectedIds(items.map(({ id }) => id))
+          return
         }
-        e.preventDefault()
-        e.stopPropagation()
-        return
-      }
+        // ⌘ r : reveal
+        if (e.key === 'r' && withCtrlOrMeta && !withShift && !withAlt) {
+          e.preventDefault()
+          e.stopPropagation()
+          const el = itemsRef.current[focusedIndex]
+          listRef.current?.scrollTo({
+            top: el.offsetTop - listRef.current.clientHeight * 0.382,
+            behavior: 'smooth'
+          })
+          return
+        }
+        // ⌘ z      : undo
+        // ⌘ v      : change view mode
 
-      // ⌘ a : select all
-      if (e.key === 'a' && withCtrlOrMeta && !withShift && !withAlt) {
-        e.preventDefault()
-        e.stopPropagation()
-        // TODO support filtered items select all
-        setSelectedIds(items.map(({ id }) => id))
-        return
-      }
-      // ⌘ r : reveal
-      if (e.key === 'r' && withCtrlOrMeta && !withShift && !withAlt) {
-        e.preventDefault()
-        e.stopPropagation()
-        const el = itemsRef.current[focusedIndex]
-        listRef.current?.scrollTo({
-          top: el.offsetTop - listRef.current.clientHeight * 0.382,
-          behavior: 'smooth'
-        })
-        return
-      }
-      // ⌘ z      : undo
-      // ⌘ v      : change view mode
+        // ␣ : toggle select, (support quick preview?)
+        if (e.key === ' ' && withoutAll && !enableSearch) {
+          e.preventDefault()
+          e.stopPropagation()
+          toggleSelectedId(items[focusedIndex]?.id)
+          return
+        }
 
-      // ␣ : toggle select, (support quick preview?)
-      if (e.key === ' ' && withoutAll && !enableSearch) {
-        e.preventDefault()
-        e.stopPropagation()
-        toggleSelectedId(items[focusedIndex]?.id)
-        return
-      }
+        // ? : get help
+        if (e.key === '?' && withoutAllNoShift) {
+          e.preventDefault()
+          e.stopPropagation()
+          helpDialogRef.current?.open()
+          return
+        }
 
-      // ⌘ f      : lower find                      |
-      // ⌘ ⇧ f    : higher find                     |
+        // ⌘ f      : lower find                      |
+        // ⌘ ⇧ f    : higher find                     |
         // ⌥ c    : toggle upper/lower ignore case  |
         // ⌥ w    : toggle word match               |
         // ⌥ f    : configure filers                |-- ⎋ : exit find mode
-      // /        : find by regex                   |
-      // ⌘ g      : find by glob expression         |
-      // ⌘ /      : switch start with mode          |
-      // ⌘ %(5)   : switch fuzzy mode               |
+        // /        : find by regex                   |
+        // ⌘ g      : find by glob expression         |
+        // ⌘ /      : switch start with mode          |
+        // ⌘ %(5)   : switch fuzzy mode               |
         // ⌫      : delete last char                |
-      if (e.key === 'f' && withCtrlOrMeta && !withShift && !withAlt) {
-        e.preventDefault()
-        e.stopPropagation()
-        setSearchMode('strict')
-        setKeyword('')
-        return
-      }
-      if (enableSearch) {
-        // ⎋
-        if (e.key === 'Escape' && withoutAll) {
+        if (e.key === 'f' && withCtrlOrMeta && !withShift && !withAlt) {
           e.preventDefault()
           e.stopPropagation()
+          setSearchMode('strict')
           setKeyword('')
+          return
+        }
+        if (enableSearch) {
+          // ⎋
+          if (e.key === 'Escape' && withoutAll) {
+            e.preventDefault()
+            e.stopPropagation()
+            setKeyword('')
+            if (searchMode !== 'fuzzy') {
+              setSearchMode('fuzzy')
+            }
+            return
+          }
+          // ⌫
+          if (e.key === 'Backspace' && withoutAll) {
+            e.preventDefault()
+            e.stopPropagation()
+            setKeyword(keyword => keyword.slice(0, -1))
+            if (keyword.length <= 1) {
+              setKeyword('')
+              if (searchMode !== 'fuzzy') {
+                setSearchMode('fuzzy')
+              }
+            }
+            return
+          }
+          // ⌥ c
+          if (e.key === 'ç') {
+            e.preventDefault()
+            e.stopPropagation()
+            setEnableUpperKeywordsIgnore(e => !e)
+            return
+          }
+          // ⌥ w
+          if (e.key === '∑') {
+            e.preventDefault()
+            e.stopPropagation()
+            setEnableWordMatch(e => !e)
+            return
+          }
+        } else {
+          if (e.key === '/' && withoutAll) {
+            e.preventDefault()
+            e.stopPropagation()
+            setSearchMode('regex')
+            return
+          }
+        }
+        // ⌘ g
+        if (e.key === 'g' && withCtrlOrMeta && !withShift && !withAlt) {
+          e.preventDefault()
+          e.stopPropagation()
+          if (searchMode !== 'glob') {
+            setSearchMode('glob')
+          } else {
+            setSearchMode('fuzzy')
+          }
+          return
+        }
+        // ⌘ /
+        if (e.key === '/' && withCtrlOrMeta && !withShift && !withAlt) {
+          e.preventDefault()
+          e.stopPropagation()
+          if (searchMode !== 'start-with') {
+            setSearchMode('start-with')
+          } else {
+            setSearchMode('fuzzy')
+          }
+          return
+        }
+        // ⌘ %(5)
+        if (e.key === '5' && withCtrlOrMeta && !withShift && !withAlt) {
+          e.preventDefault()
+          e.stopPropagation()
           if (searchMode !== 'fuzzy') {
             setSearchMode('fuzzy')
           }
           return
         }
-        // ⌫
-        if (e.key === 'Backspace' && withoutAll) {
+
+        // any char : fuzzy find
+        if (e.key.length === 1 && withoutAllNoShift) {
           e.preventDefault()
           e.stopPropagation()
-          setKeyword(keyword => keyword.slice(0, -1))
-          if (keyword.length <= 1) {
-            setKeyword('')
-            if (searchMode !== 'fuzzy') {
-              setSearchMode('fuzzy')
-            }
-          }
+          // \/ : find /
+          // \? : find ?
+          setKeyword(keyword => {
+            if (keyword === '\\' && (
+              e.key === '/' ||
+              e.key === '?'
+            )) {
+              return e.key
+            } else
+              return keyword + e.key
+          })
           return
         }
-        // ⌥ c
-        if (e.key === 'ç') {
+
+        // ⎋   : clear selection
+        if (e.key === 'Escape' && withoutAll) {
           e.preventDefault()
           e.stopPropagation()
-          setEnableUpperKeywordsIgnore(e => !e)
+          setSelectedIds([])
           return
         }
-        // ⌥ w
-        if (e.key === '∑') {
-          e.preventDefault()
-          e.stopPropagation()
-          setEnableWordMatch(e => !e)
-          return
-        }
-      } else {
-        if (e.key === '/' && withoutAll) {
-          e.preventDefault()
-          e.stopPropagation()
-          setSearchMode('regex')
-          return
-        }
-      }
-      // ⌘ g
-      if (e.key === 'g' && withCtrlOrMeta && !withShift && !withAlt) {
-        e.preventDefault()
-        e.stopPropagation()
-        if (searchMode !== 'glob') {
-          setSearchMode('glob')
-        } else {
-          setSearchMode('fuzzy')
-        }
-        return
-      }
-      // ⌘ /
-      if (e.key === '/' && withCtrlOrMeta && !withShift && !withAlt) {
-        e.preventDefault()
-        e.stopPropagation()
-        if (searchMode !== 'start-with') {
-          setSearchMode('start-with')
-        } else {
-          setSearchMode('fuzzy')
-        }
-        return
-      }
-      // ⌘ %(5)
-      if (e.key === '5' && withCtrlOrMeta && !withShift && !withAlt) {
-        e.preventDefault()
-        e.stopPropagation()
-        if (searchMode !== 'fuzzy') {
-          setSearchMode('fuzzy')
-        }
-        return
-      }
-
-      // ?        : get help
-
-      // any char : fuzzy find
-      if (e.key.length === 1 && withoutAllNoShift) {
-        e.preventDefault()
-        e.stopPropagation()
-        // \/ : find /
-        // \? : find ?
-        setKeyword(keyword => {
-          if (keyword === '\\' && (
-            e.key === '/' ||
-            e.key === '?'
-          )) {
-            return e.key
-          } else
-            return keyword + e.key
-        })
-        return
-      }
-
-      // ⎋   : clear selection
-      if (e.key === 'Escape' && withoutAll) {
-        e.preventDefault()
-        e.stopPropagation()
-        setSelectedIds([])
-        return
-      }
-      // ⏎   : [select]|[open]
-      // ⌘ ⏎ : [open]|[open in new tab]
-      // ⇥   : focus next
-    }}
-    onScroll={onScroll}
-    >
-    {searchbarPopper.popper}
-    <div className={`${prefix}-wrap`}>
-      {items.map((item, index) => <div
-        ref={el => el && (itemsRef.current[index] = el)}
-        key={item.id}
-        tabIndex={item.disabled ? undefined : 0}
-        data-id={item.id}
-        className={classnames(
-          `${prefix}-item`,
-          selectable && !item.disabled && 'clickable',
-          item.disabled && 'disabled',
-          selectedIds.includes(item.id) && 'selected',
-          hidedIds.includes(item.id) && 'hided'
-        )}
-        style={{
-          // @ts-ignore
-          '--indent-level': item.indent ?? 0
-        }}
-        onClick={e => {
-          e.stopPropagation()
-          if (!selectable || item.disabled) return
-
-          const withCtrlOrMeta = e.ctrlKey || e.metaKey
-          const withShift = e.shiftKey
-          if (!withCtrlOrMeta && !withShift) {
-            setSelectedIds([item.id])
-            return
-          }
-          if (withCtrlOrMeta) {
-            toggleSelectedId(item.id)
-            return
-          }
-
-          toggleRangeSelectedId(item.id)
-        }}
-        onFocus={e => {
-          e.stopPropagation()
-          setFocusedIndex(index)
-        }}
+        // ⏎   : [select]|[open]
+        // ⌘ ⏎ : [open]|[open in new tab]
+        // ⇥   : focus next
+      }}
+      onScroll={onScroll}
       >
-        {(items[index + 1]?.indent ?? 0) > (item?.indent ?? 0)
-          ? <button
-            className={`${prefix}-item__icon cldr codicon codicon-chevron-right`}
-            style={{
-              transform: foldedIds.includes(item.id)
-                ? 'rotate(0deg)'
-                : 'rotate(90deg)'
-            }}
-            onClick={e => {
-              e.stopPropagation()
-              foldId(item.id)
-            }}
-          />
-          : <span className={`${prefix}-item__icon cldr space`} />}
-        {item.icon && typeof item.icon === 'string'
-          ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
-          : item.icon}
-        {item.content
-          ? typeof item.content === 'function'
-            ? item.content(keyword, item)
-            : item.content
-          : <code className={`${prefix}-item__label`}>{labelContentRender(item)}</code>}
-        {item.placeholder && typeof item.placeholder === 'string'
-          ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
-          : item.placeholder}
-      </div>)}
+      <div className={`${prefix}-wrap`}>
+        {items.map((item, index) => <div
+          ref={el => el && (itemsRef.current[index] = el)}
+          key={item.id}
+          tabIndex={item.disabled ? undefined : 0}
+          data-id={item.id}
+          className={classnames(
+            `${prefix}-item`,
+            selectable && !item.disabled && 'clickable',
+            item.disabled && 'disabled',
+            selectedIds.includes(item.id) && 'selected',
+            hidedIds.includes(item.id) && 'hided'
+          )}
+          style={{
+            // @ts-ignore
+            '--indent-level': item.indent ?? 0
+          }}
+          onClick={e => {
+            e.stopPropagation()
+            if (!selectable || item.disabled) return
+
+            const withCtrlOrMeta = e.ctrlKey || e.metaKey
+            const withShift = e.shiftKey
+            if (!withCtrlOrMeta && !withShift) {
+              setSelectedIds([item.id])
+              return
+            }
+            if (withCtrlOrMeta) {
+              toggleSelectedId(item.id)
+              return
+            }
+
+            toggleRangeSelectedId(item.id)
+          }}
+          onFocus={e => {
+            e.stopPropagation()
+            setFocusedIndex(index)
+          }}
+        >
+          {(items[index + 1]?.indent ?? 0) > (item?.indent ?? 0)
+            ? <button
+              className={`${prefix}-item__icon cldr codicon codicon-chevron-right`}
+              style={{
+                transform: foldedIds.includes(item.id)
+                  ? 'rotate(0deg)'
+                  : 'rotate(90deg)'
+              }}
+              onClick={e => {
+                e.stopPropagation()
+                foldId(item.id)
+              }}
+            />
+            : <span className={`${prefix}-item__icon cldr space`} />}
+          {item.icon && typeof item.icon === 'string'
+            ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
+            : item.icon}
+          {item.content
+            ? typeof item.content === 'function'
+              ? item.content(keyword, item)
+              : item.content
+            : <code className={`${prefix}-item__label`}>{labelContentRender(item)}</code>}
+          {item.placeholder && typeof item.placeholder === 'string'
+            ? <code className={`${prefix}-item__placeholder`}>{item.placeholder}</code>
+            : item.placeholder}
+        </div>)}
+      </div>
     </div>
-  </div>
+  </>
 })
 Object.defineProperty(List, 'prefix', {
   value: 'ppd-list',
+  writable: false
+})
+
+const CMD_OR_CTRL = isMacOS
+  ? KeyMapUnicodeEmoji.Command : 'Ctrl'
+const CTRL = isMacOS
+  ? KeyMapUnicodeEmoji.Control : 'Ctrl'
+const SPLITTER = Symbol('SPLITTER')
+
+const HelpDialog = forwardRefWithStatic<{
+  readonly prefix: 'ppd-help-dialog'
+}, DialogRef>((...[, ref]) => {
+  const {
+    prefix
+  } = HelpDialog
+  const sectionPrefix = `${prefix}__section`
+  const keymap = {
+    Base: [
+      ['Display help message dialog', KeyMapUnicodeEmoji.Shift, '/']
+    ],
+    Focus: [
+      ['Up or down 1 item',
+        KeyMapUnicodeEmoji.ArrowUp, SPLITTER,
+        KeyMapUnicodeEmoji.ArrowDown
+      ],
+      ['Up or down 1 page',
+        KeyMapUnicodeEmoji.PageUp, SPLITTER,
+        KeyMapUnicodeEmoji.PageDown, SPLITTER,
+        KeyMapUnicodeEmoji.Option, `${KeyMapUnicodeEmoji.ArrowUp}/${KeyMapUnicodeEmoji.ArrowDown}`
+      ],
+      ['Up or down to first and last',
+        KeyMapUnicodeEmoji.Home, SPLITTER,
+        KeyMapUnicodeEmoji.End, SPLITTER,
+        CMD_OR_CTRL, `${KeyMapUnicodeEmoji.ArrowUp}/${KeyMapUnicodeEmoji.ArrowDown}`
+      ]
+    ],
+    Select: [
+      ['Select all', CMD_OR_CTRL, 'A'],
+      ['Select item', KeyMapUnicodeEmoji.Space],
+      ['Select range',
+        KeyMapUnicodeEmoji.Shift, [
+          `${KeyMapUnicodeEmoji.ArrowUp}/${KeyMapUnicodeEmoji.ArrowDown}`,
+          `${KeyMapUnicodeEmoji.PageUp}/${KeyMapUnicodeEmoji.PageDown}`,
+          `${KeyMapUnicodeEmoji.Home}/${KeyMapUnicodeEmoji.End}`
+        ]
+      ]
+    ],
+    Search: [
+      ['Search item with strict mode', CMD_OR_CTRL, 'F']
+    ]
+  } as Record<string, [description: string, ...keys: (
+    | string
+    | symbol
+    | string[]
+  )[]][]>
+  return <Dialog
+    ref={ref}
+    className={prefix}
+    style={{
+      '--width': '80vw',
+      '--max-height': '80vh'
+    }}
+    >
+    {Object.entries(keymap).map(([title, keymap]) => <div
+      key={title}
+      className={sectionPrefix}
+    >
+      <h3 className={`${sectionPrefix}__title`}>{title}</h3>
+      <div className={`${sectionPrefix}__content`}>
+        {keymap.map(([description, ...keys]) => <div
+          key={description}
+          className={`${sectionPrefix}__content-item`}
+        >
+          <span className={
+            classnames(`${sectionPrefix}__content-item__description`, {
+              'no-key': keys.length === 0
+            })
+          }>{description}</span>
+          <span className={
+            `${sectionPrefix}__content-item__keys`
+          }>
+            {keys.map((key, index) => typeof key === 'symbol'
+              ? <span key={index}
+                      className={`${sectionPrefix}__content-item__keys-splitter`}>|</span>
+              : Array.isArray(key)
+                ? <div key={index}
+                       className={`${sectionPrefix}__content-item__keys-group`}>
+                  {key.map((key, index) => <kbd key={index}>{key}</kbd>)}
+                </div>
+                : <kbd key={index}>{key}</kbd>)}
+          </span>
+        </div>)}
+      </div>
+    </div>)}
+  </Dialog>
+})
+Object.defineProperty(HelpDialog, 'prefix', {
+  value: 'ppd-help-dialog',
   writable: false
 })

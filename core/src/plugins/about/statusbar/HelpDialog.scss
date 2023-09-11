@@ -41,25 +41,4 @@ dialog.ppd-help-dialog {
     display: flex;
     flex-direction: column;
   }
-  kbd {
-    --inner-comp-bg-cr: #fff8;
-    html[theme-mode=dark] & {
-      --inner-comp-bg-cr: #5558;
-    }
-
-    position: relative;
-    display: inline-block;
-    padding: 0 4px;
-    width: 24px;
-
-    font-size: 14px;
-    text-align: center;
-    background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 80%);
-    border-radius: 4px;
-    transition: .1s;
-    &:hover {
-      background-color: color-mix(in srgb, var(--primary), var(--inner-comp-bg-cr) 60%);
-      box-shadow: inset 0 0 4px #0005;
-    }
-  }
 }
