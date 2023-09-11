@@ -65,22 +65,29 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
       ref={containerRef}
       className={`${prefix}__container`}
       onKeyUp={e => {
-        if (e.key === 'Escape') toggle(false)
+        if (!open) return
+        if (e.key === 'Escape') {
+          toggle(false)
+          e.stopPropagation()
+          e.preventDefault()
+          return
+        }
         handleKeyUpOnOpen?.(e, {
           open: () => toggle(true),
           hide: () => toggle(false)
         })
-        e.stopPropagation()
-        e.preventDefault()
       }}
       onKeyDown={e => {
-        binding?.(e) && toggle(true)
+        if (!open) return
+        binding?.(e) && (
+          toggle(true),
+          e.stopPropagation(),
+          e.preventDefault()
+        )
         handleKeyDownOnOpen?.(e, {
           open: () => toggle(true),
           hide: () => toggle(false)
         })
-        e.stopPropagation()
-        e.preventDefault()
       }}
     >
       {title && <div className={`${prefix}__title`}>
