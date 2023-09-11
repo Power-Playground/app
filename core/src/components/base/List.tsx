@@ -270,6 +270,7 @@ export const List = forwardRefWithStatic<{
   const searchbarPopper = usePopper({
     className: `${prefix}-searchbar`,
     placement: 'top-start',
+    focusAbility: false,
     offset: [8, 0],
     arrowVisible: false,
     referenceElement: listRef.current,
