@@ -12,6 +12,7 @@ export const POPPER_PREFIX = 'ppd-popper'
 export interface UsePopperProps {
   referenceElement: HTMLElement | VirtualElement | null
 
+  focusAbility?: boolean
   content: React.ReactNode
   className?: string
   style?: React.CSSProperties
@@ -31,6 +32,7 @@ export const usePopper = (props: UsePopperProps) => {
     content,
     onVisibleChange, onKeydown,
     closeWhenMouseLeave,
+    focusAbility = true,
     placement, offset = [0, 0],
     arrowVisible
   } = props
@@ -71,10 +73,11 @@ export const usePopper = (props: UsePopperProps) => {
       popper.current?.update()
       setTimeout(() => {
         setArrowPlacement(popper.current?.state?.placement ?? 'top')
-        setTimeout(() => popperElement?.focus(), 200)
+        focusAbility
+          && setTimeout(() => popperElement?.focus(), 200)
       }, 100)
     }
-  }, [popperElement, visible])
+  }, [popperElement, visible, focusAbility])
 
   const display = useDebouncedValue(visible, 200)
   const [popoverId] = useState(() => Math.random().toString(36).slice(2))
@@ -89,7 +92,7 @@ export const usePopper = (props: UsePopperProps) => {
     popper: (
       visible ? true : display
     ) && createPortal(<div
-      tabIndex={0}
+      tabIndex={focusAbility ? 0 : undefined}
       ref={setPopperElement}
       className={classnames(POPPER_PREFIX, 'monaco-editor', props.className)}
       data-show={!visible ? false : display}
