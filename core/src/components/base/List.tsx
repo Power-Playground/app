@@ -572,7 +572,7 @@ export const List = forwardRefWithStatic<{
         }
 
         // ? : get help
-        if (e.key === '?' && withoutAllNoShift) {
+        if (e.key === '?' && withoutAllNoShift && keyword.length === 0) {
           e.preventDefault()
           e.stopPropagation()
           helpDialogRef.current?.open()
