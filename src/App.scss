@@ -38,7 +38,7 @@
       filter: drop-shadow(0 0 0 #0000);
       transition: .3s;
       &:hover {
-        filter: drop-shadow(0 0 8px #666);
+        filter: drop-shadow(0 0 4px #000);
       }
       > svg {
         width: 28px;
