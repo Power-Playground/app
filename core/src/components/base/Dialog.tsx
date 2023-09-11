@@ -75,12 +75,6 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
       className={`${prefix}__container`}
       onKeyUp={e => {
         if (!open) return
-        if (e.key === 'Escape') {
-          toggle(false)
-          e.stopPropagation()
-          e.preventDefault()
-          return
-        }
         handleKeyUpOnOpen?.(e, {
           open: () => toggle(true),
           hide: () => toggle(false)
@@ -88,6 +82,12 @@ export const Dialog = forwardRef<DialogRef, DialogProps>(function Dialog({
       }}
       onKeyDown={e => {
         if (!open) return
+        if (e.key === 'Escape') {
+          toggle(false)
+          e.stopPropagation()
+          e.preventDefault()
+          return
+        }
         handleKeyDownOnOpen?.(e, {
           open: () => toggle(true),
           hide: () => toggle(false)
