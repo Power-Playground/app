@@ -1,5 +1,6 @@
 import './List.scss'
 
+import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRetimer } from 'foxact/use-retimer'
 
@@ -794,7 +795,14 @@ const HelpDialog = forwardRefWithStatic<{
   const keymap = {
     Base: [
       ['Display help message dialog', KeyMapUnicodeEmoji.Shift, '/'],
-      ['Search item with fuzzy mode', '\\w']
+      [{
+        label: 'Search item with fuzzy mode',
+        description: <>
+          Press any char to trigger fuzzy mode,
+          but if you want to find <code>/</code> or <code>?</code>,
+          press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd>.
+        </>
+      }, '\\w']
     ],
     Focus: [
       ['Up or down 1 item',
@@ -832,11 +840,16 @@ const HelpDialog = forwardRefWithStatic<{
       ['Toggle word match', KeyMapUnicodeEmoji.Option, 'W'],
       ['Clear search', KeyMapUnicodeEmoji.Escape]
     ]
-  } as Record<string, [description: string, ...keys: (
-    | string
-    | symbol
-    | string[]
-  )[]][]>
+  } as Record<string, [
+    description: string | {
+      label: string,
+      description: ReactNode
+    },
+    ...keys: (
+      | string
+      | symbol
+      | string[]
+    )[]][]>
   return <Dialog
     ref={ref}
     className={prefix}
@@ -851,28 +864,38 @@ const HelpDialog = forwardRefWithStatic<{
     >
       <h3 className={`${sectionPrefix}__title`}>{title}</h3>
       <div className={`${sectionPrefix}__content`}>
-        {keymap.map(([description, ...keys]) => <div
-          key={description}
+        {keymap.map(([description, ...keys], index) => <div
+          key={index}
           className={`${sectionPrefix}__content-item`}
         >
-          <span className={
-            classnames(`${sectionPrefix}__content-item__description`, {
-              'no-key': keys.length === 0
-            })
-          }>{description}</span>
-          <span className={
-            `${sectionPrefix}__content-item__keys`
-          }>
-            {keys.map((key, index) => typeof key === 'symbol'
-              ? <span key={index}
-                      className={`${sectionPrefix}__content-item__keys-splitter`}>|</span>
-              : Array.isArray(key)
-                ? <div key={index}
-                       className={`${sectionPrefix}__content-item__keys-group`}>
-                  {key.map((key, index) => <kbd key={index}>{key}</kbd>)}
-                </div>
-                : <kbd key={index}>{key}</kbd>)}
-          </span>
+          <div className={`${sectionPrefix}__content-item__label-wrap`}>
+            <span className={
+              classnames(`${sectionPrefix}__content-item__label`, {
+                'no-key': keys.length === 0
+              })
+            }>{
+              typeof description === 'string'
+                ? description
+                : description.label
+            }</span>
+            <span className={
+              `${sectionPrefix}__content-item__keys`
+            }>
+              {keys.map((key, index) => typeof key === 'symbol'
+                ? <span key={index}
+                        className={`${sectionPrefix}__content-item__keys-splitter`}>|</span>
+                : Array.isArray(key)
+                  ? <div key={index}
+                         className={`${sectionPrefix}__content-item__keys-group`}>
+                    {key.map((key, index) => <kbd key={index}>{key}</kbd>)}
+                  </div>
+                  : <kbd key={index}>{key}</kbd>)}
+            </span>
+          </div>
+          {typeof description !== 'string' &&
+            <div className={`${sectionPrefix}__content-item__description`}>
+              {description.description}
+            </div>}
         </div>)}
       </div>
     </div>)}
