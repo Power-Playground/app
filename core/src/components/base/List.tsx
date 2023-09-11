@@ -855,7 +855,7 @@ const HelpDialog = forwardRefWithStatic<{
     className={prefix}
     style={{
       '--width': '80vw',
-      '--max-height': '80vh'
+      '--max-height': '40vh'
     }}
     >
     {Object.entries(keymap).map(([title, keymap]) => <div

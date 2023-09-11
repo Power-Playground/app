@@ -230,6 +230,9 @@
   &__section {
     flex-grow: 1;
     width: 0;
+
+    display: flex;
+    flex-direction: column;
   }
   &__section__title {
     margin-top: 10px;
@@ -237,10 +240,11 @@
     font-size: 18px;
   }
   &__section__content {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
 
-    height: 220px;
+    height: 0;
     overflow: overlay;
     &-item {
       display: flex;
@@ -294,6 +298,9 @@
         background-color: var(--bg-cr);
 
         text-align: center;
+        html[theme-mode=dark] & {
+          box-shadow: 0 1px 0 1px #fffc;
+        }
       }
     }
     &-item__keys {
