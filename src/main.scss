@@ -14,6 +14,7 @@ body {
   -webkit-text-size-adjust: 100%;
 
   --primary: #365eb4;
+  --primary-l0: #2963de;
   --match-span-cr: #ff950b;
 
   --primary-hover: #365eb422;
@@ -40,6 +41,7 @@ body {
   --icon-cr: #fff;
   html[theme-mode=dark] & {
     --primary: #263c6e;
+    --primary-l0: #6b88ce;
     --match-span-cr: #e38520;
 
     --primary-hover: #263c6e44;
