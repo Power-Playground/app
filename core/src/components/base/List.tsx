@@ -792,9 +792,27 @@ const HelpDialog = forwardRefWithStatic<{
     prefix
   } = HelpDialog
   const sectionPrefix = `${prefix}__section`
-  const keymap = {
+  const keymap: Record<string, [
+    description: string | {
+      label: string
+      demoImg?: string
+      description?: ReactNode
+    },
+    ...keys: (
+      | string
+      | symbol
+      | string[]
+  )[]][]> = {
     Base: [
-      ['Display help message dialog', KeyMapUnicodeEmoji.Shift, '/'],
+      [{
+        label: 'Display help message dialog',
+        demoImg: import.meta.glob('../../assets/CleanShot 2023-09-11 at 17.34.41.gif', {
+          as: 'url',
+          eager: true
+        })[
+          '../../assets/CleanShot 2023-09-11 at 17.34.41.gif'
+        ]
+      }, KeyMapUnicodeEmoji.Shift, '/'],
       [{
         label: 'Search item with fuzzy mode',
         description: <>
@@ -840,31 +858,37 @@ const HelpDialog = forwardRefWithStatic<{
       ['Toggle word match', KeyMapUnicodeEmoji.Option, 'W'],
       ['Clear search', KeyMapUnicodeEmoji.Escape]
     ]
-  } as Record<string, [
-    description: string | {
-      label: string,
-      description: ReactNode
-    },
-    ...keys: (
-      | string
-      | symbol
-      | string[]
-    )[]][]>
+  }
 
+  const [hoverItem, setHoverItem] = useState<
+    (typeof keymap)[string][number][0]
+  >()
   const [affixElement, setAffixElement] = useState<HTMLDivElement | null>(null)
   const demo = usePopper({
-    className: `${prefix}__demo`,
+    className: classnames(
+      `${prefix}__demo`,
+      typeof hoverItem === 'object' && `${prefix}__demo--is-object`
+    ),
     placement: 'top-start',
     focusAbility: false,
-    offset: [8, 0],
+    offset: [0, 0],
     referenceElement: affixElement,
-    content: <>这是一个测试</>
+    content: typeof hoverItem === 'object' ? <>
+      {hoverItem.demoImg
+        && <img src={hoverItem.demoImg} alt={hoverItem.label} />}
+      <div className={`${prefix}__demo__label`}>
+        {hoverItem.label}
+      </div>
+      {hoverItem.description && <div className={`${prefix}__demo__description`}>
+        {hoverItem.description}
+      </div>}
+    </> : hoverItem
   })
   return <Dialog
     ref={ref}
     className={prefix}
     style={{
-      '--width': '80vw',
+      '--width': '90vw',
       '--max-height': '40vh'
     }}
     >
@@ -884,9 +908,10 @@ const HelpDialog = forwardRefWithStatic<{
               (e.target as HTMLElement)
                 .closest(`.${sectionPrefix}__content-item`) as HTMLDivElement
             )
+            setHoverItem(description)
           }}
           onMouseLeave={() => {
-            demo.changeVisible(false)
+            // demo.changeVisible(false)
           }}
         >
           <div className={`${sectionPrefix}__content-item__label-wrap`}>
