@@ -24,7 +24,7 @@ dialog.ppd-dialog {
   &[open] {
     pointer-events: unset;
     visibility: unset;
-    background-color: #00000020;
+    background-color: #0000000a;
     html[theme-mode=dark] & {
       background-color: #00000040;
     }
@@ -49,13 +49,13 @@ dialog.ppd-dialog {
     background-color: var(--bg-cr-o0);
     border: 1px solid var(--border-color);
     backdrop-filter: blur(12px);
-    box-shadow: 0 0 32px #2224;
+    box-shadow: 0 0 16px #2224;
 
     overflow: overlay;
     transition: .5s;
     &:focus-visible {
       outline: none;
-      box-shadow: 0 20px 32px #2224;
+      box-shadow: 0 20px 32px #2222;
     }
     > .ppd-dialog__title {
       display: flex;
