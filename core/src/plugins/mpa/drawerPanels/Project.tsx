@@ -6,6 +6,8 @@ import { List } from '../../../components/base/List'
 import type { DrawerPanel } from '../../../components/drawerPanelCreator'
 import { NotImplemented } from '../../../components/NotImplemented'
 
+const prefix = 'ppd-drawer-panel--project'
+
 export default {
   id: 'project',
   icon: 'project',
@@ -35,41 +37,29 @@ export default {
   content: <List
     selectable
     items={[
-      { icon: 'file',
+      {
+        icon: 'file',
         id: 'index.ts',
         label: 'index.ts',
-        placeholder: '[entry] very longerrrrrrrrrrrrrrrrrrrrrr placeholder' },
-      { icon: 'beaker',
-        id: 'index.spec.ts',
-        label: 'index.spec.ts',
-        placeholder: '[entry] test' },
-      { icon: 'file',
-        id: 'tsconfig.json',
-        label: 'tsconfig.json' },
-      { icon: 'file',
-        id: '?unknown',
-        label: '?unknown' },
-      { icon: 'file',
-        id: '/start with slash',
-        label: '/start with slash' },
-      { icon: 'file',
-        id: '0',
-        label: 'foo bar.js' },
-      { icon: 'file',
-        id: '1',
-        label: 'foobar.js' },
-      { icon: 'file',
-        id: '2',
-        label: 'bar.js' },
-      ...[...Array(100)].map((_, i) => ({
-        icon: i % 3 !== 2 ? 'folder' : 'file',
-        id: `item-${i}`,
-        label: `Item ${i}`,
-
-        indent: i % 3 === 0 ? 0 : i % 3 === 1 ? 1 : 2
-      })),
-      { icon: 'folder-library',
+        placeholder: '[entry]'
+      },
+      {
+        icon: 'file',
+        id: 'index.js',
+        label: 'index.js',
+        indent: 1
+      },
+      {
+        icon: 'file',
+        id: 'index.d.ts',
+        label: 'index.d.ts',
+        indent: 1
+      },
+      {
+        icon: 'folder-library',
         id: 'node_modules',
-        label: 'node_modules' }
+        label: 'node_modules',
+        className: prefix + '--dir-type__external'
+      }
     ]} />
 } as DrawerPanel

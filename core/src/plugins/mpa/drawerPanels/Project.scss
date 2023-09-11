@@ -7,4 +7,17 @@
       height: calc(100% - 16px);
     }
   }
+  &--dir-type__external {
+    &::before {
+      content: '';
+
+      position: absolute;
+      top: -2px;
+      bottom: -2px;
+      left: -10px;
+      right: -10px;
+
+      background: rgba(250, 171, 52, 0.33);
+    }
+  }
 }

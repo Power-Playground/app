@@ -22,6 +22,9 @@ export interface ListItem {
   placeholder?: string | React.ReactNode
 
   disabled?: boolean
+
+  className?: string
+  style?: React.CSSProperties
 }
 export interface ListProps {
   selectable?: boolean
@@ -716,11 +719,13 @@ export const List = forwardRefWithStatic<{
             selectable && !item.disabled && 'clickable',
             item.disabled && 'disabled',
             selectedIds.includes(item.id) && 'selected',
-            hidedIds.includes(item.id) && 'hided'
+            hidedIds.includes(item.id) && 'hided',
+            item.className
           )}
           style={{
             // @ts-ignore
-            '--indent-level': item.indent ?? 0
+            '--indent-level': item.indent ?? 0,
+            ...item.style
           }}
           onClick={e => {
             e.stopPropagation()
