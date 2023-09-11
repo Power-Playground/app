@@ -860,7 +860,7 @@ const HelpDialog = forwardRefWithStatic<{
         </>
       }, '\\w']
     ],
-    Focus: [
+    Control: [
       ['Up or down 1 item',
         KeyMapUnicodeEmoji.ArrowUp, SPLITTER,
         KeyMapUnicodeEmoji.ArrowDown
@@ -874,9 +874,7 @@ const HelpDialog = forwardRefWithStatic<{
         KeyMapUnicodeEmoji.Home, SPLITTER,
         KeyMapUnicodeEmoji.End, SPLITTER,
         CMD_OR_CTRL, `${KeyMapUnicodeEmoji.ArrowUp}/${KeyMapUnicodeEmoji.ArrowDown}`
-      ]
-    ],
-    Control: [
+      ],
       ['Toggle item select state', KeyMapUnicodeEmoji.Space],
       ['Select range',
         KeyMapUnicodeEmoji.Shift, [
