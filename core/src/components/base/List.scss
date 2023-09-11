@@ -212,13 +212,24 @@
 }
 
 .ppd-help-dialog {
-  @at-root dialog#{&} .ppd-dialog__content {
-    display: flex;
-    flex-direction: row;
-    gap: 16px;
+  @at-root dialog#{&} {
+    & > .ppd-dialog__container {
+      top: unset;
+      bottom: -100%;
+    }
+    &[open] > .ppd-dialog__container {
+      top: unset;
+      bottom: -5%;
+    }
+    .ppd-dialog__content {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+    }
   }
   &__section {
     flex-grow: 1;
+    width: 0;
   }
   &__section__title {
     margin-top: 10px;
