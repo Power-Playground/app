@@ -26,23 +26,29 @@
     -webkit-mask: url(./ts_light.svg) center no-repeat;
     mask: url(./ts_light.svg) center no-repeat;
     &:hover, &.active {
-      background-color: #ff8100;
+      -webkit-mask: url(./ts_light_active.svg) center no-repeat;
+      mask: url(./ts_light_active.svg) center no-repeat;
+      background-color: #ff9a00;
     }
   }
   > .dark {
     -webkit-mask: url(./ts_dark.svg) center no-repeat;
     mask: url(./ts_dark.svg) center no-repeat;
     &:hover, &.active {
+      -webkit-mask: url(./ts_dark_active.svg) center no-repeat;
+      mask: url(./ts_dark_active.svg) center no-repeat;
       background-color: yellow;
     }
   }
   > .auto {
-    -webkit-mask: url(./ts_auto.svg) center no-repeat;
-    mask: url(./ts_auto.svg) center no-repeat;
+    background-color: unset;
+    background-image: url(./ts_auto.svg);
+    background-size: 28px;
+    filter: invert(.8);
+    opacity: .8;
     &:hover, &.active {
-      -webkit-mask: url(./ts_auto_active.svg) center no-repeat;
-      mask: url(./ts_auto_active.svg) center no-repeat;
-      background-color: var(--primary-l0);
+      background-image: url(./ts_auto_active.svg);
+      filter: invert(1);
     }
   }
 }
