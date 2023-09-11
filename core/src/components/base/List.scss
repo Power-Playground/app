@@ -233,6 +233,7 @@
   }
   &__section__title {
     margin-top: 10px;
+    padding-left: 6px;
     font-size: 18px;
   }
   &__section__content {
@@ -243,9 +244,19 @@
       align-items: center;
 
       padding: 6px 8px;
+
+      opacity: .6;
       border-bottom: 1px solid var(--fr-cr-placholder);
 
       font-size: 15px;
+
+      transition: .1s;
+      &:last-child {
+        border-bottom: none;
+      }
+      &:hover {
+        opacity: 1;
+      }
     }
     &-item__description {
       flex-grow: 1;
@@ -279,7 +290,7 @@
         box-shadow: 0 1px 0 1px #0003;
         background-color: var(--bg-cr);
 
-        transition: .05s;
+        transition: .1s;
         &:hover {
           box-shadow: 0 1px 0 0 #0005;
         }
