@@ -227,6 +227,13 @@
       gap: 16px;
     }
   }
+  &__demo {
+    width: 50vh;
+    height: 30vh;
+    background-color: var(--bg-cr-o0) !important;
+    backdrop-filter: blur(12px);
+    pointer-events: none;
+  }
   &__section {
     flex-grow: 1;
     width: 0;

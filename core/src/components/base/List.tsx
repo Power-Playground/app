@@ -71,7 +71,7 @@ const EMPTY_LIST_ITEMS: ListItem[] = []
 
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
-}, ListRef, ListProps>((props) => {
+}, ListRef, ListProps>((props, ref) => {
   const {
     selectable = false
   } = props
@@ -850,6 +850,16 @@ const HelpDialog = forwardRefWithStatic<{
       | symbol
       | string[]
     )[]][]>
+
+  const [affixElement, setAffixElement] = useState<HTMLDivElement | null>(null)
+  const demo = usePopper({
+    className: `${prefix}__demo`,
+    placement: 'top-start',
+    focusAbility: false,
+    offset: [8, 0],
+    referenceElement: affixElement,
+    content: <>这是一个测试</>
+  })
   return <Dialog
     ref={ref}
     className={prefix}
@@ -858,6 +868,7 @@ const HelpDialog = forwardRefWithStatic<{
       '--max-height': '40vh'
     }}
     >
+    {demo.popper}
     {Object.entries(keymap).map(([title, keymap]) => <div
       key={title}
       className={sectionPrefix}
@@ -867,6 +878,16 @@ const HelpDialog = forwardRefWithStatic<{
         {keymap.map(([description, ...keys], index) => <div
           key={index}
           className={`${sectionPrefix}__content-item`}
+          onMouseEnter={e => {
+            demo.changeVisible(true)
+            setAffixElement(
+              (e.target as HTMLElement)
+                .closest(`.${sectionPrefix}__content-item`) as HTMLDivElement
+            )
+          }}
+          onMouseLeave={() => {
+            demo.changeVisible(false)
+          }}
         >
           <div className={`${sectionPrefix}__content-item__label-wrap`}>
             <span className={
