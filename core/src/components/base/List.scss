@@ -303,7 +303,7 @@
   }
   &__section__title {
     margin: 10px 0;
-    padding-left: 6px;
+    padding-left: 8px;
     font-size: 18px;
   }
   &__section__content {
@@ -318,9 +318,12 @@
       align-items: flex-start;
       flex-direction: column;
 
-      padding: 6px 8px;
+      padding: 10px 8px;
 
       opacity: .6;
+      html[theme-mode=dark] & {
+        opacity: .8;
+      }
       border-bottom: 1px solid var(--fr-cr-placholder);
 
       font-size: 15px;
