@@ -793,7 +793,8 @@ const HelpDialog = forwardRefWithStatic<{
   const sectionPrefix = `${prefix}__section`
   const keymap = {
     Base: [
-      ['Display help message dialog', KeyMapUnicodeEmoji.Shift, '/']
+      ['Display help message dialog', KeyMapUnicodeEmoji.Shift, '/'],
+      ['Search item with fuzzy mode', '\\w']
     ],
     Focus: [
       ['Up or down 1 item',
@@ -823,7 +824,13 @@ const HelpDialog = forwardRefWithStatic<{
       ]
     ],
     Search: [
-      ['Search item with strict mode', CMD_OR_CTRL, 'F']
+      ['Search item with strict mode', CMD_OR_CTRL, 'F'],
+      ['Search item with regex mode', '/'],
+      ['Search item with glob mode', CMD_OR_CTRL, 'G'],
+      ['Search item with start with mode', CMD_OR_CTRL, '/'],
+      ['Toggle upper/lower ignore case', KeyMapUnicodeEmoji.Option, 'C'],
+      ['Toggle word match', KeyMapUnicodeEmoji.Option, 'W'],
+      ['Clear search', KeyMapUnicodeEmoji.Escape]
     ]
   } as Record<string, [description: string, ...keys: (
     | string
