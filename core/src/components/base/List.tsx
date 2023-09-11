@@ -799,9 +799,9 @@ const HelpDialog = forwardRefWithStatic<{
       description?: ReactNode
     },
     ...keys: (
-      | string
-      | symbol
-      | string[]
+    | string
+    | symbol
+    | string[]
   )[]][]> = {
     Base: [
       [{
@@ -884,6 +884,12 @@ const HelpDialog = forwardRefWithStatic<{
       </div>}
     </> : hoverItem
   })
+  const toggleDemoPopperRetimer = useRetimer()
+  const toggleDemoPopper = useCallback((visible: boolean) => {
+    toggleDemoPopperRetimer(setTimeout(() => {
+      demo.changeVisible(visible)
+    }, 1000) as unknown as number)
+  }, [toggleDemoPopperRetimer, demo])
   return <Dialog
     ref={ref}
     className={prefix}
@@ -903,16 +909,16 @@ const HelpDialog = forwardRefWithStatic<{
           key={index}
           className={`${sectionPrefix}__content-item`}
           onMouseEnter={e => {
-            demo.changeVisible(true)
+            demo.visible
+              ? toggleDemoPopper(true)
+              : demo.changeVisible(true)
             setAffixElement(
               (e.target as HTMLElement)
                 .closest(`.${sectionPrefix}__content-item`) as HTMLDivElement
             )
             setHoverItem(description)
           }}
-          onMouseLeave={() => {
-            // demo.changeVisible(false)
-          }}
+          onMouseLeave={() => toggleDemoPopper(false)}
         >
           <div className={`${sectionPrefix}__content-item__label-wrap`}>
             <span className={
