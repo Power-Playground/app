@@ -11,21 +11,20 @@ dialog.ppd-dialog {
   width: 100vw;
   height: 100vh;
 
-  background-color: #0001;
+  background-color: #00000000;
   outline: none;
   border: none;
 
   transition: .3s;
   & {
     display: block;
-    opacity: 0;
     pointer-events: none;
     visibility: hidden;
   }
   &[open] {
-    opacity: 1;
     pointer-events: unset;
     visibility: unset;
+    background-color: #00000020;
     > .ppd-dialog__container {
       top: 50%;
     }
@@ -35,7 +34,7 @@ dialog.ppd-dialog {
     flex-direction: column;
 
     position: absolute;
-    top: 100%;
+    top: 150%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: var(--width);
