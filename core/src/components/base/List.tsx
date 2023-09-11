@@ -861,7 +861,13 @@ const HelpDialog = forwardRefWithStatic<{
       }, '\\w']
     ],
     Control: [
-      ['Up or down 1 item',
+      [
+        {
+          label: 'Move focus index up or down 1 item',
+          description: 'When you\'re in search mode, ' +
+            'if the target location doesn\'t exist in the filtered results, ' +
+            'it will jump to the next matching result\'s position.'
+        },
         KeyMapUnicodeEmoji.ArrowUp, SPLITTER,
         KeyMapUnicodeEmoji.ArrowDown
       ],
