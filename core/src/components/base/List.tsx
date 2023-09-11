@@ -785,6 +785,19 @@ const CTRL = isMacOS
   ? KeyMapUnicodeEmoji.Control : 'Ctrl'
 const SPLITTER = Symbol('SPLITTER')
 
+type KeymapSection = [
+  description: string | {
+    label: string
+    demoImg?: string
+    description?: ReactNode
+  },
+  ...keys: (
+    | string
+    | symbol
+    | string[]
+  )[]
+][]
+
 const HelpDialog = forwardRefWithStatic<{
   readonly prefix: 'ppd-help-dialog'
 }, DialogRef>((...[, ref]) => {
@@ -792,17 +805,7 @@ const HelpDialog = forwardRefWithStatic<{
     prefix
   } = HelpDialog
   const sectionPrefix = `${prefix}__section`
-  const keymap: Record<string, [
-    description: string | {
-      label: string
-      demoImg?: string
-      description?: ReactNode
-    },
-    ...keys: (
-    | string
-    | symbol
-    | string[]
-  )[]][]> = {
+  const keymap: Record<string, KeymapSection> = {
     Base: [
       [{
         label: 'Display help message dialog',
@@ -860,9 +863,7 @@ const HelpDialog = forwardRefWithStatic<{
     ]
   }
 
-  const [hoverItem, setHoverItem] = useState<
-    (typeof keymap)[string][number][0]
-  >()
+  const [hoverItem, setHoverItem] = useState<KeymapSection[number][0]>()
   const [affixElement, setAffixElement] = useState<HTMLDivElement | null>(null)
   const demo = usePopper({
     className: classnames(
