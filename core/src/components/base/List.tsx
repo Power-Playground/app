@@ -886,6 +886,7 @@ const HelpDialog = forwardRefWithStatic<{
     content: typeof hoverItem === 'object' ? <>
       {(() => {
         const gif = helpDialogGifs[`${hoverItem.label}${theme === 'dark' ? '.dark' : ''}`]
+          ?? helpDialogGifs[hoverItem.label]
         if (gif) {
           return <img src={gif} alt={hoverItem.label} />
         }
