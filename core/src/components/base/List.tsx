@@ -876,24 +876,27 @@ const HelpDialog = forwardRefWithStatic<{
         CMD_OR_CTRL, `${KeyMapUnicodeEmoji.ArrowUp}/${KeyMapUnicodeEmoji.ArrowDown}`
       ]
     ],
-    Select: [
-      ['Select all', CMD_OR_CTRL, 'A'],
-      ['Select item', KeyMapUnicodeEmoji.Space],
+    Control: [
+      ['Toggle item select state', KeyMapUnicodeEmoji.Space],
       ['Select range',
         KeyMapUnicodeEmoji.Shift, [
           `${KeyMapUnicodeEmoji.ArrowUp}/${KeyMapUnicodeEmoji.ArrowDown}`,
           `${KeyMapUnicodeEmoji.PageUp}/${KeyMapUnicodeEmoji.PageDown}`,
           `${KeyMapUnicodeEmoji.Home}/${KeyMapUnicodeEmoji.End}`
         ]
-      ]
+      ],
+      ['Select all', CMD_OR_CTRL, 'A'],
+      ['Clear selection', KeyMapUnicodeEmoji.Escape],
+      ['Toggle selected item fold state', CMD_OR_CTRL, '-/='],
+      ['Toggle all items fold state', CMD_OR_CTRL, KeyMapUnicodeEmoji.Shift, '-/=']
     ],
     Search: [
       ['Search item with strict mode', CMD_OR_CTRL, 'F'],
       ['Search item with regex mode', '/'],
       ['Search item with glob mode', CMD_OR_CTRL, 'G'],
       ['Search item with start with mode', CMD_OR_CTRL, '/'],
-      ['Toggle upper/lower ignore case', KeyMapUnicodeEmoji.Option, 'C'],
-      ['Toggle word match', KeyMapUnicodeEmoji.Option, 'W'],
+      ['> Toggle upper/lower ignore case', KeyMapUnicodeEmoji.Option, 'C'],
+      ['> Toggle word match', KeyMapUnicodeEmoji.Option, 'W'],
       ['Clear search', KeyMapUnicodeEmoji.Escape]
     ]
   }
