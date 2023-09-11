@@ -814,6 +814,10 @@ const HelpDialog = forwardRefWithStatic<{
     prefix
   } = HelpDialog
   const sectionPrefix = `${prefix}__section`
+
+  const [theme, setTheme] = useState<string>('light')
+  useEffect(() => onThemeChange(setTheme), [])
+
   const keymap: Record<string, KeymapSection> = {
     Base: [
       [{
@@ -882,8 +886,12 @@ const HelpDialog = forwardRefWithStatic<{
     offset: [0, 0],
     referenceElement: affixElement,
     content: typeof hoverItem === 'object' ? <>
-      {hoverItem.demoImg
-        && <img src={hoverItem.demoImg} alt={hoverItem.label} />}
+      {(() => {
+        const gif = helpDialogGifs[`${hoverItem.label}${theme === 'dark' ? '.dark' : ''}`]
+        if (gif) {
+          return <img src={gif} alt={hoverItem.label} />
+        }
+      })()}
       <div className={`${prefix}__demo__label`}>
         {hoverItem.label}
       </div>

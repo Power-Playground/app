@@ -261,7 +261,7 @@
   &__demo {
     display: flex;
     flex-direction: column;
-    max-width: 540px;
+    max-width: 576px;
 
     overflow: hidden !important;
     pointer-events: none;
@@ -273,7 +273,7 @@
     }
     > img {
       width: 100%;
-      height: 356px;
+      height: 360px;
       object-fit: contain;
       border-bottom: 1px solid var(--border-color);
     }
