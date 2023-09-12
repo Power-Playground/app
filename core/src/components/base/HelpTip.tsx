@@ -190,10 +190,7 @@ export const HelpTip = forwardRefWithStatic<{
             })
           }}
         >
-          <span className={classnames('cldr codicon', {
-            'codicon-pin': !pinned,
-            'codicon-pinned': pinned
-          })} />
+          <span className='cldr codicon codicon-pin' />
         </button>
       </span>
       <button onClick={() => {
@@ -201,8 +198,8 @@ export const HelpTip = forwardRefWithStatic<{
         prevMillionSeconds.current = stopMillionSeconds.current = Date.now()
         durationMillionSeconds.current = 0
       }}>
-        Next tip
         <span className='cldr codicon codicon-fold-up' />
+        Next tip
       </button>
     </div>
   </div> : null

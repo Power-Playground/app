@@ -72,9 +72,12 @@
     button {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
       padding: 4px;
 
+      max-width: 22px;
+      overflow: hidden;
+      white-space: nowrap;
       border: none;
       border-radius: 2px;
       background-color: transparent;
@@ -82,16 +85,18 @@
 
       cursor: pointer;
       user-select: none;
-      transition: .1s;
+      transition: .2s;
       &:hover {
+        max-width: 100px;
         color: var(--fr-cr);
-        background-color: var(--primary-active);
+        background-color: var(--primary-hover);
       }
     }
     .cldr.codicon {
       width: 12px;
       height: 12px;
       line-height: 12px;
+      transition: .1s;
     }
     .codicon:before {
       display: block;
@@ -99,6 +104,15 @@
     }
     .codicon.codicon-fold-up {
       transform: rotate(90deg);
+    }
+  }
+  &--pinned &__opts {
+    // TODO support firefox?
+    button:has(.codicon-pin) {
+      background-color: var(--primary-active);
+    }
+    .codicon.codicon-pin {
+      transform: rotate(-45deg);
     }
   }
 }
