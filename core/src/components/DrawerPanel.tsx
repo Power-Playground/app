@@ -69,7 +69,11 @@ export function DrawerPanel() {
     >
     {memoActivePanel && <>
       <div className={`${prefix}__header`}>
-        <div className={`${prefix}__header__title`}>
+        <div
+          ref={e => e?.focus()}
+          tabIndex={0}
+          className={`${prefix}__header__title`}
+        >
           <h3>
             {typeof memoActivePanel?.icon === 'string'
               ? <span className={`cldr codicon codicon-${memoActivePanel.icon}`}></span>
