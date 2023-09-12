@@ -49,7 +49,7 @@ export function HelpTip(props: HelpTipProps) {
         localStorage.setItem(`${storageKey}--isDisplay`, newIsDisplay.toString())
       }
     }
-  }, [])
+  }, [storageKey])
   const [pinned, setPinned] = useState(() => {
     if (storageKey) {
       const pinned = localStorage.getItem(`${storageKey}--pinned`)
