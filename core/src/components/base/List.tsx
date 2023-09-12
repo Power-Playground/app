@@ -695,7 +695,7 @@ export const List = forwardRefWithStatic<{
           return
         }
 
-        // ⎋   : clear selection
+        // ⎋ : clear selection
         if (e.key === 'Escape' && withoutAll) {
           if (selectedIds.length === 0) return
           e.preventDefault()
