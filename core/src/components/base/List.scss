@@ -1,3 +1,37 @@
+@mixin codeAndKBD {
+  code {
+    font-weight: bold;
+    padding: 0 4px;
+    margin-right: 2px;
+    border-radius: 4px;
+    border: 1px solid var(--fr-cr-placholder);
+    background-color: var(--bg-cr);
+  }
+  kbd {
+    display: inline-block;
+    width: 16px;
+
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 1px #0003;
+    background-color: var(--bg-cr);
+
+    color: var(--fr-cr);
+    text-align: center;
+    html[theme-mode=dark] & {
+      box-shadow: 0 1px 0 1px #fffc;
+    }
+  }
+}
+@mixin description {
+  &__description {
+    margin-top: 5px;
+    font-size: 12px;
+    padding-bottom: 2px;
+    color: var(--fr-cr-placholder);
+    @include codeAndKBD;
+  }
+}
 .ppd-list {
   --indent-size: 20px;
 
@@ -209,39 +243,93 @@
       color: var(--fr-cr-placholder);
     }
   }
-}
+  &-tip {
+    container: tips-container /inline-size;
+    position: relative;
 
-@mixin description {
-  &__description {
-    margin-top: 5px;
-    font-size: 12px;
-    padding-bottom: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 200px;
+    padding: 0 50px;
     color: var(--fr-cr-placholder);
-    code {
-      font-weight: bold;
-      padding: 0 4px;
-      margin-right: 2px;
-      border-radius: 4px;
-      border: 1px solid var(--fr-cr-placholder);
-      background-color: var(--bg-cr);
+
+    @include codeAndKBD;
+    @keyframes short {
+      0% {
+        width: 100%;
+      }
+      40% {
+        width: 100%;
+      }
+      98% {
+        width: 0;
+      }
+      100% {
+        width: 100%;
+      }
     }
-    kbd {
-      display: inline-block;
-      width: 16px;
+    &:hover &__opts::after {
+      animation-play-state: paused;
+    }
+    &__content {
+      height: 100px;
+    }
+    &__opts {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
 
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      box-shadow: 0 1px 0 1px #0003;
-      background-color: var(--bg-cr);
+      padding-top: 5px;
+      padding-bottom: 10px;
+      width: 100%;
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 2px;
+        background-color: var(--primary-active-border);
 
-      text-align: center;
-      html[theme-mode=dark] & {
-        box-shadow: 0 1px 0 1px #fffc;
+        animation: short 5s linear infinite;
+      }
+      button {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0;
+
+        border: none;
+        background-color: transparent;
+        color: var(--fr-cr-placholder);
+
+        cursor: pointer;
+        user-select: none;
+        transition: .1s;
+        &:hover {
+          color: var(--primary);
+        }
+      }
+      .cldr.codicon {
+        width: 12px;
+        height: 12px;
+        line-height: 12px;
+      }
+      .codicon:before {
+        display: block;
+        font-size: 12px;
+      }
+      .codicon.codicon-fold-up {
+        transform: rotate(90deg);
       }
     }
   }
 }
-
 .ppd-help-dialog {
   @at-root dialog#{&} {
     & > .ppd-dialog__container {
