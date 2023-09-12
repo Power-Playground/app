@@ -1,7 +1,7 @@
 import './HelpTip.scss'
 
 import type { ReactNode } from 'react'
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { classnames } from '../../utils'
 
@@ -21,14 +21,44 @@ export function HelpTip(props: HelpTipProps) {
     tips
   } = props
   const ref = useRef<HTMLDivElement>(null)
+  const getAHelpTipForThis = useMemo(() => getAHelpTip.bind(null, tips), [tips])
   const [pinned, setPinned] = useState(false)
-  const [helpTip, setHelpTip] = useState<IHelpTip | undefined>(getAHelpTip.bind(null, tips))
+  const [helpTip, setHelpTip] = useState<IHelpTip | undefined>(getAHelpTipForThis)
+  const resetAnimation = useCallback(() => {
+    const opts = ref.current!.querySelector<HTMLDivElement>(`.${prefix}__opts__line`)!
+    opts.style.animation = 'none'
+    // noinspection BadExpressionStatementJS
+    opts.offsetHeight
+    opts.style.animation = ''
+  }, [prefix])
+  const updateHelpTip = useCallback(() => {
+    resetAnimation()
+    setHelpTip(prev => getAHelpTipForThis(prev))
+  }, [resetAnimation, getAHelpTipForThis])
+  const timer = useRef<number>()
+  const setTimer = useCallback(() => {
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
+      setHelpTip(prev => getAHelpTipForThis(prev))
+    }, 5000) as unknown as number
+  }, [getAHelpTipForThis])
+  useEffect(() => {
+    if (helpTip) setTimer()
+    return () => clearTimeout(timer.current)
+  }, [helpTip, setTimer])
 
   return helpTip ? <div
     ref={ref}
     className={classnames(prefix, {
       [`${prefix}--pinned`]: pinned
     })}
+    onMouseEnter={() => {
+      clearTimeout(timer.current)
+      resetAnimation()
+    }}
+    onMouseLeave={() => {
+      if (!pinned) setTimer()
+    }}
     >
     <span className={`${prefix}__content`}>
       {helpTip[0]}
@@ -52,14 +82,7 @@ export function HelpTip(props: HelpTipProps) {
           })} />
         </button>
       </span>
-      <button onClick={() => {
-        const opts = ref.current!.querySelector<HTMLDivElement>(`.${prefix}__opts__line`)!
-        opts.style.animation = 'none'
-        // noinspection BadExpressionStatementJS
-        opts.offsetHeight
-        opts.style.animation = ''
-        setHelpTip(prev => getAHelpTip(tips, prev))
-      }}>
+      <button onClick={updateHelpTip}>
         Next tip
         <span className='cldr codicon codicon-fold-up' />
       </button>
