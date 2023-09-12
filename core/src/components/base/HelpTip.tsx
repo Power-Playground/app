@@ -36,11 +36,14 @@ export function HelpTip(props: HelpTipProps) {
     setHelpTip(prev => getAHelpTipForThis(prev))
   }, [resetAnimation, getAHelpTipForThis])
   const timer = useRef<number>()
-  const setTimer = useCallback(() => {
+  const prevMillionSeconds = useRef<number>()
+  const stopMillionSeconds = useRef<number>()
+  const setTimer = useCallback((time = 5000) => {
     clearTimeout(timer.current)
+    prevMillionSeconds.current = Date.now()
     timer.current = setTimeout(() => {
       setHelpTip(prev => getAHelpTipForThis(prev))
-    }, 5000) as unknown as number
+    }, time) as unknown as number
   }, [getAHelpTipForThis])
   useEffect(() => {
     if (helpTip) setTimer()
@@ -54,10 +57,18 @@ export function HelpTip(props: HelpTipProps) {
     })}
     onMouseEnter={() => {
       clearTimeout(timer.current)
-      resetAnimation()
+      stopMillionSeconds.current = Date.now()
     }}
     onMouseLeave={() => {
-      if (!pinned) setTimer()
+      if (
+        !pinned
+        && stopMillionSeconds.current
+        && prevMillionSeconds.current
+      ) {
+        setTimer(
+          5000 - (stopMillionSeconds.current - prevMillionSeconds.current)
+        )
+      }
     }}
     >
     <span className={`${prefix}__content`}>
