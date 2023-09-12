@@ -1,3 +1,5 @@
+import './ListHelpDialog.scss'
+
 import type { ReactNode } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRetimer } from 'foxact/use-retimer'
