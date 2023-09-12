@@ -33,16 +33,19 @@ export function HelpTip(props: HelpTipProps) {
   }, [prefix])
   const updateHelpTip = useCallback(() => {
     resetAnimation()
+    clearTimeout(timer.current)
     setHelpTip(prev => getAHelpTipForThis(prev))
   }, [resetAnimation, getAHelpTipForThis])
   const timer = useRef<number>()
   const prevMillionSeconds = useRef<number>()
   const stopMillionSeconds = useRef<number>()
-  const setTimer = useCallback((time = 5000) => {
+  const durationMillionSeconds = useRef<number>()
+  const setTimer = useCallback((time = 4800) => {
     clearTimeout(timer.current)
     prevMillionSeconds.current = Date.now()
     timer.current = setTimeout(() => {
       setHelpTip(prev => getAHelpTipForThis(prev))
+      durationMillionSeconds.current = 0
     }, time) as unknown as number
   }, [getAHelpTipForThis])
   useEffect(() => {
@@ -65,9 +68,11 @@ export function HelpTip(props: HelpTipProps) {
         && stopMillionSeconds.current
         && prevMillionSeconds.current
       ) {
-        setTimer(
-          5000 - (stopMillionSeconds.current - prevMillionSeconds.current)
-        )
+        durationMillionSeconds.current =
+          (durationMillionSeconds.current ?? 0) +
+          (stopMillionSeconds.current - prevMillionSeconds.current)
+
+        setTimer(5000 - durationMillionSeconds.current)
       }
     }}
     >
@@ -93,7 +98,11 @@ export function HelpTip(props: HelpTipProps) {
           })} />
         </button>
       </span>
-      <button onClick={updateHelpTip}>
+      <button onClick={() => {
+        updateHelpTip()
+        prevMillionSeconds.current = stopMillionSeconds.current = Date.now()
+        durationMillionSeconds.current = 0
+      }}>
         Next tip
         <span className='cldr codicon codicon-fold-up' />
       </button>
