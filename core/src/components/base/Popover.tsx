@@ -117,10 +117,10 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
           changeVisible(true)
         }
       }}
-      onBlur={event => {
+      onBlur={e => {
         if (props.tabIndex !== undefined) {
-          if (event.relatedTarget instanceof HTMLElement) {
-            if (event.relatedTarget.closest(
+          if (e.relatedTarget instanceof HTMLElement) {
+            if (e.relatedTarget.closest(
               `.${POPPER_PREFIX}, .${prefix}-reference`
             )) return
           }
