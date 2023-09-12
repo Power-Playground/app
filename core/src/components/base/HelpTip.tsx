@@ -42,7 +42,6 @@ export const HelpTip = forwardRefWithStatic<{
     return true
   })
   const changeIsDisplay = useCallback<typeof setIsDisplay>(newIsDisplay => {
-    console.log('changeIsDisplay', newIsDisplay)
     if (typeof newIsDisplay === 'function') {
       setIsDisplay(prevIsDisplay => {
         const nIsDisplay = newIsDisplay(prevIsDisplay)
