@@ -49,9 +49,16 @@ export function HelpTip(props: HelpTipProps) {
     }, time) as unknown as number
   }, [getAHelpTipForThis])
   useEffect(() => {
-    if (helpTip) setTimer()
-    return () => clearTimeout(timer.current)
-  }, [helpTip, setTimer])
+    if (helpTip) {
+      prevMillionSeconds.current = stopMillionSeconds.current = Date.now()
+      durationMillionSeconds.current = 0
+      setTimer()
+    }
+    return () => {
+      resetAnimation()
+      clearTimeout(timer.current)
+    }
+  }, [helpTip, resetAnimation, setTimer])
 
   return helpTip ? <div
     ref={ref}
