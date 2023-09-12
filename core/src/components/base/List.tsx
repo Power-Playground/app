@@ -833,8 +833,9 @@ const HelpDialog = forwardRefWithStatic<{
         label: 'Search item with fuzzy mode',
         description: <>
           Press any char to trigger fuzzy mode,
-          but if you want to find <code>/</code> or <code>?</code>,
+          but if you want to find <code>/</code> or <code>?</code>,&nbsp;
           <span
+            style={{ textDecoration: 'underline', color: 'var(--primary)' }}
             onMouseEnter={e => {
               e.stopPropagation()
               demo.visible
@@ -858,7 +859,7 @@ const HelpDialog = forwardRefWithStatic<{
               }
             }}
             >
-            &nbsp;press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd> .
+            press <kbd>\</kbd> first, then press <kbd>/</kbd> or <kbd>?</kbd> .
           </span>
           <br />
           <code>\w</code> means you can enter any character to trigger the list search mode.
