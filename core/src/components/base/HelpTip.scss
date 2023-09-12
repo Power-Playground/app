@@ -11,6 +11,8 @@
 
   margin-top: 200px;
   padding: 0 50px;
+  min-height: 100px;
+
   color: var(--fr-cr-placholder);
 
   @include codeAndKBD;
@@ -28,11 +30,17 @@
       width: 100%;
     }
   }
-  &:hover &__opts::after {
+  &:not(&--pinned) &__opts__line {
+    animation: short 5s linear infinite;
+  }
+  &:hover &__opts__line {
     animation-play-state: paused;
   }
   &__content {
-    height: 100px;
+    flex-grow: 1;
+
+    transition: .3s;
+    &:hover { color: var(--fr-cr) }
   }
   &__opts {
     position: relative;
@@ -44,16 +52,13 @@
     padding-top: 5px;
     padding-bottom: 10px;
     width: 100%;
-    &::after {
-      content: "";
+    &__line {
       position: absolute;
       bottom: 0;
       right: 0;
       width: 100%;
       height: 2px;
       background-color: var(--primary-active-border);
-
-      animation: short 5s linear infinite;
     }
 
     &__btns {
