@@ -1,9 +1,11 @@
 import './HelpTip.scss'
 
 import type { ReactNode } from 'react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 
 import { classnames } from '../../utils'
+
+import { forwardRefWithStatic } from './forwardRefWithStatic'
 
 export type IHelpTip = [node: ReactNode, probability: number]
 
@@ -12,8 +14,13 @@ export interface HelpTipProps {
   storageKey?: string
 }
 
-HelpTip.prefix = 'ppd-help-tip'
-export function HelpTip(props: HelpTipProps) {
+export interface HelpTipRef {
+  display: () => void
+}
+
+export const HelpTip = forwardRefWithStatic<{
+  prefix: string
+}, HelpTipRef, HelpTipProps>((props, _ref) => {
   const {
     prefix
   } = HelpTip
@@ -21,7 +28,7 @@ export function HelpTip(props: HelpTipProps) {
     tips,
     storageKey
   } = props
-  const ref = useRef<HTMLDivElement>(null)
+  const ele = useRef<HTMLDivElement>(null)
   const getAHelpTipForThis = useMemo(() => getAHelpTip.bind(null, tips), [tips])
   const [isDisplay, setIsDisplay] = useState(() => {
     if (storageKey) {
@@ -35,6 +42,7 @@ export function HelpTip(props: HelpTipProps) {
     return true
   })
   const changeIsDisplay = useCallback<typeof setIsDisplay>(newIsDisplay => {
+    console.log('changeIsDisplay', newIsDisplay)
     if (typeof newIsDisplay === 'function') {
       setIsDisplay(prevIsDisplay => {
         const nIsDisplay = newIsDisplay(prevIsDisplay)
@@ -79,7 +87,7 @@ export function HelpTip(props: HelpTipProps) {
   }, [storageKey])
   const [helpTip, setHelpTip] = useState<IHelpTip | undefined>(getAHelpTipForThis)
   const resetAnimation = useCallback(() => {
-    const opts = ref.current?.querySelector<HTMLDivElement>(`.${prefix}__opts__line`)
+    const opts = ele.current?.querySelector<HTMLDivElement>(`.${prefix}__opts__line`)
     if (opts) {
       opts.style.animation = 'none'
       // noinspection BadExpressionStatementJS
@@ -118,8 +126,14 @@ export function HelpTip(props: HelpTipProps) {
     }
   }, [helpTip, resetAnimation, setTimer])
 
+  useImperativeHandle(_ref, () => ({
+    display: () => {
+      changeIsDisplay(true)
+      updateHelpTip()
+    }
+  }), [changeIsDisplay, updateHelpTip])
   return helpTip && isDisplay ? <div
-    ref={ref}
+    ref={ele}
     className={classnames(prefix, {
       [`${prefix}--pinned`]: pinned
     })}
@@ -193,7 +207,11 @@ export function HelpTip(props: HelpTipProps) {
       </button>
     </div>
   </div> : null
-}
+})
+Object.defineProperty(HelpTip, 'prefix', {
+  value: 'ppd-help-tip',
+  writable: false
+})
 
 function getAHelpTip(tips: IHelpTip[], prevTip?: IHelpTip) {
   const realTips = tips.filter(tip => tip !== prevTip)

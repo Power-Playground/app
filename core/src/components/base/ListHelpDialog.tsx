@@ -120,7 +120,11 @@ export const HelpDialog = forwardRefWithStatic<{
           <br />
           <code>\w</code> means you can enter any character to trigger the list search mode.
         </>
-      }, '\\w']
+      }, '\\w'],
+      [{
+        label: 'Display tooltip',
+        description: 'Display some useful tooltip in the list empty area.'
+      }, KeyMapUnicodeEmoji.Command, 'T']
     ],
     Control: [
       [

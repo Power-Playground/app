@@ -8,7 +8,7 @@ import { classnames, isMacOS } from '../../utils'
 
 import type { DialogRef } from './Dialog'
 import { forwardRefWithStatic } from './forwardRefWithStatic'
-import type { IHelpTip } from './HelpTip'
+import type { HelpTipRef, IHelpTip } from './HelpTip'
 import { HelpTip } from './HelpTip'
 import { HelpDialog } from './ListHelpDialog'
 
@@ -81,6 +81,7 @@ export const List = forwardRefWithStatic<{
   } = props
 
   const helpDialogRef = useRef<DialogRef>(null)
+  const helpTipRef = useRef<HelpTipRef>(null)
 
   const listRef = useRef<HTMLDivElement>(null)
   const itemsRef = useRef<HTMLDivElement[]>([])
@@ -560,6 +561,13 @@ export const List = forwardRefWithStatic<{
           })
           return
         }
+        // ⌘ t : open tooltip when enter fullscreen
+        if (e.key === 't' && withCtrlOrMeta && !withShift && !withAlt) {
+          e.preventDefault()
+          e.stopPropagation()
+          helpTipRef.current?.display()
+          return
+        }
         // ⌘ z      : undo
         // ⌘ v      : change view mode
 
@@ -775,6 +783,7 @@ export const List = forwardRefWithStatic<{
         </div>)}
       </div>
       <HelpTip
+        ref={helpTipRef}
         tips={LIST_HELP_TIPS}
         storageKey='list'
       />
