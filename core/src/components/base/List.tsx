@@ -1,6 +1,5 @@
 import './List.scss'
 
-import type { ReactNode } from 'react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRetimer } from 'foxact/use-retimer'
 
@@ -9,6 +8,8 @@ import { classnames, isMacOS } from '../../utils'
 
 import type { DialogRef } from './Dialog'
 import { forwardRefWithStatic } from './forwardRefWithStatic'
+import type { IHelpTip } from './HelpTip'
+import { HelpTip } from './HelpTip'
 import { HelpDialog } from './ListHelpDialog'
 
 export interface ListItem {
@@ -40,6 +41,23 @@ function inVisibleArea(el: HTMLElement, container: HTMLElement) {
   return elRect.top >= containerRect.top
     && elRect.bottom <= containerRect.bottom
 }
+
+const LIST_HELP_TIPS: IHelpTip[] = [
+  /* eslint-disable react/jsx-key */
+  [
+    <>Did you know? After focusing on the list, pressing <kbd>?</kbd> ( <kbd>⇧</kbd> <kbd>/</kbd> ) can display help information.</>,
+    50
+  ],
+  [
+    <>Having trouble finding the file you want among too many files? Try focusing on this area and typing characters to search for it.</>,
+    10
+  ],
+  [
+    <>Glob is a powerful way to search for files. Try it! We support <code>*</code>, <code>**</code>, <code>?</code> and <code>␣</code> .</>,
+    10
+  ]
+  /* eslint-enable react/jsx-key */
+]
 
 const EMPTY_LIST_ITEMS: ListItem[] = []
 
@@ -350,7 +368,6 @@ export const List = forwardRefWithStatic<{
       return acc
     }, [] as [index: number, item: ListItem][])
   }, [enableSearch, items, labelMatcher])
-  const [helpTip, setHelpTip] = useState<HelpTip | undefined>(getAHelpTip.bind(null, LIST_HELP_TIPS))
   // noinspection GrazieInspection,StructuralWrap
   return <>
     {searchbarPopper.popper}
@@ -749,35 +766,7 @@ export const List = forwardRefWithStatic<{
             : item.placeholder}
         </div>)}
       </div>
-      {helpTip && <div className={`${prefix}-tip`}>
-        <span className={`${prefix}-tip__content`}>
-          {helpTip[0]}
-        </span>
-        <div className={`${prefix}-tip__opts`}>
-          <span style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 5
-          }}>
-            <button
-              title='Hide tip'
-              onClick={() => setHelpTip(undefined)}
-            >
-              <span className='cldr codicon codicon-close' />
-            </button>
-            <button
-              title='Pin tip'
-              onClick={() => setHelpTip(undefined)}
-            >
-              <span className='cldr codicon codicon-pin' />
-            </button>
-          </span>
-          <button onClick={() => setHelpTip(prev => getAHelpTip(LIST_HELP_TIPS, prev))}>
-            Next tip
-            <span className='cldr codicon codicon-fold-up' />
-          </button>
-        </div>
-      </div>}
+      <HelpTip tips={LIST_HELP_TIPS} />
     </div>
   </>
 })
@@ -785,36 +774,3 @@ Object.defineProperty(List, 'prefix', {
   value: 'ppd-list',
   writable: false
 })
-
-type HelpTip = [node: ReactNode, probability: number]
-
-const LIST_HELP_TIPS: HelpTip[] = [
-  /* eslint-disable react/jsx-key */
-  [
-    <>Did you know? After focusing on the list, pressing <kbd>?</kbd> ( <kbd>⇧</kbd> <kbd>/</kbd> ) can display help information.</>,
-    50
-  ],
-  [
-    <>Having trouble finding the file you want among too many files? Try focusing on this area and typing characters to search for it.</>,
-    10
-  ],
-  [
-    <>Glob is a powerful way to search for files. Try it! We support <code>*</code>, <code>**</code>, <code>?</code> and <code>␣</code> .</>,
-    10
-  ]
-  /* eslint-enable react/jsx-key */
-]
-function getAHelpTip(tips: HelpTip[], prevTip?: HelpTip) {
-  const realTips = tips.filter(tip => tip !== prevTip)
-  const probabilitySum = realTips
-    .filter(([_, probability]) => probability > 0)
-    .reduce((acc, [_, probability]) => acc + probability, 0)
-  const randomNum = Math.random() * probabilitySum
-  let sum = 0
-  for (const [, value] of Object.entries(realTips)) {
-    sum += value[1]
-    if (randomNum < sum) {
-      return value
-    }
-  }
-}
