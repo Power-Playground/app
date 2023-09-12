@@ -73,9 +73,10 @@
       display: flex;
       align-items: center;
       gap: 5px;
-      padding: 0;
+      padding: 4px;
 
       border: none;
+      border-radius: 2px;
       background-color: transparent;
       color: var(--fr-cr-placholder);
 
@@ -83,7 +84,8 @@
       user-select: none;
       transition: .1s;
       &:hover {
-        color: var(--primary);
+        color: var(--fr-cr);
+        background-color: var(--primary-active);
       }
     }
     .cldr.codicon {

@@ -18,18 +18,47 @@ export function HelpTip(props: HelpTipProps) {
     prefix
   } = HelpTip
   const {
-    tips
+    tips,
+    storageKey
   } = props
   const ref = useRef<HTMLDivElement>(null)
   const getAHelpTipForThis = useMemo(() => getAHelpTip.bind(null, tips), [tips])
-  const [pinned, setPinned] = useState(false)
+  const [pinned, setPinned] = useState(() => {
+    if (storageKey) {
+      const pinned = localStorage.getItem(`${storageKey}--pinned`)
+      if (pinned === 'true') {
+        return true
+      } else if (pinned === 'false') {
+        return false
+      }
+    }
+    return false
+  })
+  const changePinned = useCallback<typeof setPinned>(newPinned => {
+    if (typeof newPinned === 'function') {
+      setPinned(prevIsPinned => {
+        const nPinned = newPinned(prevIsPinned)
+        if (storageKey) {
+          localStorage.setItem(`${storageKey}--pinned`, nPinned.toString())
+        }
+        return nPinned
+      })
+    } else {
+      setPinned(newPinned)
+      if (storageKey) {
+        localStorage.setItem(`${storageKey}--pinned`, newPinned.toString())
+      }
+    }
+  }, [storageKey])
   const [helpTip, setHelpTip] = useState<IHelpTip | undefined>(getAHelpTipForThis)
   const resetAnimation = useCallback(() => {
-    const opts = ref.current!.querySelector<HTMLDivElement>(`.${prefix}__opts__line`)!
-    opts.style.animation = 'none'
-    // noinspection BadExpressionStatementJS
-    opts.offsetHeight
-    opts.style.animation = ''
+    const opts = ref.current?.querySelector<HTMLDivElement>(`.${prefix}__opts__line`)
+    if (opts) {
+      opts.style.animation = 'none'
+      // noinspection BadExpressionStatementJS
+      opts.offsetHeight
+      opts.style.animation = ''
+    }
   }, [prefix])
   const updateHelpTip = useCallback(() => {
     resetAnimation()
@@ -93,12 +122,18 @@ export function HelpTip(props: HelpTipProps) {
           title='Hide tip'
           onClick={() => setHelpTip(undefined)}
         >
+          <span className='cldr codicon codicon-remove' />
+        </button>
+        <button
+          title='Hide forever'
+          onClick={() => setHelpTip(undefined)}
+        >
           <span className='cldr codicon codicon-close' />
         </button>
         <button
           title={pinned ? 'Unpin tip' : 'Pin tip'}
           onClick={() => {
-            setPinned(prevIsPinned => {
+            changePinned(prevIsPinned => {
               if (prevIsPinned) {
                 prevMillionSeconds.current = stopMillionSeconds.current = Date.now()
                 durationMillionSeconds.current = 0

@@ -774,7 +774,10 @@ export const List = forwardRefWithStatic<{
             : item.placeholder}
         </div>)}
       </div>
-      <HelpTip tips={LIST_HELP_TIPS} />
+      <HelpTip
+        tips={LIST_HELP_TIPS}
+        storageKey='list'
+      />
     </div>
   </>
 })
