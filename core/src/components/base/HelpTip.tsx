@@ -23,6 +23,33 @@ export function HelpTip(props: HelpTipProps) {
   } = props
   const ref = useRef<HTMLDivElement>(null)
   const getAHelpTipForThis = useMemo(() => getAHelpTip.bind(null, tips), [tips])
+  const [isDisplay, setIsDisplay] = useState(() => {
+    if (storageKey) {
+      const isDisplay = localStorage.getItem(`${storageKey}--isDisplay`)
+      if (isDisplay === 'true') {
+        return true
+      } else if (isDisplay === 'false') {
+        return false
+      }
+    }
+    return true
+  })
+  const changeIsDisplay = useCallback<typeof setIsDisplay>(newIsDisplay => {
+    if (typeof newIsDisplay === 'function') {
+      setIsDisplay(prevIsDisplay => {
+        const nIsDisplay = newIsDisplay(prevIsDisplay)
+        if (storageKey) {
+          localStorage.setItem(`${storageKey}--isDisplay`, nIsDisplay.toString())
+        }
+        return nIsDisplay
+      })
+    } else {
+      setIsDisplay(newIsDisplay)
+      if (storageKey) {
+        localStorage.setItem(`${storageKey}--isDisplay`, newIsDisplay.toString())
+      }
+    }
+  }, [])
   const [pinned, setPinned] = useState(() => {
     if (storageKey) {
       const pinned = localStorage.getItem(`${storageKey}--pinned`)
@@ -91,7 +118,7 @@ export function HelpTip(props: HelpTipProps) {
     }
   }, [helpTip, resetAnimation, setTimer])
 
-  return helpTip ? <div
+  return helpTip && isDisplay ? <div
     ref={ref}
     className={classnames(prefix, {
       [`${prefix}--pinned`]: pinned
@@ -128,7 +155,10 @@ export function HelpTip(props: HelpTipProps) {
         </button>
         <button
           title='Hide forever'
-          onClick={() => setHelpTip(undefined)}
+          onClick={() => {
+            changeIsDisplay(false)
+            setHelpTip(undefined)
+          }}
         >
           <span className='cldr codicon codicon-close' />
         </button>
