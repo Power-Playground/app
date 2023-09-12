@@ -55,6 +55,14 @@ const LIST_HELP_TIPS: IHelpTip[] = [
   [
     <>Glob is a powerful way to search for files. Try it! We support <code>*</code>, <code>**</code>, <code>?</code> and <code>␣</code> .</>,
     10
+  ],
+  [
+    <>
+      You can use <kbd>⌘</kbd> <kbd>f</kbd> to switch to strict mode,
+      <kbd>⌘</kbd> <kbd>g</kbd> to switch to glob mode,
+      and <kbd>⌘</kbd> <kbd>/</kbd> to switch to start with mode.
+    </>,
+    10
   ]
   /* eslint-enable react/jsx-key */
 ]
