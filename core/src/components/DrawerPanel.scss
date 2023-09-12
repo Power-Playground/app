@@ -93,7 +93,10 @@
     min-width: 0;
     max-width: 0;
   }
-  .ppd-editor-zone__menu-switch:not(.is-active) ~ &.centered > &__header {
+  .ppd-editor-zone__menu-switch:not(.is-active) ~ &:not(.centered) {
+    left: 0;
+  }
+  .ppd-editor-zone__menu-switch:not(.is-active) ~ & > &__header {
     padding-left: 28px;
   }
 
