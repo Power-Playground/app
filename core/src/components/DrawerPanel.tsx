@@ -35,7 +35,7 @@ export function DrawerPanel() {
 
   useEffect(() => {
     if (activePanel?.id) {
-      panelRef.current?.focus()
+      setTimeout(() => panelRef.current?.focus(), 10)
     }
   }, [activePanel?.id])
   const debouncedActivePanel = useDebouncedValue(activePanel, DrawerPanel.delay)
@@ -69,11 +69,7 @@ export function DrawerPanel() {
     >
     {memoActivePanel && <>
       <div className={`${prefix}__header`}>
-        <div
-          ref={e => e?.focus()}
-          tabIndex={0}
-          className={`${prefix}__header__title`}
-        >
+        <div className={`${prefix}__header__title`}>
           <h3>
             {typeof memoActivePanel?.icon === 'string'
               ? <span className={`cldr codicon codicon-${memoActivePanel.icon}`}></span>
