@@ -70,13 +70,15 @@ export function HelpTip(props: HelpTipProps) {
   const stopMillionSeconds = useRef<number>()
   const durationMillionSeconds = useRef<number>()
   const setTimer = useCallback((time = 5000) => {
+    if (pinned) return
+
     clearTimeout(timer.current)
     prevMillionSeconds.current = Date.now()
     timer.current = setTimeout(() => {
       setHelpTip(prev => getAHelpTipForThis(prev))
       durationMillionSeconds.current = 0
     }, time) as unknown as number
-  }, [getAHelpTipForThis])
+  }, [getAHelpTipForThis, pinned])
   useEffect(() => {
     if (helpTip) {
       prevMillionSeconds.current = stopMillionSeconds.current = Date.now()
