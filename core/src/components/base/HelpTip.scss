@@ -34,7 +34,7 @@
     }
   }
   &:not(&--pinned) &__opts__line {
-    animation: short 5s linear infinite;
+    animation: short 5.1s linear infinite;
   }
   &:hover &__opts__line {
     animation-play-state: paused;

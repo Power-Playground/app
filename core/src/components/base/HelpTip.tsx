@@ -40,7 +40,7 @@ export function HelpTip(props: HelpTipProps) {
   const prevMillionSeconds = useRef<number>()
   const stopMillionSeconds = useRef<number>()
   const durationMillionSeconds = useRef<number>()
-  const setTimer = useCallback((time = 4800) => {
+  const setTimer = useCallback((time = 5000) => {
     clearTimeout(timer.current)
     prevMillionSeconds.current = Date.now()
     timer.current = setTimeout(() => {
@@ -90,7 +90,18 @@ export function HelpTip(props: HelpTipProps) {
         </button>
         <button
           title={pinned ? 'Unpin tip' : 'Pin tip'}
-          onClick={() => setPinned(prev => !prev)}
+          onClick={() => {
+            setPinned(prevIsPinned => {
+              if (prevIsPinned) {
+                prevMillionSeconds.current = stopMillionSeconds.current = Date.now()
+                durationMillionSeconds.current = 0
+                setTimer()
+              } else {
+                clearTimeout(timer.current)
+              }
+              return !prevIsPinned
+            })
+          }}
         >
           <span className={classnames('cldr codicon', {
             'codicon-pin': !pinned,
