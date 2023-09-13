@@ -1,3 +1,7 @@
+import './menuDemo.scss'
+
 export default function MenuDemo () {
-  return <>Menu Demo</>
+  return <>
+    <button>Menu Demo</button>
+  </>
 }
