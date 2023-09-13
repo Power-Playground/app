@@ -88,6 +88,20 @@
   width: 100%;
   height: 100%;
 
+  background-size: 150% 150%;
+  background-image: linear-gradient(120deg,
+          #a1c4fd,
+          #c2e9fb,
+          #fefdfc
+  );
+  html[theme-mode=dark] & {
+    background-image: linear-gradient(120deg,
+            #8999D1,
+            #6E8DCA,
+            #4264BC
+    );
+  }
+
   transition: .2s;
   > main {
     position: absolute;
@@ -97,7 +111,11 @@
 
     min-width: 300px;
     padding: 10px;
-    filter: drop-shadow(0 0 8px #00000037);
+    filter: drop-shadow(0 5px 8px #00000037);
+    transition: .2s;
+    html[theme-mode=dark] & {
+      filter: drop-shadow(0 10px 20px #00000078);
+    }
   }
   > .menu {
     display: flex;

@@ -1,7 +1,7 @@
 #root .components-demo[data-pathname=dev\/list] {
-  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+  background-position: 0 0;
   > main {
-    background-color: white;
+    background-color: var(--bg-cr);
     border-radius: 4px;
     > .ppd-list {
       padding: 10px;
