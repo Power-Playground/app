@@ -5,7 +5,7 @@ import './App.scss'
 
 import './init'
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import type { Plugin } from '@power-playground/core'
 import {
   classnames,
@@ -182,9 +182,12 @@ export function App() {
     if (!Child) {
       content = <>404</>
     } else {
-      content = <div className='components-demo'>
-        <main className={pathname}>
-          <Child />
+      content = <div className='components-demo'
+                     data-pathname={pathname}>
+        <main>
+          <Suspense fallback={<>Loading...</>}>
+            <Child />
+          </Suspense>
         </main>
         <div className='menu'>
           {Array.from(devRoutesMap.keys()).map(key => <a
