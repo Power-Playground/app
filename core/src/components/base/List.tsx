@@ -524,6 +524,9 @@ export const List = forwardRefWithStatic<{
           const isMinusOrEqual = ['-', '='].includes(e.key)
           if (isMinusOrEqual && !withCtrlOrMeta) return
 
+          // TODO support change focus
+          //  to lower indent item and unfold when press arrow right
+          //  to upper indent item and fold when press arrow left
           if (!withShift) {
             const item = items[focusedIndex]
             if (item) {
