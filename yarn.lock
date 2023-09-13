@@ -897,6 +897,11 @@
     "@babel/plugin-transform-react-jsx-source" "^7.22.5"
     react-refresh "^0.14.0"
 
+"@vscode/codicons@^0.0.33":
+  version "0.0.33"
+  resolved "https://registry.npmjs.org/@vscode/codicons/-/codicons-0.0.33.tgz#a56243ab5492801fff04e53c0aab0d18a6521751"
+  integrity sha512-VdgpnD75swH9hpXjd34VBgQ2w2quK63WljodlUcOoJDPKiV+rPjHrcUc2sjLCNKxhl6oKqmsZgwOWcDAY2GKKQ==
+
 "@xn-sakina/rml-darwin-arm64@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@xn-sakina/rml-darwin-arm64/-/rml-darwin-arm64-1.0.0.tgz#876f0af8bf5be4b46381874f746cec7607a29448"

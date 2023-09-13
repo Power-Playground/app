@@ -95,8 +95,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
 
-    width: 60vw;
-    height: 40vh;
+    min-width: 300px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 8px 32px #00000037;
   }
   > .menu {
     display: flex;
@@ -113,6 +116,7 @@
     border-radius: 8px;
     background-color: var(--bg-cr-o0);
     backdrop-filter: blur(12px);
+    box-shadow: 0 5px 16px #00000020;
     transition: .3s;
     > .menu-item {
       display: flex;

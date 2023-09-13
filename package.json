@@ -34,6 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react": "^4.0.4",
+    "@vscode/codicons": "^0.0.33",
     "dotenv": "^16.3.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react": "^7.32.2",

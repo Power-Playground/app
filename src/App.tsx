@@ -183,7 +183,9 @@ export function App() {
       content = <>404</>
     } else {
       content = <div className='components-demo'>
-        <main><Child /></main>
+        <main className={pathname}>
+          <Child />
+        </main>
         <div className='menu'>
           {Array.from(devRoutesMap.keys()).map(key => <a
             key={key}
