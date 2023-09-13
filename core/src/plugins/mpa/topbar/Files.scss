@@ -1,0 +1,65 @@
+.mpa__topbar__files {
+  order: -1000;
+  flex-grow: 1;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  &-tab {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+
+    padding: 6px 10px;
+    height: 100%;
+    border-right: 1px solid var(--border-color);
+
+    user-select: none;
+    transition: .1s;
+    &::after {
+      content: '';
+      position: absolute;
+
+      bottom: -2px;
+      left: -1px;
+
+      width: calc(100% + 2px);
+      height: 3px;
+
+      transition: .1s;
+    }
+    &:first-child {
+      border-left: 1px solid var(--border-color);
+    }
+    &:hover {
+      background-color: var(--primary-hover);
+    }
+    &.active {
+      background-color: var(--primary-active);
+      &::after {
+        background-color: var(--primary);
+      }
+    }
+    &.active, &:hover {
+      .cldr.codicon.codicon-close {
+        opacity: 1;
+      }
+    }
+    .cldr.codicon.codicon-close {
+      opacity: 0;
+
+      cursor: pointer;
+      transition: .1s;
+      &:hover {
+        border-radius: 4px;
+        background-color: var(--primary);
+      }
+    }
+  }
+  &-full {
+    flex-grow: 1;
+  }
+}

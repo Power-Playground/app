@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+
   padding: 44px 5px 5px;
   width: 36px;
   background-image: linear-gradient(
@@ -11,7 +12,7 @@
       color-mix(in srgb, var(--primary), var(--bg-cr) 40%) 80%,
       color-mix(in srgb, var(--primary), var(--bg-cr) 80%)
   );
-  box-shadow: 2px 0 16px #3338;
+
   overflow: hidden;
   transition: .1s;
   html[theme-mode="dark"] & {
@@ -65,5 +66,8 @@
     > img {
       border-radius: 4px;
     }
+  }
+  &:has(~ .ppd-drawer-panel--active) {
+    border-right: 1px solid var(--border-color);
   }
 }
