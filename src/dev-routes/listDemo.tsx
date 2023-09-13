@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import '@vscode/codicons/dist/codicon.css'
+import './listDemo.scss'
 
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { List } from '../../core/src/components/base/List'
@@ -10,21 +11,17 @@ export default function ListDemo () {
     items={[
       {
         icon: 'file',
-        id: 'index.ts',
-        label: 'index.ts',
+        id: 'item0',
+        label: 'item0',
         placeholder: '[entry]'
       },
       {
-        icon: 'file',
-        id: 'index.js',
-        label: 'index.js',
-        indent: 1
+        id: 'item1',
+        label: 'item1'
       },
       {
-        icon: 'file',
-        id: 'index.d.ts',
-        label: 'index.d.ts',
-        indent: 1
+        id: 'item2',
+        label: 'item2'
       }
     ]}
   />
