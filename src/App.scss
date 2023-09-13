@@ -80,3 +80,63 @@
     border: none;
   }
 }
+
+#root .components-demo {
+  position: relative;
+  display: flex;
+
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+
+  > main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 60vw;
+    height: 40vh;
+  }
+  > .menu {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: absolute;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 40vw;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: var(--bg-cr-o0);
+    backdrop-filter: blur(12px);
+    transition: .3s;
+    > .menu-item {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      width: 180px;
+      height: 48px;
+      border-radius: 8px;
+
+      color: var(--fr-cr);
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+
+      cursor: pointer;
+      transition: .3s;
+      &:hover {
+        background-color: var(--primary-hover);
+      }
+      &.active {
+        color: var(--primary-active-fc);
+        background-color: var(--primary-active);
+      }
+    }
+  }
+}

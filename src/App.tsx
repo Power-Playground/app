@@ -5,7 +5,7 @@ import './App.scss'
 
 import './init'
 
-import { useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Plugin } from '@power-playground/core'
 import {
   classnames,
@@ -20,6 +20,7 @@ import commonPlugins from '@power-playground/core/common-plugins'
 
 import { I18N } from './components/I18N'
 import { ThemeSwitcher } from './components/ThemeSwitcher'
+import { devRoutesMap } from './dev-routes'
 
 const plugins = Object.assign(
   {},
@@ -66,16 +67,78 @@ const {
   githubUrl
 } = __PPD_CONFIGURES__
 
-export function App() {
-  useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {
-    light: 'default', dark: 'dark'
-  }[theme]])), [])
-
+function Main({
+  evalLogsVisible,
+  onEvalLogsVisible
+}: {
+  evalLogsVisible: boolean
+  onEvalLogsVisible: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const [dockTo, setDockTo] = useState('right')
   useEffect(() => elBridgeP.on('dock-to', setDockTo), [])
   const resizable = useMemo(() => ({ [dockTo]: true } as {
     [K in 'left' | 'right' | 'bottom']?: boolean
   }), [dockTo])
+
+  return <div className={classnames(
+    'main', dockTo,
+    evalLogsVisible ? 'eval-logs-visible' : ''
+  )}>
+    <QuickAccessContext.Provider value={createQuickAccessInstance()}>
+      <QuickAccess />
+      <EditorZone
+        resizable={resizable}
+        style={{
+          '--editor-width': dockTo === 'bottom' ? '100%'
+            : evalLogsVisible ? '65%' : '100%',
+          '--editor-height': dockTo !== 'bottom' ? '100%'
+            : evalLogsVisible ? '50%' : '100%'
+        }}
+        plugins={plugins}
+        onBorderBtnClick={(...[, , { type }]) => {
+          if (type === 'full') {
+            onEvalLogsVisible(e => !e)
+            // TODO query cache
+          }
+        }}
+      />
+      {evalLogsVisible && <iframe
+        src='./eval-logs.html'
+        className='eval-logs'
+      />}
+    </QuickAccessContext.Provider>
+  </div>
+}
+
+function computePathname() {
+  return location
+    .pathname
+    .replace(import.meta.env.BASE_URL, '')
+}
+
+function usePathname() {
+  const [pathname, setPathname] = useState(computePathname)
+  return [
+    pathname,
+    useCallback<typeof setPathname>(function (pathname) {
+      let newPathname = pathname
+      if (typeof pathname === 'function') {
+        setPathname(prev => {
+          newPathname = pathname(prev)
+          return newPathname
+        })
+      } else {
+        setPathname(newPathname)
+      }
+      history.pushState({}, '', `${import.meta.env.BASE_URL}${newPathname}`)
+    }, [])
+  ] as const
+}
+
+export function App() {
+  useEffect(() => onThemeChange(theme => elBridgeP.send('update:localStorage', ['uiTheme', {
+    light: 'default', dark: 'dark'
+  }[theme]])), [])
 
   const [displayHeader, setDisplayHeader] = useState(true)
   const headerTitle = useMemo(() => {
@@ -111,6 +174,36 @@ export function App() {
   })
 
   const [evalLogsVisible, setEvalLogsVisible] = useState(true)
+
+  let content: React.ReactNode
+  const [pathname, setPathname] = usePathname()
+  if (pathname.startsWith('dev/')) {
+    const Child = devRoutesMap.get(pathname.replace('dev/', ''))
+    if (!Child) {
+      content = <>404</>
+    } else {
+      content = <div className='components-demo'>
+        <main><Child /></main>
+        <div className='menu'>
+          {Array.from(devRoutesMap.keys()).map(key => <a
+            key={key}
+            className={classnames('menu-item', {
+              active: pathname === `dev/${key}`
+            })}
+            href={`${import.meta.env.BASE_URL}dev/${key}`}
+            onClick={e => {
+              e.preventDefault()
+              setPathname(`dev/${key}`)
+            }}
+          >
+            {key.replace(/^[a-z]/g, s => s.toUpperCase())}
+          </a>)}
+        </div>
+      </div>
+    }
+  } else {
+    content = <Main evalLogsVisible={evalLogsVisible} onEvalLogsVisible={setEvalLogsVisible} />
+  }
   return (
     <>
       <header style={{
@@ -143,34 +236,7 @@ export function App() {
           <ThemeSwitcher />
         </div>
       </header>
-      <div className={classnames(
-        'main', dockTo,
-        evalLogsVisible ? 'eval-logs-visible' : ''
-      )}>
-        <QuickAccessContext.Provider value={createQuickAccessInstance()}>
-          <QuickAccess />
-          <EditorZone
-            resizable={resizable}
-            style={{
-              '--editor-width': dockTo === 'bottom' ? '100%'
-                : evalLogsVisible ? '65%' : '100%',
-              '--editor-height': dockTo !== 'bottom' ? '100%'
-                : evalLogsVisible ? '50%' : '100%'
-            }}
-            plugins={plugins}
-            onBorderBtnClick={(...[, , { type }]) => {
-              if (type === 'full') {
-                setEvalLogsVisible(e => !e)
-                // TODO query cache
-              }
-            }}
-          />
-          {evalLogsVisible && <iframe
-            src='./eval-logs.html'
-            className='eval-logs'
-          />}
-        </QuickAccessContext.Provider>
-      </div>
+      {content}
     </>
   )
 }
