@@ -212,4 +212,12 @@
       color: var(--fr-cr-placholder);
     }
   }
+  &:not(&--contain-icon) {
+    .ppd-list-item__icon {
+      display: none;
+    }
+  }
+  &:not(&--contain-indent) {
+    padding-left: var(--padding);
+  }
 }

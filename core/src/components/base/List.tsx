@@ -81,6 +81,8 @@ export const List = forwardRefWithStatic<{
   const {
     items = EMPTY_LIST_ITEMS
   } = props
+  const containIndent = useMemo(() => items.some(({ indent }) => indent !== undefined), [items])
+  const containIcon = useMemo(() => items.some(({ icon }) => icon !== undefined), [items])
 
   const helpDialogRef = useRef<DialogRef>(null)
   const helpTipRef = useRef<HelpTipRef>(null)
@@ -386,7 +388,11 @@ export const List = forwardRefWithStatic<{
     <div
       ref={listRef}
       tabIndex={0}
-      className={prefix}
+      className={classnames(
+        prefix,
+        containIndent && `${prefix}--contain-indent`,
+        containIcon && `${prefix}--contain-icon`
+      )}
       onClick={() => setSelectedIds([])}
       onFocus={() => focusTo(focusedIndex)}
       onKeyDown={async e => {
