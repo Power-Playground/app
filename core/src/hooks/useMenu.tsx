@@ -92,6 +92,7 @@ export function useMenu(
           await innerTrigger(false)
           return false
         }
+        // TODO https://www.w3.org/WAI/ARIA/apg/patterns/menubar/#:~:text=in%20the%20submenu.-,Right%20Arrow,-%3A
         if (event.key === 'ArrowRight' && item.children) {
           await innerTrigger()
           return false
