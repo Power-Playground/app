@@ -24,6 +24,8 @@ export interface UsePopperProps {
 
   onVisibleChange?: (visible: boolean) => void
   onKeydown?: (event: React.KeyboardEvent) => void
+  onFocus?: (event: React.FocusEvent) => void
+  onBlur?: (event: React.FocusEvent) => void
 }
 
 export const usePopper = (props: UsePopperProps) => {
@@ -84,11 +86,15 @@ export const usePopper = (props: UsePopperProps) => {
   return {
     visible,
     changeVisible,
-    clickOther: useCallback((event: MouseEvent) => {
-      if (popperElement && !popperElement.contains(event.target as Node)) {
+    whenClickOtherAndHide: useCallback((event: MouseEvent) => {
+      if (popperElement && !popperElement.contains(event.target as Node) && (
+        !referenceElement
+        || !(referenceElement instanceof HTMLElement)
+        || !(referenceElement.contains(event.target as Node))
+      )) {
         changeVisible(false)
       }
-    }, [changeVisible, popperElement]),
+    }, [changeVisible, popperElement, referenceElement]),
     popper: (
       visible ? true : display
     ) && createPortal(<div
@@ -113,6 +119,8 @@ export const usePopper = (props: UsePopperProps) => {
           event.stopPropagation()
         }
       }}
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
       >
       {content}
       {arrowVisible && <div
