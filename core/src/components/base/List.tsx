@@ -12,11 +12,13 @@ import type { HelpTipRef, IHelpTip } from './HelpTip'
 import { HelpTip } from './HelpTip'
 import { HelpDialog } from './ListHelpDialog'
 
+type ListT = typeof List
+
 export interface ListItem {
   /** @default 0 */
   indent?: number
 
-  icon?: string | React.ReactNode
+  icon?: string | React.ReactNode | ListT['SpaceSymbol']
   id: string
   label: string
   content?: React.ReactNode | ((keyword: string, item: ListItem) => React.ReactNode)
@@ -82,6 +84,7 @@ const EMPTY_LIST_ITEMS: ListItem[] = []
 
 export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
+  readonly SpaceSymbol: symbol
 }, ListRef, ListProps>((props, ref) => {
   const {
     selectable = false,
@@ -828,7 +831,11 @@ export const List = forwardRefWithStatic<{
             : <span className={`${prefix}-item__icon cldr space`} />}
           {item.icon && typeof item.icon === 'string'
             ? <span className={`${prefix}-item__icon cldr codicon codicon-${item.icon}`} />
-            : item.icon}
+            : typeof item.icon === 'symbol'
+              ? {
+                [List.SpaceSymbol]: <span className={`${prefix}-item__icon cldr space`} />
+              }[item.icon]
+              : item.icon}
           {item.content
             ? typeof item.content === 'function'
               ? item.content(keyword, item)
@@ -849,5 +856,9 @@ export const List = forwardRefWithStatic<{
 })
 Object.defineProperty(List, 'prefix', {
   value: 'ppd-list',
+  writable: false
+})
+Object.defineProperty(List, 'SpaceSymbol', {
+  value: Symbol('ppd-list-space'),
   writable: false
 })
