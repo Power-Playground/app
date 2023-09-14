@@ -18,6 +18,8 @@
     opacity: 1;
   }
   &-arrow {
+    --bc: var(--vscode-dropdown-background, var(--bg-cr));
+
     position: absolute;
     width: 0;
     height: 0;
@@ -41,25 +43,25 @@
       bottom: 0;
     }
     &[data-position^=top]::before {
-      border-top-color: var(--vscode-dropdown-background);
+      border-top-color: var(--bc);
     }
     &[data-position^=bottom] {
       top: -12px;
     }
     &[data-position^=bottom]::before {
-      border-bottom-color: var(--vscode-dropdown-background);
+      border-bottom-color: var(--bc);
     }
     &[data-position^=left] {
       right: 0;
     }
     &[data-position^=left]::before {
-      border-left-color: var(--vscode-dropdown-background);
+      border-left-color: var(--bc);
     }
     &[data-position^=right] {
       left: -12px;
     }
     &[data-position^=right]::before {
-      border-right-color: var(--vscode-dropdown-background);
+      border-right-color: var(--bc);
     }
   }
   kbd { color: gray; }
