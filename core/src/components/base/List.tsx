@@ -29,18 +29,20 @@ export interface ListItem {
   className?: string
   style?: React.CSSProperties
 }
-export interface ListProps {
+export interface ListProps<T extends ListItem = ListItem> {
   selectable?: boolean
   hideTip?: boolean
 
-  items?: ListItem[]
+  items?: T[]
   onClickItem?: (
-    item: ListItem,
+    ref: HTMLDivElement | null,
+    item: T,
     type: 'click' | 'dblclick' | 'contextmenu',
     event: React.MouseEvent
   ) => false | void | Promise<false | void>
   onItemKeyDown?: (
-    item: ListItem,
+    ref: HTMLDivElement | null,
+    item: T,
     event: React.KeyboardEvent
   ) => false | void | Promise<false | void>
 }
@@ -82,10 +84,10 @@ const LIST_HELP_TIPS: IHelpTip[] = [
 
 const EMPTY_LIST_ITEMS: ListItem[] = []
 
-export const List = forwardRefWithStatic<{
+const _List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
   readonly SpaceSymbol: symbol
-}, ListRef, ListProps>((props, ref) => {
+}, ListRef, ListProps>((props: ListProps, ref) => {
   const {
     selectable = false,
     hideTip = false,
@@ -422,7 +424,7 @@ export const List = forwardRefWithStatic<{
       onFocus={() => focusTo(focusedIndex)}
       onKeyDown={async e => {
         const stopDefaultBehavior = items[focusedIndex]
-          && await onItemKeyDown?.(items[focusedIndex], e)
+          && await onItemKeyDown?.(itemsRef.current[focusedIndex], items[focusedIndex], e)
 
         if (stopDefaultBehavior === false) return
 
@@ -782,15 +784,15 @@ export const List = forwardRefWithStatic<{
           }}
           onContextMenu={async e => {
             e.stopPropagation()
-            await onClickItem?.(item, 'contextmenu', e)
+            await onClickItem?.(itemsRef.current[index], item, 'contextmenu', e)
           }}
           onDoubleClick={async e => {
             e.stopPropagation()
-            await onClickItem?.(item, 'dblclick', e)
+            await onClickItem?.(itemsRef.current[index], item, 'dblclick', e)
           }}
           onClick={async e => {
             e.stopPropagation()
-            const result = await onClickItem?.(item, 'click', e)
+            const result = await onClickItem?.(itemsRef.current[index], item, 'click', e)
             if (result === false) return
             if (!selectable) return
 
@@ -854,11 +856,16 @@ export const List = forwardRefWithStatic<{
     </div>
   </>
 })
-Object.defineProperty(List, 'prefix', {
+Object.defineProperty(_List, 'prefix', {
   value: 'ppd-list',
   writable: false
 })
-Object.defineProperty(List, 'SpaceSymbol', {
+Object.defineProperty(_List, 'SpaceSymbol', {
   value: Symbol('ppd-list-space'),
   writable: false
 })
+export const List = _List as {
+  readonly prefix: 'ppd-list'
+  readonly SpaceSymbol: symbol
+  <T extends ListItem>(props: ListProps<T> & { ref?: React.Ref<ListRef> }): JSX.Element
+}

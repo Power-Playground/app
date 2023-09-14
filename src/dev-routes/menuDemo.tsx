@@ -29,7 +29,11 @@ export default function MenuDemo () {
       {
         id: '3',
         label: 'item 3',
-        icon: 'bell'
+        icon: 'bell',
+        children: [
+          { id: '3-1', label: 'item 3-1', icon: 'bell-dot' },
+          { id: '3-2', label: 'item 3-2', icon: 'bell-slash' }
+        ]
       }
     ],
     {
