@@ -219,6 +219,9 @@
   }
   &:not(&--contain-indent) {
     padding-left: var(--padding);
+    .ppd-list-item__icon.space {
+      display: none;
+    }
   }
   &:focus-visible {
     outline: 1px solid var(--primary-active-border);
