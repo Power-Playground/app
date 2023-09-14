@@ -38,6 +38,7 @@ export function useMenu(
     onTrigger
   } = props ?? {}
   const listRef = useRef<ListRef>(null)
+  const childrenListRef = useRef<ListRef>(null)
 
   const [activator, setActivator] = useState<[MenuItem, HTMLElement | null] | null>(null)
   const [activeItem, activeElem] = activator ?? []
@@ -115,6 +116,7 @@ export function useMenu(
     className: 'ppd-menu2',
     content: rt.visible && childrenIsVisible ? <List
       hideTip
+      ref={childrenListRef}
       items={activeItem?.children ?? []}
       onClickItem={async (ref, item, type, event) => {
         if (type === 'click') {
@@ -123,14 +125,42 @@ export function useMenu(
           event.stopPropagation()
         }
       }}
+      onKeyDown={async (event) => {
+        if (event.key === 'ArrowLeft') {
+          listRef.current?.focus()
+          childrenMenu.changeVisible(false)
+          event.preventDefault()
+          event.stopPropagation()
+          return false
+        }
+        if (event.key === 'Escape') {
+          rt.changeVisible(false)
+          event.preventDefault()
+          event.stopPropagation()
+          return false
+        }
+      }}
       onItemKeyDown={async (ref, item, event) => {
         if (event.key === 'Enter') {
           await trigger(null, item)
           event.preventDefault()
           event.stopPropagation()
+          return false
+        }
+        if (event.key === 'ArrowLeft') {
+          listRef.current?.focus()
+          childrenMenu.changeVisible(false)
+          event.preventDefault()
+          event.stopPropagation()
+          return false
         }
       }}
-    /> : null
+    /> : null,
+    onVisibleChange: useCallback((v: boolean) => {
+      if (v) {
+        setTimeout(() => childrenListRef.current?.focus(), 300)
+      }
+    }, [])
   })
 
   const trigger = useCallback(async (

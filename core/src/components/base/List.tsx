@@ -40,6 +40,7 @@ export interface ListProps<T extends ListItem = ListItem> {
     type: 'click' | 'dblclick' | 'contextmenu',
     event: React.MouseEvent
   ) => false | void | Promise<false | void>
+  onKeyDown?: (event: React.KeyboardEvent) => false | void | Promise<false | void>
   onItemKeyDown?: (
     ref: HTMLDivElement | null,
     item: T,
@@ -423,10 +424,13 @@ const _List = forwardRefWithStatic<{
       onClick={() => setSelectedIds([])}
       onFocus={() => focusTo(focusedIndex)}
       onKeyDown={async e => {
-        const stopDefaultBehavior = items[focusedIndex]
+        const stopDefaultBehaviorForOnKeyDown = await props.onKeyDown?.(e)
+        if (stopDefaultBehaviorForOnKeyDown === false) return
+
+        const stopDefaultBehaviorForOnItemKeyDown = items[focusedIndex]
           && await onItemKeyDown?.(itemsRef.current[focusedIndex], items[focusedIndex], e)
 
-        if (stopDefaultBehavior === false) return
+        if (stopDefaultBehaviorForOnItemKeyDown === false) return
 
         const withCtrlOrMeta = e.ctrlKey || (
           isMacOS && e.metaKey
