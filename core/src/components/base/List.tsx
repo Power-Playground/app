@@ -29,6 +29,7 @@ export interface ListItem {
 }
 export interface ListProps {
   selectable?: boolean
+  hideTip?: boolean
 
   items?: ListItem[]
 }
@@ -73,7 +74,8 @@ export const List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
 }, ListRef, ListProps>((props, ref) => {
   const {
-    selectable = false
+    selectable = false,
+    hideTip = false
   } = props
   const { prefix } = List
   const {
@@ -785,11 +787,11 @@ export const List = forwardRefWithStatic<{
             : item.placeholder}
         </div>)}
       </div>
-      <HelpTip
+      {!hideTip && <HelpTip
         ref={helpTipRef}
         tips={LIST_HELP_TIPS}
         storageKey='list'
-      />
+      />}
     </div>
   </>
 })
