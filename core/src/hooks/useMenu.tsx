@@ -16,6 +16,9 @@ export interface MenuItem extends ListItem {
 }
 
 export interface UseMenuProps {
+  noArrow?: boolean
+  offset?: [number, number]
+
   onTrigger?: (item: MenuItem) => void | Promise<void>
 }
 
@@ -35,6 +38,8 @@ export function useMenu(
     }))
   }, [items])
   const {
+    noArrow = false,
+    offset = [0, 6],
     onTrigger
   } = props ?? {}
   const listRef = useRef<ListRef>(null)
@@ -49,9 +54,9 @@ export function useMenu(
   const rt = usePopper({
     referenceElement: items.length > 0 ? ref : null,
     placement: 'bottom-start',
-    arrowVisible: true,
+    arrowVisible: !noArrow,
     focusAbility: false,
-    offset: [0, 6],
+    offset,
     className: 'ppd-menu2',
     content: <List
       hideTip

@@ -1,6 +1,9 @@
 #root .components-demo[data-pathname=dev\/menu] {
   background-position: 100% 0;
   main {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
   }
 }
