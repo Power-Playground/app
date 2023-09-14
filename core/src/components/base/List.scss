@@ -220,7 +220,7 @@
   &:not(&--contain-indent) {
     padding-left: var(--padding);
   }
-  &:focus-visible, &:focus {
+  &:focus-visible {
     outline: 1px solid var(--primary-active-border);
     outline-offset: -2px;
   }
