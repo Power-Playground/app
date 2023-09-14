@@ -32,6 +32,11 @@ export interface ListProps {
   hideTip?: boolean
 
   items?: ListItem[]
+  onClickItem?: (
+    item: ListItem,
+    type: 'click' | 'dblclick' | 'contextmenu',
+    event: React.MouseEvent
+  ) => false | void | Promise<false | void>
 }
 export interface ListRef {
   focus(index?: number): void
@@ -76,7 +81,8 @@ export const List = forwardRefWithStatic<{
 }, ListRef, ListProps>((props, ref) => {
   const {
     selectable = false,
-    hideTip = false
+    hideTip = false,
+    onClickItem
   } = props
   const { prefix } = List
   const {
@@ -755,8 +761,18 @@ export const List = forwardRefWithStatic<{
             '--indent-level': item.indent ?? 0,
             ...item.style
           }}
-          onClick={e => {
+          onContextMenu={async e => {
             e.stopPropagation()
+            await onClickItem?.(item, 'contextmenu', e)
+          }}
+          onDoubleClick={async e => {
+            e.stopPropagation()
+            await onClickItem?.(item, 'dblclick', e)
+          }}
+          onClick={async e => {
+            e.stopPropagation()
+            const result = await onClickItem?.(item, 'click', e)
+            if (result === false) return
             if (!selectable || item.disabled) return
 
             const withCtrlOrMeta = e.ctrlKey || e.metaKey
