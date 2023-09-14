@@ -518,15 +518,19 @@ export const List = forwardRefWithStatic<{
           }
           focusItem(index)
           if (withShift) {
-            // ⇧ ⇡/⇣ : change focus and select
-            if (!isPagination && !isJump) {
-              pushSelectedId(items[index]?.id)
-              pushSelectedId(items[focusedIndex]?.id)
-              return
+            if (selectable) {
+              // ⇧ ⇡/⇣ : change focus and select
+              if (!isPagination && !isJump) {
+                !items[index]?.disabled
+                  && pushSelectedId(items[index]?.id)
+                !items[focusedIndex]?.disabled
+                  && pushSelectedId(items[focusedIndex]?.id)
+                return
+              }
+              // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
+              // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
+              toggleRangeSelectedId(items[index]?.id)
             }
-            // ⌘ ⇧ ⇡/⇣ : forward ⇱/⇲ and select
-            // ⌥ ⇧ ⇡/⇣ : forward ⇞/⇟ and select
-            toggleRangeSelectedId(items[index]?.id)
             return
           }
         }
@@ -603,7 +607,8 @@ export const List = forwardRefWithStatic<{
         if (e.key === ' ' && withoutAll && !enableSearch) {
           e.preventDefault()
           e.stopPropagation()
-          toggleSelectedId(items[focusedIndex]?.id)
+          if (selectable && !items[focusedIndex]?.disabled)
+            toggleSelectedId(items[focusedIndex]?.id)
           return
         }
 
@@ -773,20 +778,23 @@ export const List = forwardRefWithStatic<{
             e.stopPropagation()
             const result = await onClickItem?.(item, 'click', e)
             if (result === false) return
-            if (!selectable || item.disabled) return
+            if (!selectable) return
 
             const withCtrlOrMeta = e.ctrlKey || e.metaKey
             const withShift = e.shiftKey
-            if (!withCtrlOrMeta && !withShift) {
-              setSelectedIds([item.id])
-              return
-            }
-            if (withCtrlOrMeta) {
-              toggleSelectedId(item.id)
-              return
+            if (!item.disabled) {
+              if (!withCtrlOrMeta && !withShift) {
+                setSelectedIds([item.id])
+                return
+              }
+              if (withCtrlOrMeta) {
+                toggleSelectedId(item.id)
+                return
+              }
             }
 
-            toggleRangeSelectedId(item.id)
+            if (!withCtrlOrMeta && withShift)
+              toggleRangeSelectedId(item.id)
           }}
           onFocus={e => {
             e.stopPropagation()
