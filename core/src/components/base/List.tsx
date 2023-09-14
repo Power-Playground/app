@@ -1,6 +1,6 @@
 import './List.scss'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { useRetimer } from 'foxact/use-retimer'
 
 import { usePopper } from '../../hooks/usePopper'
@@ -34,6 +34,7 @@ export interface ListProps {
   items?: ListItem[]
 }
 export interface ListRef {
+  focus(index?: number): void
 }
 
 function inVisibleArea(el: HTMLElement, container: HTMLElement) {
@@ -186,16 +187,16 @@ export const List = forwardRefWithStatic<{
   }
 
   const [focusedIndex, setFocusedIndex] = useState<number>(-1)
-  function focusTo(index: number) {
+  const focusTo = useCallback((index: number) => {
     if (index < 0 || index >= itemsRef.current.length) return
     itemsRef.current[index].focus()
-  }
-  function focusItem(index: number) {
+  }, [])
+  const focusItem = useCallback((index: number) => {
     if (index >= itemsRef.current.length) return
     const realIndex = index !== -1 ? index : items.length - 1
     setFocusedIndex(realIndex)
     focusTo(realIndex)
-  }
+  }, [focusTo, items.length])
 
   const [foldedIds, setFoldedIds] = useState<string[]>([])
   const [hidedIds, setHidedIds] = useState<string[]>([])
@@ -381,6 +382,16 @@ export const List = forwardRefWithStatic<{
       return acc
     }, [] as [index: number, item: ListItem][])
   }, [enableSearch, items, labelMatcher])
+
+  useImperativeHandle(ref, () => ({
+    focus(index?: number) {
+      if (index === undefined) {
+        listRef.current?.focus()
+      } else {
+        focusItem(index)
+      }
+    }
+  }), [focusItem])
   // noinspection GrazieInspection,StructuralWrap
   return <>
     {searchbarPopper.popper}
