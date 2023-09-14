@@ -36,6 +36,15 @@ export default function MenuDemo () {
           { id: '3-1', label: 'item 3-1', icon: 'bell-dot' },
           { id: '3-2', label: 'item 3-2', icon: 'bell-slash' }
         ]
+      },
+      {
+        id: '4',
+        label: 'item 4',
+        icon: 'terminal',
+        children: [
+          { id: '4-1', label: 'item 4-1', icon: 'terminal-bash' },
+          { id: '4-2', label: 'item 4-2', icon: 'terminal-cmd' }
+        ]
       }
     ],
     {
