@@ -37,6 +37,10 @@ export interface ListProps {
     type: 'click' | 'dblclick' | 'contextmenu',
     event: React.MouseEvent
   ) => false | void | Promise<false | void>
+  onItemKeyDown?: (
+    item: ListItem,
+    event: React.KeyboardEvent
+  ) => false | void | Promise<false | void>
 }
 export interface ListRef {
   focus(index?: number): void
@@ -82,7 +86,8 @@ export const List = forwardRefWithStatic<{
   const {
     selectable = false,
     hideTip = false,
-    onClickItem
+    onClickItem,
+    onItemKeyDown
   } = props
   const { prefix } = List
   const {
@@ -413,6 +418,11 @@ export const List = forwardRefWithStatic<{
       onClick={() => setSelectedIds([])}
       onFocus={() => focusTo(focusedIndex)}
       onKeyDown={async e => {
+        const stopDefaultBehavior = items[focusedIndex]
+          && await onItemKeyDown?.(items[focusedIndex], e)
+
+        if (stopDefaultBehavior === false) return
+
         const withCtrlOrMeta = e.ctrlKey || (
           isMacOS && e.metaKey
         )
@@ -741,6 +751,7 @@ export const List = forwardRefWithStatic<{
           setSelectedIds([])
           return
         }
+
         // ⏎   : [select]|[open]
         // ⌘ ⏎ : [open]|[open in new tab]
         // ⇥   : focus next
