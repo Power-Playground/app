@@ -10,12 +10,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.6em;
+  padding: .6em;
   background: var(--primary);
   box-shadow: 0 0 16px #00000047;
   color: #fff;
   overflow: hidden;
-  transition: 0.1s;
+  transition: .1s;
   a {
     display: flex;
     align-items: center;
@@ -36,7 +36,7 @@
       align-items: center;
       cursor: pointer;
       filter: drop-shadow(0 0 0 #0000);
-      transition: 0.3s;
+      transition: .3s;
       &:hover {
         filter: drop-shadow(0 0 4px #000);
       }
@@ -94,12 +94,20 @@
   height: 100%;
 
   background-size: 150% 150%;
-  background-image: linear-gradient(120deg, #a1c4fd, #c2e9fb, #fefdfc);
-  html[theme-mode="dark"] & {
-    background-image: linear-gradient(120deg, #8999d1, #6e8dca, #4264bc);
+  background-image: linear-gradient(120deg,
+          #a1c4fd,
+          #c2e9fb,
+          #fefdfc
+  );
+  html[theme-mode=dark] & {
+    background-image: linear-gradient(120deg,
+            #8999D1,
+            #6E8DCA,
+            #4264BC
+    );
   }
 
-  transition: 0.2s;
+  transition: .2s;
   > main {
     position: absolute;
     top: 50%;
@@ -109,8 +117,8 @@
     min-width: 300px;
     padding: 10px;
     filter: drop-shadow(0 5px 8px #00000037);
-    transition: 0.2s;
-    html[theme-mode="dark"] & {
+    transition: .2s;
+    html[theme-mode=dark] & {
       filter: drop-shadow(0 10px 20px #00000078);
     }
   }
@@ -130,7 +138,7 @@
     background-color: var(--bg-cr-o0);
     backdrop-filter: blur(12px);
     box-shadow: 0 5px 16px #00000020;
-    transition: 0.3s;
+    transition: .3s;
     > .menu-item {
       display: flex;
       align-items: center;
@@ -146,7 +154,7 @@
       font-size: 18px;
 
       cursor: pointer;
-      transition: 0.3s;
+      transition: .3s;
       &:hover {
         background-color: var(--primary-hover);
       }

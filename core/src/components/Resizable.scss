@@ -71,16 +71,14 @@
       z-index: 10;
       background-color: #0008;
     }
-    &__top > &__btns,
-    &__bottom > &__btns {
+    &__top > &__btns, &__bottom > &__btns {
       flex-direction: row;
       > button {
         width: 30px;
         height: 16px;
       }
     }
-    &__left,
-    &__right {
+    &__left, &__right {
       top: 0;
       width: var(--inner-border-width);
       height: 100%;
@@ -89,8 +87,7 @@
         width: calc(var(--inner-border-width) * var(--inner-border-scale));
       }
     }
-    &__top,
-    &__bottom {
+    &__top, &__bottom {
       left: 0;
       width: 100%;
       height: var(--inner-border-width);
