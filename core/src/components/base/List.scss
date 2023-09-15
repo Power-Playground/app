@@ -218,7 +218,6 @@
     }
   }
   &:not(&--contain-indent) {
-    padding-left: var(--padding);
     .ppd-list-item__icon.space:first-child {
       display: none;
     }
