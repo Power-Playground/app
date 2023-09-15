@@ -34,6 +34,9 @@ export interface ListProps<T extends ListItem = ListItem> {
   hideTip?: boolean
 
   items?: T[]
+  defaultFocusIndex?: number
+  defaultSelectedIds?: string[]
+
   onClickItem?: (
     ref: HTMLDivElement | null,
     item: T,
@@ -92,6 +95,8 @@ const _List = forwardRefWithStatic<{
   const {
     selectable = false,
     hideTip = false,
+    defaultFocusIndex = -1,
+    defaultSelectedIds = [],
     onClickItem,
     onItemKeyDown
   } = props
@@ -136,7 +141,7 @@ const _List = forwardRefWithStatic<{
   }, [computeVisibleItems, scrollRetimer])
 
   const [keyword, setKeyword] = useState<string>('')
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>(defaultSelectedIds)
   function pushSelectedId(id?: string, isUnshift = false) {
     if (!id) return
 
@@ -203,7 +208,7 @@ const _List = forwardRefWithStatic<{
     })
   }
 
-  const [focusedIndex, setFocusedIndex] = useState<number>(-1)
+  const [focusedIndex, setFocusedIndex] = useState<number>(defaultFocusIndex)
   const focusTo = useCallback((index: number) => {
     if (index < 0 || index >= itemsRef.current.length) return
     itemsRef.current[index].focus()
