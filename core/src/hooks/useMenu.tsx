@@ -23,6 +23,7 @@ export interface UseMenuProps {
   defaultSelectedIds?: string[]
 
   onTrigger?: (item: MenuItem) => void | Promise<void>
+  onVisibleChange?: (visible: boolean) => void
 }
 
 export function useMenu(
@@ -46,7 +47,8 @@ export function useMenu(
     defaultVisible = false,
     defaultFocusIndex,
     defaultSelectedIds,
-    onTrigger
+    onTrigger,
+    onVisibleChange
   } = props ?? {}
   const listRef = useRef<ListRef>(null)
   const childrenListRef = useRef<ListRef>(null)
@@ -114,6 +116,7 @@ export function useMenu(
       }}
     />,
     onVisibleChange: useCallback((v: boolean) => {
+      onVisibleChange?.(v)
       if (v) {
         setTimeout(() => listRef.current?.focus(), 300)
       } else {
@@ -121,7 +124,7 @@ export function useMenu(
           ref.focus()
         }
       }
-    }, [ref])
+    }, [onVisibleChange, ref])
   })
   const childrenMenu = usePopper({
     referenceElement: rt.visible && childrenIsVisible ? (activeElem ?? null) : null,
