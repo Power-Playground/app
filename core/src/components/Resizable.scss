@@ -61,9 +61,7 @@
           box-shadow: 0 0 2px gray;
           background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 30%);
         }
-        > span.cldr {
-          font-size: 12px;
-        }
+        > span.cldr { font-size: 12px }
       }
     }
     &:hover &__btns {
