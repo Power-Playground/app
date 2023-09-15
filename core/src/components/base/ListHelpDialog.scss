@@ -1,7 +1,7 @@
 @import 'List.share';
 
 .ppd-help-dialog {
-  @at-root dialog#{&} {
+  @at-root dialog.ppd-dialog#{&} {
     & > .ppd-dialog__container {
       top: unset;
       bottom: -100%;
