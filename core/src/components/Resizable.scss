@@ -21,8 +21,8 @@
     z-index: 100;
     position: absolute;
     background-color: #cacdd1;
-    transition: .1s;
-    html[theme-mode=dark] & {
+    transition: 0.1s;
+    html[theme-mode="dark"] & {
       background-color: #494c50;
       &:hover {
         background-color: #fff5;
@@ -40,7 +40,7 @@
       transform: translate(-50%, -50%);
 
       opacity: 0;
-      transition: .1s;
+      transition: 0.1s;
       > button {
         display: flex;
         align-items: center;
@@ -55,13 +55,15 @@
         background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
         border: 1px solid color-mix(in srgb, var(--primary), var(--bg-cr) 80%);
 
-        cursor: pointer;
-        transition: .1s;
+        cursor: e-resize;
+        transition: 0.1s;
         &:hover {
           box-shadow: 0 0 2px gray;
           background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 30%);
         }
-        > span.cldr { font-size: 12px }
+        > span.cldr {
+          font-size: 12px;
+        }
       }
     }
     &:hover &__btns {
@@ -71,14 +73,16 @@
       z-index: 10;
       background-color: #0008;
     }
-    &__top > &__btns, &__bottom > &__btns {
+    &__top > &__btns,
+    &__bottom > &__btns {
       flex-direction: row;
       > button {
         width: 30px;
         height: 16px;
       }
     }
-    &__left, &__right {
+    &__left,
+    &__right {
       top: 0;
       width: var(--inner-border-width);
       height: 100%;
@@ -87,7 +91,8 @@
         width: calc(var(--inner-border-width) * var(--inner-border-scale));
       }
     }
-    &__top, &__bottom {
+    &__top,
+    &__bottom {
       left: 0;
       width: 100%;
       height: var(--inner-border-width);
