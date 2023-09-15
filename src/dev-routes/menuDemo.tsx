@@ -48,6 +48,7 @@ export default function MenuDemo () {
       }
     ],
     {
+      defaultVisible: true,
       onTrigger: async (item) => {
         if (item.id === '1') {
           console.log('item 1')

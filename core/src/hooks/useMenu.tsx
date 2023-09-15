@@ -18,6 +18,9 @@ export interface MenuItem extends ListItem {
 export interface UseMenuProps {
   noArrow?: boolean
   offset?: [number, number]
+  defaultVisible?: boolean
+  defaultFocusIndex?: number
+  defaultSelectedIds?: string[]
 
   onTrigger?: (item: MenuItem) => void | Promise<void>
 }
@@ -40,6 +43,9 @@ export function useMenu(
   const {
     noArrow = false,
     offset = [0, 6],
+    defaultVisible = false,
+    defaultFocusIndex,
+    defaultSelectedIds,
     onTrigger
   } = props ?? {}
   const listRef = useRef<ListRef>(null)
@@ -57,11 +63,14 @@ export function useMenu(
     arrowVisible: !noArrow,
     focusAbility: false,
     offset,
+    defaultVisible,
     className: 'ppd-menu2',
     content: <List
       hideTip
       ref={listRef}
       items={memoItems}
+      defaultFocusIndex={defaultFocusIndex}
+      defaultSelectedIds={defaultSelectedIds}
       onClickItem={async (ref, item, type, event) => {
         if (type === 'click') {
           try {

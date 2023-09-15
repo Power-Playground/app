@@ -21,6 +21,7 @@ export interface UsePopperProps {
   placement: Placement
   offset?: [number, number]
   arrowVisible?: boolean
+  defaultVisible?: boolean
 
   onVisibleChange?: (visible: boolean) => void
   onKeydown?: (event: React.KeyboardEvent) => void
@@ -36,7 +37,8 @@ export const usePopper = (props: UsePopperProps) => {
     closeWhenMouseLeave,
     focusAbility = true,
     placement, offset = [0, 0],
-    arrowVisible
+    arrowVisible,
+    defaultVisible = false
   } = props
 
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -65,7 +67,7 @@ export const usePopper = (props: UsePopperProps) => {
     }
   }, [arrowElement, offset, placement])
 
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(defaultVisible)
   const changeVisible = useCallback((visible: boolean) => {
     setVisible(visible)
     onVisibleChange?.(visible)
