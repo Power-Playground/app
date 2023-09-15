@@ -52,7 +52,7 @@ export function DrawerPanel() {
   const setMenuIsOpenDelay = useCallback((isOpen: boolean) => {
     setMenuIsOpenDelayRetimer(setTimeout(
       () => setMenuIsOpen(isOpen),
-      100
+      200
     ) as unknown as number)
   }, [setMenuIsOpenDelayRetimer])
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
