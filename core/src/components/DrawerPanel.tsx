@@ -1,12 +1,13 @@
 import './DrawerPanel.scss'
 
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { classnames } from '@power-playground/core'
 import { useDebouncedValue } from 'foxact/use-debounced-value'
+import { useRetimer } from 'foxact/use-retimer'
 
 import { ExtensionContext } from '../contextes/Extension'
+import { useMenu } from '../hooks/useMenu.tsx'
 
-import { Menu } from './base/Menu'
 import { Popover } from './base/Popover'
 import { useDrawerPanelController } from './drawerPanelCreator'
 import { Resizable } from './Resizable'
@@ -47,7 +48,47 @@ export function DrawerPanel() {
   ])
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
+  const setMenuIsOpenDelayRetimer = useRetimer()
+  const setMenuIsOpenDelay = useCallback((isOpen: boolean) => {
+    setMenuIsOpenDelayRetimer(setTimeout(
+      () => setMenuIsOpen(isOpen),
+      100
+    ) as unknown as number)
+  }, [setMenuIsOpenDelayRetimer])
   const [windowMode, setWindowMode] = useState<'centered' | 'popout'>('popout')
+
+  const moreMenuRef = useRef<HTMLButtonElement>(null)
+  const moreMenu = useMenu(moreMenuRef.current, [
+    {
+      id: 'switch-drawer-mode',
+      icon: windowMode === 'popout' ? 'editor-layout' : 'layout-centered',
+      label: 'Switch Drawer Mode',
+      children: [
+        { id: 'switch-drawer-mode.popout', icon: 'editor-layout', label: 'Popout' },
+        { id: 'switch-drawer-mode.centered', icon: 'layout-centered', label: 'Centered' }
+      ]
+    },
+    {
+      id: 'help',
+      icon: 'question',
+      label: 'Help',
+      placeholder: <code>?(⇧ /)</code>
+    }
+  ], {
+    onVisibleChange: v => v ? setMenuIsOpen(true) : setMenuIsOpenDelay(false),
+    onTrigger: async item => {
+      switch (item.id) {
+        case 'switch-drawer-mode.popout':
+          setWindowMode('popout')
+          break
+        case 'switch-drawer-mode.centered':
+          setWindowMode('centered')
+          break
+        case 'help':
+          break
+      }
+    }
+  })
   return <Resizable
     _ref={panelRef}
     className={classnames(
@@ -79,46 +120,13 @@ export function DrawerPanel() {
         </div>
         <div className={`${prefix}__header__actions`}>
           {memoActivePanel?.actions}
-          <Menu
-           items={[
-             { id: 'switch-drawer-mode', content: <span style={{
-               display: 'flex',
-               alignItems: 'center',
-               cursor: 'default'
-             }}>
-               Switch Drawer Mode
-               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-               <span
-                 className='cldr codicon codicon-editor-layout'
-                 style={{
-                   cursor: 'pointer',
-                   color: windowMode === 'popout' ? 'var(--primary)' : undefined
-                 }}
-                 onClick={e => (
-                   e.stopPropagation(),
-                   setWindowMode('popout')
-                 )}
-               />
-               &nbsp;
-               <span
-                 className='cldr codicon codicon-layout-centered'
-                 style={{
-                   cursor: 'pointer',
-                   color: windowMode === 'centered' ? 'var(--primary)' : undefined
-                 }}
-                 onClick={e => (
-                   e.stopPropagation(),
-                   setWindowMode('centered')
-                 )}
-               />
-             </span> }
-           ]}
-           onVisibleChange={setMenuIsOpen}
+          {moreMenu.popper}
+          <button
+            ref={moreMenuRef}
+            onClick={() => moreMenu.changeVisible(true)}
           >
-            <button>
-              <span className='cldr codicon codicon-more' />
-            </button>
-          </Menu>
+            <span className='cldr codicon codicon-more' />
+          </button>
           <Popover
             content={<>
               Minimize
