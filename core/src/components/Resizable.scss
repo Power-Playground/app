@@ -56,7 +56,7 @@
         border: 1px solid color-mix(in srgb, var(--primary), var(--bg-cr) 80%);
 
         cursor: e-resize;
-        transition: 0.1s;
+        transition: .1s;
         &:hover {
           box-shadow: 0 0 2px gray;
           background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 30%);
