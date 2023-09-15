@@ -36,6 +36,8 @@ export interface ListProps<T extends ListItem = ListItem> {
   items?: T[]
   defaultFocusIndex?: number
   defaultSelectedIds?: string[]
+  /** @default Infinity */
+  max?: number
 
   onClickItem?: (
     ref: HTMLDivElement | null,
@@ -97,6 +99,9 @@ const _List = forwardRefWithStatic<{
     hideTip = false,
     defaultFocusIndex = -1,
     defaultSelectedIds = [],
+    // TODO support max
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    max = Infinity,
     onClickItem,
     onItemKeyDown
   } = props
