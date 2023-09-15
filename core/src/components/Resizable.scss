@@ -22,7 +22,7 @@
     position: absolute;
     background-color: #cacdd1;
     transition: 0.1s;
-    html[theme-mode="dark"] & {
+    html[theme-mode='dark'] & {
       background-color: #494c50;
       &:hover {
         background-color: #fff5;
