@@ -9,7 +9,7 @@ import { ExtensionContext } from '../contextes/Extension'
 import { useMenu } from '../hooks/useMenu.tsx'
 
 import { Popover } from './base/Popover'
-import { useDrawerPanelController } from './drawerPanelCreator'
+import { type DrawerPanel, useDrawerPanelController } from './drawerPanelCreator'
 import { Resizable } from './Resizable'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
@@ -39,8 +39,11 @@ export function DrawerPanel() {
       setTimeout(() => panelRef.current?.focus(), 10)
     }
   }, [activePanel?.id])
-  const debouncedActivePanel = useDebouncedValue(activePanel, DrawerPanel.delay)
-  const memoActivePanel = useMemo(() => activePanel
+  const debouncedActivePanel = useDebouncedValue(
+    () => activePanel,
+    DrawerPanel.delay
+  ) as unknown as DrawerPanel
+  const MemoActivePanel = useMemo(() => activePanel
     ? activePanel
     : debouncedActivePanel, [
     activePanel,
@@ -108,18 +111,18 @@ export function DrawerPanel() {
       }
     }}
     >
-    {memoActivePanel && <>
+    {MemoActivePanel && <>
       <div className={`${prefix}__header`}>
         <div className={`${prefix}__header__title`}>
           <h3>
-            {typeof memoActivePanel?.icon === 'string'
-              ? <span className={`cldr codicon codicon-${memoActivePanel.icon}`}></span>
-              : memoActivePanel?.icon}
-            {memoActivePanel?.title}
+            {typeof MemoActivePanel?.icon === 'string'
+              ? <span className={`cldr codicon codicon-${MemoActivePanel.icon}`}></span>
+              : MemoActivePanel?.icon}
+            {MemoActivePanel?.title}
           </h3>
         </div>
         <div className={`${prefix}__header__actions`}>
-          {memoActivePanel?.actions}
+          {MemoActivePanel?.actions}
           {moreMenu.popper}
           <button
             ref={moreMenuRef}
@@ -134,14 +137,14 @@ export function DrawerPanel() {
               <kbd>Esc</kbd>
             </>}
             placement='right'>
-            <button onClick={() => memoActivePanel && closePanel(memoActivePanel?.id)}>
+            <button onClick={() => MemoActivePanel && closePanel(MemoActivePanel?.id)}>
               <span className='cldr codicon codicon-remove' />
             </button>
           </Popover>
         </div>
       </div>
       <div className={`${prefix}__body`}>
-        {memoActivePanel?.content}
+        <MemoActivePanel Template={() => void 0} />
       </div>
     </>}
   </Resizable>

@@ -2,12 +2,20 @@ import type { ReactNode } from 'react'
 import { useCallback, useMemo, useRef } from 'react'
 import { atom, useAtom, useStore } from 'jotai'
 
+export interface DrawerPanelProps {
+  Template(props: {
+    name: 'title' | 'actions'
+    children: ReactNode
+  }): ReactNode
+}
+
 export interface DrawerPanel {
   id: string
   icon?: string | ReactNode
   title: string | ReactNode
   actions?: ReactNode
   content?: ReactNode
+  (props: DrawerPanelProps): ReactNode
 }
 
 export interface DrawerPanelController {
