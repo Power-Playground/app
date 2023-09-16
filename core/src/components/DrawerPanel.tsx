@@ -1,6 +1,6 @@
 import './DrawerPanel.scss'
 
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { classnames } from '@power-playground/core'
 import { useDebouncedValue } from 'foxact/use-debounced-value'
 import { useRetimer } from 'foxact/use-retimer'
@@ -9,7 +9,8 @@ import { ExtensionContext } from '../contextes/Extension'
 import { useMenu } from '../hooks/useMenu.tsx'
 
 import { Popover } from './base/Popover'
-import { type DrawerPanel, useDrawerPanelController } from './drawerPanelCreator'
+import type { DrawerPanel as IDrawerPanel, DrawerPanelProps, DrawerPanelSlots } from './drawerPanelCreator'
+import { useDrawerPanelController } from './drawerPanelCreator'
 import { Resizable } from './Resizable'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
@@ -42,13 +43,20 @@ export function DrawerPanel() {
   const debouncedActivePanel = useDebouncedValue(
     () => activePanel,
     DrawerPanel.delay
-  ) as unknown as DrawerPanel
+  ) as unknown as IDrawerPanel
   const MemoActivePanel = useMemo(() => activePanel
     ? activePanel
     : debouncedActivePanel, [
     activePanel,
     debouncedActivePanel
   ])
+  const [PanelSlots, setPanelSlots] = useState<Partial<DrawerPanelSlots>>({})
+  const template = useCallback<DrawerPanelProps['template']>((name, children) => {
+    setPanelSlots(prev => ({
+      ...prev,
+      [name]: children
+    }))
+  }, [])
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const setMenuIsOpenDelayRetimer = useRetimer()
@@ -71,12 +79,7 @@ export function DrawerPanel() {
         { id: 'switch-drawer-mode.centered', icon: 'layout-centered', label: 'Centered' }
       ]
     },
-    {
-      id: 'help',
-      icon: 'question',
-      label: 'Help',
-      placeholder: <code>?(⇧ /)</code>
-    }
+    ...PanelSlots.moreMenu ?? []
   ], {
     onVisibleChange: v => v ? setMenuIsOpen(true) : setMenuIsOpenDelay(false),
     onTrigger: async item => {
@@ -86,8 +89,6 @@ export function DrawerPanel() {
           break
         case 'switch-drawer-mode.centered':
           setWindowMode('centered')
-          break
-        case 'help':
           break
       }
     }
@@ -119,10 +120,12 @@ export function DrawerPanel() {
               ? <span className={`cldr codicon codicon-${MemoActivePanel.icon}`}></span>
               : MemoActivePanel?.icon}
             {MemoActivePanel?.title}
+            {PanelSlots.title}
           </h3>
         </div>
         <div className={`${prefix}__header__actions`}>
           {MemoActivePanel?.actions}
+          {PanelSlots.actions}
           {moreMenu.popper}
           <button
             ref={moreMenuRef}
@@ -144,7 +147,7 @@ export function DrawerPanel() {
         </div>
       </div>
       <div className={`${prefix}__body`}>
-        <MemoActivePanel Template={() => void 0} />
+        <MemoActivePanel template={template} />
       </div>
     </>}
   </Resizable>

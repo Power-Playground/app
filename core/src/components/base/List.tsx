@@ -28,6 +28,8 @@ export interface ListItem {
 
   className?: string
   style?: React.CSSProperties
+
+  onClick?: (event: React.MouseEvent, item: ListItem) => boolean | void | Promise<boolean | void>
 }
 export interface ListProps<T extends ListItem = ListItem> {
   selectable?: boolean
@@ -54,6 +56,7 @@ export interface ListProps<T extends ListItem = ListItem> {
 }
 export interface ListRef {
   focus(index?: number): void
+  help(): void
 }
 
 function inVisibleArea(el: HTMLElement, container: HTMLElement) {
@@ -417,6 +420,9 @@ const _List = forwardRefWithStatic<{
       } else {
         focusItem(index)
       }
+    },
+    help() {
+      helpDialogRef.current?.open()
     }
   }), [focusItem])
   // noinspection GrazieInspection,StructuralWrap
@@ -806,8 +812,13 @@ const _List = forwardRefWithStatic<{
           }}
           onClick={async e => {
             e.stopPropagation()
-            const result = await onClickItem?.(itemsRef.current[index], item, 'click', e)
-            if (result === false) return
+
+            const onClickItemContinue = await onClickItem?.(itemsRef.current[index], item, 'click', e)
+            if (onClickItemContinue === false) return
+
+            const onClickContinue = await item.onClick?.(e, item)
+            if (onClickContinue === false) return
+
             if (!selectable) return
 
             const withCtrlOrMeta = e.ctrlKey || e.metaKey

@@ -2,11 +2,19 @@ import type { ReactNode } from 'react'
 import { useCallback, useMemo, useRef } from 'react'
 import { atom, useAtom, useStore } from 'jotai'
 
+import type { ListItem } from './base/List'
+
+export interface DrawerPanelSlots {
+  title: ReactNode
+  actions: ReactNode
+  moreMenu: ListItem[]
+}
+
 export interface DrawerPanelProps {
-  Template(props: {
-    name: 'title' | 'actions'
-    children: ReactNode
-  }): ReactNode
+  template<T extends keyof DrawerPanelSlots>(
+    name: T,
+    children: DrawerPanelSlots[T]
+  ): void
 }
 
 export interface DrawerPanel {
@@ -15,6 +23,7 @@ export interface DrawerPanel {
   title: string | ReactNode
   actions?: ReactNode
   content?: ReactNode
+  moreListItems?: ListItem[]
   (props: DrawerPanelProps): ReactNode
 }
 
