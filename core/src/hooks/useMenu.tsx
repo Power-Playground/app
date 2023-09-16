@@ -130,7 +130,7 @@ export function useMenu(
     referenceElement: rt.visible && childrenIsVisible ? (activeElem ?? null) : null,
     placement: 'right-start',
     focusAbility: false,
-    offset: [0, 4],
+    offset: [-7, 4],
     className: 'ppd-menu2',
     content: rt.visible && childrenIsVisible ? <List
       hideTip
