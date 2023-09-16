@@ -7,6 +7,18 @@
       height: calc(100% - 16px);
     }
   }
+  .ppd-drawer-panel__header__title h3 button {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    background-color: transparent;
+    border: none;
+
+    font-size: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
   &--dir-type__external {
     &::before {
       content: '';
