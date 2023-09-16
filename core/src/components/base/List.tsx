@@ -448,7 +448,7 @@ const _List = forwardRefWithStatic<{
       )}
       onClick={() => setSelectedIds([])}
       onFocus={() => focusTo(focusedIndex)}
-      onKeyDown={async e => {
+      onKeyDownCapture={async e => {
         const stopDefaultBehaviorForOnKeyDown = await props.onKeyDown?.(e)
         if (stopDefaultBehaviorForOnKeyDown === false) return
 
@@ -779,11 +779,27 @@ const _List = forwardRefWithStatic<{
 
         // ⎋ : clear selection
         if (e.key === 'Escape' && withoutAll) {
-          if (selectedIds.length === 0) return
-          e.preventDefault()
-          e.stopPropagation()
-          setSelectedIds([])
-          return
+          let isMatch = false
+          resolve: {
+            if (selectedIds.length > 0) {
+              setSelectedIds([])
+              isMatch = true
+              break resolve
+            }
+            if (focusedIndex !== -1) {
+              itemsRef.current[focusedIndex].blur()
+              setFocusedIndex(-1)
+              isMatch = true
+              // when focus to list, it will focus to previous focused item
+              // because of the focus event listener which closure the previous focused index
+              setTimeout(() => listRef.current?.focus(), 100)
+            }
+          }
+          if (isMatch) {
+            e.preventDefault()
+            e.stopPropagation()
+            return
+          }
         }
 
         // ⏎   : [select]|[open]
