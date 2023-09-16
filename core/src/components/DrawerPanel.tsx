@@ -129,7 +129,7 @@ export function DrawerPanel() {
           {moreMenu.popper}
           <button
             ref={moreMenuRef}
-            onClick={() => moreMenu.changeVisible(true)}
+            onClick={() => moreMenu.changeVisible(v => !v)}
           >
             <span className='cldr codicon codicon-more' />
           </button>
