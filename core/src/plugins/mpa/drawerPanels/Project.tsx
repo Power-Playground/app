@@ -14,11 +14,11 @@ const prefix = 'ppd-drawer-panel--project'
 export default function Project({ template }: DrawerPanelProps) {
   const listRef = useRef<ListRef>(null)
 
-  const structureViewModeSwitchBtnRef = useRef<HTMLButtonElement>(null)
+  const viewModeSwitcherRef = useRef<HTMLButtonElement>(null)
   const {
-    popper: structureViewModeSwitchMenuPopper,
-    changeVisible: changeStructureViewModeSwitchMenuVisible
-  } = useMenu(structureViewModeSwitchBtnRef.current, [
+    popper: viewModeSwitcherMenuPopper,
+    changeVisible: changeViewModeSwitcherVisible
+  } = useMenu(viewModeSwitcherRef.current, [
     {
       id: 'project',
       icon: 'project',
@@ -32,13 +32,13 @@ export default function Project({ template }: DrawerPanelProps) {
   ])
   useEffect(() => {
     template('title', <button
-      ref={structureViewModeSwitchBtnRef}
-      onClick={() => changeStructureViewModeSwitchMenuVisible(true)}
+      ref={viewModeSwitcherRef}
+      onClick={() => changeViewModeSwitcherVisible(v => !v)}
       >
       Project
       <span className='cldr codicon codicon-chevron-down' />
     </button>)
-  }, [changeStructureViewModeSwitchMenuVisible, template])
+  }, [changeViewModeSwitcherVisible, template])
   useEffect(() => {
     template('actions', <>
       <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
@@ -62,7 +62,7 @@ export default function Project({ template }: DrawerPanelProps) {
     ])
   }, [template])
   return <>
-    {structureViewModeSwitchMenuPopper}
+    {viewModeSwitcherMenuPopper}
     <List
       ref={listRef}
       selectable

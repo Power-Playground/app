@@ -68,9 +68,17 @@ export const usePopper = (props: UsePopperProps) => {
   }, [arrowElement, offset, placement])
 
   const [visible, setVisible] = useState(defaultVisible)
-  const changeVisible = useCallback((visible: boolean) => {
-    setVisible(visible)
-    onVisibleChange?.(visible)
+  const changeVisible = useCallback<typeof setVisible>((arg0) => {
+    if (arg0 instanceof Function) {
+      setVisible(prev => {
+        const next = arg0(prev)
+        onVisibleChange?.(next)
+        return next
+      })
+    } else {
+      setVisible(arg0)
+      onVisibleChange?.(arg0)
+    }
   }, [onVisibleChange])
   useEffect(() => {
     if (visible) {
