@@ -15,6 +15,7 @@ export interface DrawerPanelProps {
     name: T,
     children: DrawerPanelSlots[T]
   ): void
+  setOnKeydown(listener: (event: React.KeyboardEvent) => void): void
 }
 
 export interface DrawerPanel {

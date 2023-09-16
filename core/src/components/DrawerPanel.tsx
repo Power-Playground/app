@@ -57,6 +57,8 @@ export function DrawerPanel() {
       [name]: children
     }))
   }, [])
+  const [onKeydown, _setOnKeydown] = useState<Function>()
+  const setOnKeydown = useCallback<typeof _setOnKeydown>(v => _setOnKeydown(() => v), [])
 
   const [menuIsOpen, setMenuIsOpen] = useState(false)
   const setMenuIsOpenDelayRetimer = useRetimer()
@@ -110,6 +112,7 @@ export function DrawerPanel() {
         e.stopPropagation()
         activePanel?.id && closePanel(activePanel?.id)
       }
+      onKeydown?.(e)
     }}
     >
     {MemoActivePanel && <>
@@ -147,7 +150,10 @@ export function DrawerPanel() {
         </div>
       </div>
       <div className={`${prefix}__body`}>
-        <MemoActivePanel template={template} />
+        <MemoActivePanel
+          template={template}
+          setOnKeydown={setOnKeydown}
+        />
       </div>
     </>}
   </Resizable>

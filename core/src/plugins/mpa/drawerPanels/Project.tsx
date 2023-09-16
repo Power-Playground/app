@@ -11,9 +11,18 @@ import { useMenu } from '../../../hooks/useMenu'
 
 const prefix = 'ppd-drawer-panel--project'
 
-export default function Project({ template }: DrawerPanelProps) {
+export default function Project({ template, setOnKeydown }: DrawerPanelProps) {
   const listRef = useRef<ListRef>(null)
 
+  useEffect(() => {
+    setOnKeydown(e => {
+      if (e && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+        listRef.current?.focus()
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    })
+  }, [setOnKeydown])
   const viewModeSwitcherRef = useRef<HTMLButtonElement>(null)
   const {
     popper: viewModeSwitcherMenuPopper,
