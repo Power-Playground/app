@@ -57,6 +57,7 @@ export interface ListProps<T extends ListItem = ListItem> {
 export interface ListRef {
   focus(index?: number): void
   help(): void
+  fold(id?: string, isFolded?: boolean): void
 }
 
 function inVisibleArea(el: HTMLElement, container: HTMLElement) {
@@ -246,7 +247,7 @@ const _List = forwardRefWithStatic<{
     }
     return children
   }, [items])
-  function foldId(id: string, isFolded?: boolean) {
+  const foldId = useCallback((id: string, isFolded?: boolean) => {
     setFoldedIds(foldedIds => {
       const index = foldedIds.indexOf(id)
       const children = getChildren(id)
@@ -258,8 +259,8 @@ const _List = forwardRefWithStatic<{
         return [...foldedIds.slice(0, index), ...foldedIds.slice(index + 1)]
       }
     })
-  }
-  function toggleFoldAll(isFolded?: boolean) {
+  }, [getChildren])
+  const toggleFoldAll = useCallback((isFolded?: boolean) => {
     // TODO performance
     if (isFolded) {
       const hidedIds = new Set<string>()
@@ -277,7 +278,7 @@ const _List = forwardRefWithStatic<{
       setFoldedIds([])
       setHidedIds([])
     }
-  }
+  }, [getChildren, items])
 
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
   const [enableWordMatch, setEnableWordMatch] = useState(false)
@@ -423,8 +424,16 @@ const _List = forwardRefWithStatic<{
     },
     help() {
       helpDialogRef.current?.open()
+    },
+    fold(id, isFolded) {
+      const isAll = id === undefined
+      if (isAll) {
+        toggleFoldAll(isFolded)
+      } else {
+        foldId(id, isFolded)
+      }
     }
-  }), [focusItem])
+  }), [focusItem, foldId, toggleFoldAll])
   // noinspection GrazieInspection,StructuralWrap
   return <>
     {searchbarPopper.popper}

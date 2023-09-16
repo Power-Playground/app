@@ -42,13 +42,13 @@ export default function Project({ template }: DrawerPanelProps) {
   useEffect(() => {
     template('actions', <>
       <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
-        <span className='cldr codicon codicon-expand-all' />
+        <span className='cldr codicon codicon-compass-dot' />
       </button>
-      <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
+      <button onClick={() => listRef.current?.fold(undefined, true)}>
         <span className='cldr codicon codicon-collapse-all' />
       </button>
-      <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
-        <span className='cldr codicon codicon-compass-dot' />
+      <button onClick={() => listRef.current?.fold(undefined, false)}>
+        <span className='cldr codicon codicon-expand-all' />
       </button>
     </>)
     template('moreMenu', [
