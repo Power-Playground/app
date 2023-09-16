@@ -81,6 +81,7 @@ export function DrawerPanel() {
         { id: 'switch-drawer-mode.centered', icon: 'layout-centered', label: 'Centered' }
       ]
     },
+    { id: 'hide', icon: 'remove', label: 'Hide' },
     ...PanelSlots.moreMenu ?? []
   ], {
     onVisibleChange: v => v ? setMenuIsOpen(true) : setMenuIsOpenDelay(false),
@@ -91,6 +92,9 @@ export function DrawerPanel() {
           break
         case 'switch-drawer-mode.centered':
           setWindowMode('centered')
+          break
+        case 'hide':
+          closePanel(MemoActivePanel.id)
           break
       }
     }
@@ -143,7 +147,7 @@ export function DrawerPanel() {
               <kbd>Esc</kbd>
             </>}
             placement='right'>
-            <button onClick={() => MemoActivePanel && closePanel(MemoActivePanel?.id)}>
+            <button onClick={() => closePanel(MemoActivePanel.id)}>
               <span className='cldr codicon codicon-remove' />
             </button>
           </Popover>
