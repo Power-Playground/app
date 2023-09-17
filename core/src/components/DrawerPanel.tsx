@@ -8,7 +8,7 @@ import { useRetimer } from 'foxact/use-retimer'
 import { ExtensionContext } from '../contextes/Extension'
 import { useMenu } from '../hooks/useMenu.tsx'
 
-import { Popover } from './base/Popover'
+import { Tooltip } from './base/Tooltip'
 import type { DrawerPanel as IDrawerPanel, DrawerPanelProps, DrawerPanelSlots } from './drawerPanelCreator'
 import { useDrawerPanelController } from './drawerPanelCreator'
 import { Resizable } from './Resizable'
@@ -117,6 +117,10 @@ export function DrawerPanel() {
         e.stopPropagation()
         activePanel?.id && closePanel(activePanel?.id)
       }
+      if (e.key === 'm' && e.metaKey) {
+        e.stopPropagation()
+        moreMenu.changeVisible(v => !v)
+      }
       onKeydown?.(e)
     }}
     >
@@ -135,23 +139,33 @@ export function DrawerPanel() {
           {MemoActivePanel?.actions}
           {PanelSlots.actions}
           {moreMenu.popper}
-          <button
-            ref={moreMenuRef}
-            onClick={() => moreMenu.changeVisible(v => !v)}
+          <Tooltip
+            content={<>
+              More
+              <br />
+              <kbd>⌘ M</kbd>
+            </>}
+            placement='bottom'
           >
-            <span className='cldr codicon codicon-more' />
-          </button>
-          <Popover
+            <button
+              ref={moreMenuRef}
+              onClick={() => moreMenu.changeVisible(v => !v)}
+            >
+              <span className='cldr codicon codicon-more' />
+            </button>
+          </Tooltip>
+          <Tooltip
             content={<>
               Minimize
               <br />
               <kbd>Esc</kbd>
             </>}
-            placement='right'>
+            placement='right'
+          >
             <button onClick={() => closePanel(MemoActivePanel.id)}>
               <span className='cldr codicon codicon-remove' />
             </button>
-          </Popover>
+          </Tooltip>
         </div>
       </div>
       <div className={`${prefix}__body`}>
