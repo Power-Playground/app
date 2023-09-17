@@ -26,6 +26,7 @@ export interface UseMenuProps {
   onVisibleChange?: (visible: boolean) => void
 }
 
+// TODO support select
 export function useMenu(
   ref: UsePopperProps['referenceElement'],
   items: MenuItem[],

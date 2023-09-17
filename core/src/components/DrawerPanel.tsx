@@ -77,6 +77,7 @@ export function DrawerPanel() {
       icon: windowMode === 'popout' ? 'editor-layout' : 'layout-centered',
       label: 'Switch Drawer Mode',
       children: [
+        // TODO display select status
         { id: 'switch-drawer-mode.popout', icon: 'editor-layout', label: 'Popout' },
         { id: 'switch-drawer-mode.centered', icon: 'layout-centered', label: 'Centered' }
       ]
