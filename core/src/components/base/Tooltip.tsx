@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 
 import type { UsePopperProps } from '../../hooks/usePopper'
 import { usePopper } from '../../hooks/usePopper'
 
 export interface TooltipProps extends Omit<UsePopperProps,
+  | 'content'
   | 'referenceElement'
   | 'placement'
 > {
+  content?: React.ReactNode
+  contentText?: string
+  contentPlaceholder?: React.ReactNode
   children: React.ReactNode
   trigger?: 'hover' | 'always'
   placement?: UsePopperProps['placement']
@@ -14,9 +18,14 @@ export interface TooltipProps extends Omit<UsePopperProps,
   onMouseLeave?: (event: React.MouseEvent) => void
 }
 
+Tooltip.prefix = 'ppd-tooltip'
 export function Tooltip(props: TooltipProps) {
+  const { prefix } = Tooltip
   const {
     trigger = 'hover',
+    content,
+    contentText,
+    contentPlaceholder,
     children,
     onMouseEnter,
     onMouseLeave,
@@ -28,9 +37,25 @@ export function Tooltip(props: TooltipProps) {
   if (!React.isValidElement(children)) {
     throw new Error('Tooltip component must have only one valid child')
   }
+  if (contentText && contentPlaceholder && content) {
+    throw new Error('Tooltip component must have only one content')
+  }
+  const computeContent = useMemo(() => {
+    if (contentText) {
+      return <span>
+        {contentText}
+        {contentPlaceholder && <>
+          {contentText.length > 20 ? <br /> : ' '}
+          <span className={`${prefix}-placeholder`}>{contentPlaceholder}</span>
+        </>}
+      </span>
+    }
+    return content
+  }, [contentText, content, contentPlaceholder, prefix])
   const [referenceElement, setReferenceElement] = useState<HTMLElement | null>(null)
   const { popper, changeVisible } = usePopper({
     referenceElement,
+    content: computeContent,
     arrowVisible: true,
     placement: 'top',
     ...popperProps

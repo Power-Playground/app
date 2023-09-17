@@ -140,11 +140,8 @@ export function DrawerPanel() {
           {PanelSlots.actions}
           {moreMenu.popper}
           <Tooltip
-            content={<>
-              More
-              <br />
-              <kbd>⌘ M</kbd>
-            </>}
+            contentText='More Actions'
+            contentPlaceholder={<kbd>⌘ M</kbd>}
             placement='bottom'
           >
             <button
@@ -155,12 +152,9 @@ export function DrawerPanel() {
             </button>
           </Tooltip>
           <Tooltip
-            content={<>
-              Minimize
-              <br />
-              <kbd>Esc</kbd>
-            </>}
-            placement='right'
+            contentText='Minimize Drawer Panel'
+            contentPlaceholder={<kbd>⎋(Esc)</kbd>}
+            placement='bottom'
           >
             <button onClick={() => closePanel(MemoActivePanel.id)}>
               <span className='cldr codicon codicon-remove' />
