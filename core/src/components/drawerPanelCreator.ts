@@ -21,7 +21,7 @@ export interface DrawerPanelProps {
 export interface DrawerPanel {
   id: string
   icon?: string | ReactNode
-  title: string | ReactNode
+  title?: string | ReactNode
   actions?: ReactNode
   content?: ReactNode
   moreListItems?: ListItem[]
