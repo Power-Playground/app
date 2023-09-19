@@ -205,6 +205,8 @@ export type Editor<X extends {
     icon: string | React.ReactNode
     /** @default 'top' */
     placement?: 'top' | 'bottom'
+    tooltip?: string | React.ReactNode
+    placeholder?: string | React.ReactNode
   }[]
 
   drawerPanels?: DrawerPanel[]
