@@ -93,7 +93,7 @@ jobs:
           mv dist app
           ls -all
           vercel --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
-          PREVIEW_URL=$(cat deployment-url.txt)
+          export PREVIEW_URL=$(cat deployment-url.txt)
 
       - name: Comment is successful
         uses: peter-evans/create-or-update-comment@v3
