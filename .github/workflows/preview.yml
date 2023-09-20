@@ -17,11 +17,11 @@ jobs:
       contents: write
 
     steps:
-      - name: Create comment
+      - name: Receive comment
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
-          issue-number: ${{ github.event.issue.number }}
+          comment-id: ${{ github.event.comment.id }}
           reactions: rocket
 
 #      - uses: actions/checkout@v4
