@@ -25,13 +25,72 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           reactions: rocket
 
-  deploy-if-watched:
+  build-dist:
     needs: watch-contain-target-issue
     runs-on: ubuntu-latest
 
     steps:
-      - name: Echo hello
-        run: echo hello
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        run: corepack enable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run:  pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
+
+      - name: Build site
+        env:
+          BASE_URL: app
+        run: |
+          pnpm build
+          tar -czvf dist.tar.gz dist vercel.json
+
+      - name: upload dist and vercel.json
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist.tar.gz
+
+  deploy-to-vercel-for-preview:
+    needs: build-dist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Download dist
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: .
+
+      - name: Unzip dist
+        run: tar -xzvf dist.tar.gz
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '18'
+      - name: Install Vercel CLI
+        run: npm add -g vercel
+
+      - name: Deploy to Vercel
+        env:
+          BASE: None
+        run: |
+          mv dist app
+          vercel --token=${{ secrets.VERCEL_TOKEN }} | awk -F 'Preview: ' '{print $2}' | awk '{print $1}' | grep -v '^$' > preview_url
+          PREVIEW_URL=$(cat preview_url)
       - name: Comment is successful
         uses: peter-evans/create-or-update-comment@v3
         with:
@@ -39,67 +98,7 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           issue-number: ${{ github.event.issue.number }}
           body: |
-              **Deploy preview**
-              - [Preview](https://baidu.com)
+            **Deploy preview**
+            - [Preview]({{ env.PREVIEW_URL }})
           edit-mode: replace
           reactions: hooray
-#      - uses: actions/checkout@v4
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Install pnpm
-#        run: corepack enable
-#
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v3
-#        with:
-#          node-version: '18'
-#          cache: 'pnpm'
-#
-#      - name: Install dependencies
-#        run:  pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
-#
-#      - name: Build site
-#        env:
-#          BASE_URL: app
-#        run: |
-#          pnpm build
-#          tar -czvf dist.tar.gz dist vercel.json
-#
-#      - name: upload dist and vercel.json
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: dist
-#          path: dist.tar.gz
-#
-#  deploy-to-vercel-for-preview:
-#    needs: build-dist
-#    runs-on: ubuntu-latest
-#    permissions:
-#      contents: write
-#    env:
-#      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-#      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-#
-#    steps:
-#      - name: Download dist
-#        uses: actions/download-artifact@v2
-#        with:
-#          name: dist
-#          path: .
-#
-#      - name: Unzip dist
-#        run: tar -xzvf dist.tar.gz
-#      - name: Setup Node.js
-#        uses: actions/setup-node@v1
-#        with:
-#          node-version: '18'
-#      - name: Install Vercel CLI
-#        run: npm add -g vercel
-#
-#      - name: Deploy to Vercel
-#        env:
-#          BASE: None
-#        run: |
-#          mv dist app
-#          vercel --token=${{ secrets.VERCEL_TOKEN }}
