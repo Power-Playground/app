@@ -33,6 +33,7 @@ export interface ResizableProps extends Omit<
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     args: { type: string }
   ) => void
+  onResized?: (el: HTMLDivElement) => void
 }
 
 function resolveResizable(resizable?: ResizableProps['resizable']): [
@@ -54,7 +55,8 @@ function resolveResizable(resizable?: ResizableProps['resizable']): [
 const prefix = 'ppd-resizable'
 
 function mountResize(
-  ele: HTMLDivElement
+  ele: HTMLDivElement,
+  onResized?: ResizableProps['onResized']
 ) {
   const gets = {
     get MIN_WIDTH() {
@@ -126,11 +128,12 @@ function mountResize(
     e.stopPropagation()
   }
   function onGlobalMouseUp() {
-    registerResizeFuncs
-      .forEach(f => document.removeEventListener('mousemove', f, false))
+    const f = registerResizeFuncs.pop()
+    f && document.removeEventListener('mousemove', f, false)
     document
       .querySelectorAll('iframe')
       .forEach(e => e.style.pointerEvents = '')
+    onResized?.(ele)
     ele.style.userSelect = ''
     ele.style.transition = ''
   }
@@ -150,6 +153,7 @@ export function Resizable({
   _ref,
   resizable,
   onBorderBtnClick,
+  onResized,
   ...props
 }: ResizableProps) {
   const resizableDivRef = useRef<HTMLDivElement>(null)
@@ -197,7 +201,7 @@ export function Resizable({
 
       // @ts-ignore
       resizableDivRef.current = ele
-      dispose.current = mountResize(ele)
+      dispose.current = mountResize(ele, onResized)
     }}
     {...props}
     >
