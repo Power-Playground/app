@@ -1,0 +1,6 @@
+packages:
+  - 'core'
+  - 'vite-plugins/*'
+  - 'external/zodui/packages/core'
+  - 'external/zodui/packages/react'
+  - 'external/zodui/packages/plugins/*'

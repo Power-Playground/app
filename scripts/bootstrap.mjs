@@ -23,8 +23,8 @@ function execa(command, argvs = [], options = defaultOptions) {
 }
 
 async function main() {
-  await execa('yarn', ['install'])
-  await execa('yarn', ['build:replacer'])
+  await execa('pnpm', ['install'])
+  await execa('pnpm', ['build:replacer'])
 }
 
 

@@ -6,18 +6,12 @@
   "repository": "git@github.com:Power-Playground/app.git",
   "author": "YiJie <yijie4188@gmail.com>",
   "license": "MIT",
-  "workspaces": [
-    "core",
-    "vite-plugins/*",
-    "external/zodui/packages/core",
-    "external/zodui/packages/react",
-    "external/zodui/packages/plugins/*"
-  ],
+  "packageManager": "pnpm@8.7.6",
   "scripts": {
     "serve": "vite",
     "build": "vite build",
     "build:watch": "vite build --watch",
-    "build:replacer": "yarn --cwd vite-plugins/replacer build",
+    "build:replacer": "pnpm --dir ./vite-plugins/replacer build",
     "preview": "vite preview",
     "bootstrap": "node scripts/bootstrap.mjs"
   },
@@ -49,7 +43,8 @@
     "typescript": "^5.1.6",
     "vite": "^4.4.0",
     "vite-plugin-cdn2": "^0.12.0",
-    "vite-plugin-inspect": "^0.7.38"
+    "vite-plugin-inspect": "^0.7.38",
+    "@power-playground/core":"workspace:*"
   },
   "engines": {
     "node": ">=18.16.0"
