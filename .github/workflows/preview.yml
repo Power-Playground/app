@@ -102,3 +102,20 @@ jobs:
             - [Preview]({{ env.PREVIEW_URL }})
           edit-mode: replace
           reactions: hooray
+
+  failure-report:
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment is failed
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.PAT }}
+          comment-id: ${{ github.event.comment.id }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            **Deploy preview**
+            - Failed to deploy preview
+            - [action detail page]({{ github.event.issue.html_url }})
+          edit-mode: replace
+          reactions: confused
