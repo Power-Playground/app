@@ -126,11 +126,12 @@ function mountResize(
     e.stopPropagation()
   }
   function onGlobalMouseUp() {
-    registerResizeFuncs
-      .forEach(f => document.removeEventListener('mousemove', f, false))
+    const f = registerResizeFuncs.pop()
+    f && document.removeEventListener('mousemove', f, false)
     document
       .querySelectorAll('iframe')
       .forEach(e => e.style.pointerEvents = '')
+    localStorage.setItem('zone-width', ele.style.width)
     ele.style.userSelect = ''
     ele.style.transition = ''
   }

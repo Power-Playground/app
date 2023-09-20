@@ -90,7 +90,7 @@ function Main({
         resizable={resizable}
         style={{
           '--editor-width': dockTo === 'bottom' ? '100%'
-            : evalLogsVisible ? '65%' : '100%',
+            : evalLogsVisible ? localStorage.getItem('zone-width') ?? '65%' : '100%',
           '--editor-height': dockTo !== 'bottom' ? '100%'
             : evalLogsVisible ? '50%' : '100%'
         }}
