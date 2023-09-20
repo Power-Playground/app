@@ -6,7 +6,7 @@ name: Build Production
 on:
   push:
     paths-ignore:
-      - '!.github/workflows/production.yml'
+      - '.github/workflows/preview.yml'
     branches:
       - 'main'
 
