@@ -112,6 +112,6 @@ jobs:
           body: |
             **Deploy preview**
             - Failed to deploy preview
-            - [action detail page]({{ github.event.issue.html_url }})
+            - [action detail page](https://github.com/Power-Playground/app/actions/runs/${{ github.run_id }})
           edit-mode: replace
           reactions: confused
