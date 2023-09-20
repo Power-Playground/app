@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: Receive comment
         uses: peter-evans/create-or-update-comment@v3
+        if: ${{ github.event.comment.body == 'Deploy Preview' }}
         with:
           token: ${{ secrets.PAT }}
           comment-id: ${{ github.event.comment.id }}
