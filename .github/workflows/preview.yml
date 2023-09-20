@@ -21,6 +21,7 @@ jobs:
       - name: Add reaction
         uses: peter-evans/create-or-update-comment@v3
         with:
+          token: ${{ secrets.PAT }}
           comment-id: ${{ github.event.comment.id }}
           reactions: eyes
 
