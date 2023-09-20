@@ -91,7 +91,6 @@ jobs:
           BASE: None
         run: |
           mv dist app
-          ls -all
           vercel --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
           export PREVIEW_URL=$(cat deployment-url.txt)
 
@@ -103,7 +102,7 @@ jobs:
           issue-number: ${{ github.event.issue.number }}
           body: |
             **Deploy preview**
-            - [Preview]({{ env.PREVIEW_URL }})
+            - [Preview](${{ env.PREVIEW_URL }})
           edit-mode: replace
           reactions: hooray
       - name: Comment is failed
