@@ -33,9 +33,7 @@ export interface ResizableProps extends Omit<
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     args: { type: string }
   ) => void
-
   onResized?: (el: HTMLDivElement) => void
-
 }
 
 function resolveResizable(resizable?: ResizableProps['resizable']): [
