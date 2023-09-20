@@ -76,7 +76,9 @@ jobs:
           path: .
 
       - name: Unzip dist
-        run: tar -xzvf dist.tar.gz
+        run: |
+          tar -xzvf dist.tar.gz
+          rm dist.tar.gz
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
