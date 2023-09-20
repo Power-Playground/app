@@ -22,8 +22,6 @@ jobs:
         with:
           token: ${{ secrets.PAT }}
           issue-number: ${{ github.event.issue.number }}
-          body: |
-            This comment was written by a bot!
           reactions: rocket
 
 #      - uses: actions/checkout@v4
