@@ -102,12 +102,8 @@ jobs:
             - [Preview]({{ env.PREVIEW_URL }})
           edit-mode: replace
           reactions: hooray
-
-  failure-report:
-    if: ${{ failure() }}
-    runs-on: ubuntu-latest
-    steps:
       - name: Comment is failed
+        if: ${{ failure() }}
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.PAT }}
