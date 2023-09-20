@@ -99,7 +99,7 @@ jobs:
         with:
           node-version: '18'
       - name: Install Vercel CLI
-        run: pnpm add -g vercel
+        run: npm add -g vercel
 
       - name: Deploy to Vercel
         env:
