@@ -185,6 +185,7 @@ export default function EditorZone(props: EditorZoneProps) {
           }}
           resizable={props.resizable ?? { right: true }}
           onBorderBtnClick={props.onBorderBtnClick}
+          onResized={(el)=>localStorage.setItem('zone-width', el.style.width)}
         >
           {enableMenuSwitch && <Popover
             placement='right'
