@@ -29,13 +29,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install pnpm
-        run:  corepack enable
+        run: corepack enable
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-          cache:  'pnpm'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run:  pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
@@ -99,7 +99,7 @@ jobs:
         with:
           node-version: '18'
       - name: Install Vercel CLI
-        run: pnpm add -g  vercel
+        run: pnpm add -g vercel
 
       - name: Deploy to Vercel
         env:
