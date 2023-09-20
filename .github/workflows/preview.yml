@@ -3,10 +3,13 @@
 
 name: Build Preview
 
+#on:
+#  pull_request_target:
+#    branches:
+#      - 'main'
 on:
-  pull_request_target:
-    branches:
-      - 'main'
+  issue_comment:
+    types: [created]
 
 jobs:
   build-dist:
