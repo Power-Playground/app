@@ -6,18 +6,12 @@
   "repository": "git@github.com:Power-Playground/app.git",
   "author": "YiJie <yijie4188@gmail.com>",
   "license": "MIT",
-  "workspaces": [
-    "core",
-    "vite-plugins/*",
-    "external/zodui/packages/core",
-    "external/zodui/packages/react",
-    "external/zodui/packages/plugins/*"
-  ],
+  "packageManager": "pnpm@8.7.6",
   "scripts": {
     "serve": "vite",
     "build": "vite build",
     "build:watch": "vite build --watch",
-    "build:replacer": "yarn --cwd vite-plugins/replacer build",
+    "build:replacer": "pnpm --dir ./vite-plugins/replacer build",
     "preview": "vite preview",
     "bootstrap": "node scripts/bootstrap.mjs"
   },
@@ -31,9 +25,11 @@
     "@types/node": "^18.16.20",
     "@types/react": "^18.2.18",
     "@types/react-dom": "^18.2.6",
+    "@types/ramda": "^0.29.3",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-react": "^4.0.4",
+    "@vscode/codicons": "^0.0.33",
     "dotenv": "^16.3.1",
     "eslint": "^8.44.0",
     "eslint-plugin-react": "^7.32.2",
@@ -42,13 +38,15 @@
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "fast-glob": "^3.3.1",
     "react-toastify": "^9.1.3",
+    "ramda": "^0.29.0",
     "rollup-plugin-visualizer": "^5.9.2",
     "sass": "^1.64.0",
     "sentinel-js": "^0.0.7",
     "typescript": "^5.1.6",
     "vite": "^4.4.0",
     "vite-plugin-cdn2": "^0.12.0",
-    "vite-plugin-inspect": "^0.7.38"
+    "vite-plugin-inspect": "^0.7.38",
+    "@power-playground/core":"workspace:*"
   },
   "engines": {
     "node": ">=18.16.0"

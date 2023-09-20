@@ -3,6 +3,8 @@
 ![Power Playground Icon-Light](./resources/PP_cover_light.svg#gh-light-mode-only)
 ![Power Playground Icon-Dark](./resources/PP_cover_dark.svg#gh-dark-mode-only)
 
+[![wakatime](https://wakatime.com/badge/user/aed75b57-20cc-4365-9914-0f5e77255daf/project/72348222-3426-403a-8ed5-5cc6dcd8e718.svg)](https://wakatime.com/badge/user/aed75b57-20cc-4365-9914-0f5e77255daf/project/72348222-3426-403a-8ed5-5cc6dcd8e718)
+
 |[zh-Hans](./resources/README.zh-Hans.md)
 |en-US
 
@@ -68,6 +70,13 @@ Provide a powerful and scalable API to simplify the cost of building an excellen
             <img src="https://avatars.githubusercontent.com/u/15249633?v=4" width="100;" alt="kainstar"/>
             <br />
             <sub><b>KainStar</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/Losses">
+            <img src="https://avatars.githubusercontent.com/u/1384036?v=4" width="100;" alt="Losses"/>
+            <br />
+            <sub><b>Losses Don</b></sub>
         </a>
     </td>
     <td align="center">

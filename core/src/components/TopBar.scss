@@ -45,3 +45,6 @@ div.ppd-top-bar {
     }
   }
 }
+.ppd-editor-zone__menu-switch:not(.is-active) ~ .ppd-editor-zone__container div.ppd-top-bar {
+  padding-left: 35px;
+}

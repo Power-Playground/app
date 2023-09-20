@@ -1,65 +1,54 @@
 .theme-switch {
   position: relative;
-  width: 85px;
+
   display: flex;
   align-items: center;
-  padding: 4px;
-  border-radius: 4px;
-  overflow: hidden;
-  transition: 0.3s;
-
-  > .cur-card {
-    z-index: 9;
-    position: absolute;
-    left: -100px;
-    width: calc((100% - 8px) / 3);
-    height: calc(100% - 8px);
-    border-radius: 4px;
-    transition: 0.3s;
-  }
-  &[data-mode=light] > .cur-card {
-    left: 4px;
-    background-color: rgba(255, 255, 255, 0.8);
-  }
-  &[data-mode=dark] > .cur-card {
-    left: calc((100% - 8px) / 3 * 1 + 4px);
-    background-color: rgba(142, 142, 142, 0.55);
-  }
-  &[data-mode=auto] > .cur-card {
-    left: calc((100% - 8px) / 3 * 2 + 4px);
-    background-color: color-mix(in srgb, var(--primary), var(--bg-cr) 50%);
-  }
+  gap: 5px;
   > .light,
   > .dark,
   > .auto {
-    z-index: 10;
-    display: flex;
-    padding: 2px;
+    width: 28px;
+    height: 28px;
+    -webkit-mask-size: 28px !important;
+    mask-size: 28px !important;
+    background-color: white;
+
     cursor: pointer;
-    > svg {
-      transition: 0.3s;
+    transition: .2s;
+    &:hover ~ .active {
+      opacity: .3;
+    }
+    &:hover {
+      opacity: .7;
     }
   }
   > .light {
-    color: orange;
-    &:hover > svg {
-      filter: drop-shadow(0 0 4px orange);
+    -webkit-mask: url(./ts_light.svg) center no-repeat;
+    mask: url(./ts_light.svg) center no-repeat;
+    &:hover, &.active {
+      -webkit-mask: url(./ts_light_active.svg) center no-repeat;
+      mask: url(./ts_light_active.svg) center no-repeat;
+      background-color: #ff9a00;
     }
   }
   > .dark {
-    color: yellow;
-    &:hover > svg {
-      filter: drop-shadow(0 0 4px yellow);
+    -webkit-mask: url(./ts_dark.svg) center no-repeat;
+    mask: url(./ts_dark.svg) center no-repeat;
+    &:hover, &.active {
+      -webkit-mask: url(./ts_dark_active.svg) center no-repeat;
+      mask: url(./ts_dark_active.svg) center no-repeat;
+      background-color: yellow;
     }
   }
   > .auto {
-    position: relative;
-    > svg:first-child {
-      border-right: 2px dashed white;
-      color: orange;
-    }
-    > svg:last-child {
-      color: yellow;
+    background-color: unset;
+    background-image: url(./ts_auto.svg);
+    background-size: 28px;
+    filter: invert(.8);
+    opacity: .8;
+    &:hover, &.active {
+      background-image: url(./ts_auto_active.svg);
+      filter: invert(1);
     }
   }
 }

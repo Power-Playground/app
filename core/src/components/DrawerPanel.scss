@@ -85,6 +85,7 @@
     }
   }
   &:hover &__header__actions,
+  &:focus-within &__header__actions,
   &--menu-open &__header__actions {
     opacity: 1;
   }
@@ -93,7 +94,10 @@
     min-width: 0;
     max-width: 0;
   }
-  .ppd-editor-zone__menu-switch:not(.is-active) ~ &.centered > &__header {
+  .ppd-editor-zone__menu-switch:not(.is-active) ~ &:not(.centered) {
+    left: 0;
+  }
+  .ppd-editor-zone__menu-switch:not(.is-active) ~ & > &__header {
     padding-left: 28px;
   }
 

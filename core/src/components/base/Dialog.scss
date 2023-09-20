@@ -6,23 +6,28 @@ dialog.ppd-dialog {
   z-index: 1000;
   top: 0;
   left: 0;
+
   padding: 0;
   width: 100vw;
   height: 100vh;
-  background-color: #0008;
+
+  background-color: #00000000;
   outline: none;
   border: none;
-  transition: .5s;
+
+  transition: .3s;
   & {
     display: block;
-    opacity: 0;
     pointer-events: none;
     visibility: hidden;
   }
   &[open] {
-    opacity: 1;
-    pointer-events: auto;
-    visibility: visible;
+    pointer-events: unset;
+    visibility: unset;
+    background-color: #0000000a;
+    html[theme-mode=dark] & {
+      background-color: #00000040;
+    }
     > .ppd-dialog__container {
       top: 50%;
     }
@@ -32,23 +37,35 @@ dialog.ppd-dialog {
     flex-direction: column;
 
     position: absolute;
-    top: 100%;
+    top: 150%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: var(--width);
     max-height: var(--max-height);
     min-height: var(--min-height);
+    border-radius: 8px;
+
     color: var(--fr-cr);
-    background-color: var(--bg-cr);
-    box-shadow: 0 30px 128px #2224;
-    border-radius: 4px;
+    background-color: var(--bg-cr-o0);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 16px #2224;
+
     overflow: overlay;
     transition: .5s;
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 20px 32px #2222;
+    }
     > .ppd-dialog__title {
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       height: 36px;
+
+      background-color: var(--bg-cr);
+      border-bottom: 1px solid var(--border-color);
       box-shadow: 0 0 48px #ccc;
       html[theme-mode=dark] & {
         box-shadow: 0 0 32px #1119;

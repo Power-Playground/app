@@ -12,6 +12,7 @@ export const POPPER_PREFIX = 'ppd-popper'
 export interface UsePopperProps {
   referenceElement: HTMLElement | VirtualElement | null
 
+  focusAbility?: boolean
   content: React.ReactNode
   className?: string
   style?: React.CSSProperties
@@ -20,9 +21,12 @@ export interface UsePopperProps {
   placement: Placement
   offset?: [number, number]
   arrowVisible?: boolean
+  defaultVisible?: boolean
 
   onVisibleChange?: (visible: boolean) => void
   onKeydown?: (event: React.KeyboardEvent) => void
+  onFocus?: (event: React.FocusEvent) => void
+  onBlur?: (event: React.FocusEvent) => void
 }
 
 export const usePopper = (props: UsePopperProps) => {
@@ -31,8 +35,10 @@ export const usePopper = (props: UsePopperProps) => {
     content,
     onVisibleChange, onKeydown,
     closeWhenMouseLeave,
+    focusAbility = true,
     placement, offset = [0, 0],
-    arrowVisible
+    arrowVisible,
+    defaultVisible = false
   } = props
 
   const [popperElement, setPopperElement] = useState<HTMLDivElement | null>(null)
@@ -61,35 +67,48 @@ export const usePopper = (props: UsePopperProps) => {
     }
   }, [arrowElement, offset, placement])
 
-  const [visible, setVisible] = useState(false)
-  const changeVisible = useCallback((visible: boolean) => {
-    setVisible(visible)
-    onVisibleChange?.(visible)
+  const [visible, setVisible] = useState(defaultVisible)
+  const changeVisible = useCallback<typeof setVisible>((arg0) => {
+    if (arg0 instanceof Function) {
+      setVisible(prev => {
+        const next = arg0(prev)
+        onVisibleChange?.(next)
+        return next
+      })
+    } else {
+      setVisible(arg0)
+      onVisibleChange?.(arg0)
+    }
   }, [onVisibleChange])
   useEffect(() => {
     if (visible) {
       popper.current?.update()
       setTimeout(() => {
         setArrowPlacement(popper.current?.state?.placement ?? 'top')
-        setTimeout(() => popperElement?.focus(), 200)
+        focusAbility
+          && setTimeout(() => popperElement?.focus(), 200)
       }, 100)
     }
-  }, [popperElement, visible])
+  }, [popperElement, visible, focusAbility])
 
   const display = useDebouncedValue(visible, 200)
   const [popoverId] = useState(() => Math.random().toString(36).slice(2))
   return {
     visible,
     changeVisible,
-    clickOther: useCallback((event: MouseEvent) => {
-      if (popperElement && !popperElement.contains(event.target as Node)) {
+    whenClickOtherAndHide: useCallback((event: MouseEvent) => {
+      if (popperElement && !popperElement.contains(event.target as Node) && (
+        !referenceElement
+        || !(referenceElement instanceof HTMLElement)
+        || !(referenceElement.contains(event.target as Node))
+      )) {
         changeVisible(false)
       }
-    }, [changeVisible, popperElement]),
+    }, [changeVisible, popperElement, referenceElement]),
     popper: (
       visible ? true : display
     ) && createPortal(<div
-      tabIndex={0}
+      tabIndex={focusAbility ? 0 : undefined}
       ref={setPopperElement}
       className={classnames(POPPER_PREFIX, 'monaco-editor', props.className)}
       data-show={!visible ? false : display}
@@ -110,6 +129,8 @@ export const usePopper = (props: UsePopperProps) => {
           event.stopPropagation()
         }
       }}
+      onFocus={props.onFocus}
+      onBlur={props.onBlur}
       >
       {content}
       {arrowVisible && <div

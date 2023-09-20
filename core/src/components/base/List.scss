@@ -1,3 +1,5 @@
+@import 'List.share';
+
 .ppd-list {
   --indent-size: 20px;
 
@@ -15,6 +17,8 @@
 
     padding: 2px 4px;
     height: 18px;
+    border-radius: 4px 4px 0 0;
+    border-bottom: none;
 
     font-size: 12px;
     user-select: none;
@@ -88,14 +92,15 @@
     padding: var(--padding);
     padding-left: var(--inner-padding-left);
     min-width: calc(100% - var(--inner-padding-left) - var(--padding) - 4px);
+    max-height: calc(18px + var(--padding) * 2 + 4px);
     border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
     border: 2px solid transparent;
 
     user-select: none;
     transition:
+            var(--inner-duration) max-height,
             var(--inner-duration) background-color,
             var(--inner-duration) color,
-            var(--inner-duration) border-color,
             var(--inner-duration) box-shadow;
     &:hover {
       z-index: 10;
@@ -140,6 +145,7 @@
         bottom: 0;
         border-radius: var(--br-0) var(--br-1) var(--br-2) var(--br-3);
         border: 2px dashed var(--primary-active-border);
+        pointer-events: none;
       }
     }
     &.selected {
@@ -151,6 +157,12 @@
     &.disabled {
       cursor: not-allowed;
       opacity: .5;
+    }
+    &.hided {
+      max-height: 0;
+      padding: 0;
+      border: none;
+      overflow: hidden;
     }
     &.active, &.selected, &:focus, &:focus-visible {
       background-color: var(--primary-active);
@@ -164,6 +176,25 @@
       color: var(--fr-cr);
       &.space {
         width: 16px;
+      }
+      &.codicon-chevron-right {
+        pointer-events: visible;
+      }
+      @at-root button#{&} {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 0;
+        width: 16px;
+        height: 16px;
+
+        border: none;
+        background-color: transparent;
+
+        cursor: pointer;
+        user-select: none;
+        transition: .05s;
       }
     }
     &__label {
@@ -180,5 +211,19 @@
     &__placeholder {
       color: var(--fr-cr-placholder);
     }
+  }
+  &:not(&--contain-icon) {
+    .ppd-list-item__icon {
+      display: none;
+    }
+  }
+  &:not(&--contain-indent) {
+    .ppd-list-item__icon.space:first-child {
+      display: none;
+    }
+  }
+  &:focus-visible {
+    outline: 1px solid var(--primary-active-border);
+    outline-offset: -2px;
   }
 }

@@ -14,7 +14,7 @@ const prefix = 'social__share'
 
 export const Share: React.ComponentType<BarItemProps> = () => {
   const [vEle, setVEle] = useState<VirtualElement | null>(null)
-  const { popper, visible, changeVisible, clickOther } = usePopper({
+  const { popper, visible, changeVisible, whenClickOtherAndHide } = usePopper({
     referenceElement: vEle,
     className: 'ppd-contextmenu',
     content: <>
@@ -48,7 +48,7 @@ export const Share: React.ComponentType<BarItemProps> = () => {
   })
   useEffect(() => {
     function withOffClick (e: MouseEvent) {
-      clickOther(e)
+      whenClickOtherAndHide(e)
       removeEventListener('click', withOffClick)
     }
     if (visible) {
@@ -58,7 +58,7 @@ export const Share: React.ComponentType<BarItemProps> = () => {
         removeEventListener('click', withOffClick)
       }
     }
-  }, [clickOther, visible])
+  }, [whenClickOtherAndHide, visible])
   return <>
     {popper}
     <Popover

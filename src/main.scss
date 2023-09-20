@@ -9,6 +9,8 @@ body {
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+}
+body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -17,14 +19,15 @@ body {
   --match-span-cr: #ff950b;
 
   --primary-hover: #365eb422;
-  --primary-hover-fc: #fff;
+  --primary-hover-fc: #888;
 
   --primary-active: #365eb444;
   --primary-active-border: #365eb4cc;
   --primary-active-fc: color-mix(in srgb, var(--fr-cr), var(--primary) 20%);
   --primary-active-placholder:rgba(255, 255, 255, 0.6);
 
-  --border-color: #cccccc;
+  --border-color: #ddd;
+  --shadow-color: #9995;
 
   --fr-cr: rgba(0, 0, 0, 0.9);
   --fr-cr-placholder: rgba(0, 0, 0, 0.26);
@@ -42,11 +45,14 @@ body {
     --primary: #263c6e;
     --match-span-cr: #e38520;
 
-    --primary-hover: #263c6e44;
+    --primary-hover: #263c6e88;
 
-    --primary-active: #263c6e66;
+    --primary-active: #263c6eaa;
     --primary-active-fc: rgba(230, 230, 230, 0.9);
     --primary-active-placholder:rgba(140, 140, 140, 0.6);
+
+    --border-color: #333333;
+    --shadow-color: #0008;
 
     --fr-cr: rgba(255, 255, 255, 0.9);
     --fr-cr-placholder: rgba(255, 255, 255, 0.26);

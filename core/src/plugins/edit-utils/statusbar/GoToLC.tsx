@@ -35,6 +35,7 @@ export function GoToLC() {
       editorInstance.trigger('whatever', 'editor.action.gotoLine', {})
     }}
     >
+    {/* TODO display selected text char, if contain line break, display line break */}
     <div className='line-and-column'>{line}:{column}</div>
   </Popover>
 }

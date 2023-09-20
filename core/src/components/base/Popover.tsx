@@ -7,7 +7,6 @@ import { POPPER_PREFIX, usePopper } from '../../hooks/usePopper'
 
 export interface PopoverProps extends Pick<
   UsePopperProps,
-    | 'placement'
     | 'offset'
     | 'onVisibleChange'
     | 'onKeydown'
@@ -16,6 +15,7 @@ export interface PopoverProps extends Pick<
   children: React.ReactNode
   content: React.ReactNode
 
+  placement?: UsePopperProps['placement']
   trigger?: 'click' | 'hover' | 'always'
 
   className?: string
@@ -117,10 +117,10 @@ export const Popover = forwardRef<PopoverRef, PopoverProps>(function Popover(pro
           changeVisible(true)
         }
       }}
-      onBlur={event => {
+      onBlur={e => {
         if (props.tabIndex !== undefined) {
-          if (event.relatedTarget instanceof HTMLElement) {
-            if (event.relatedTarget.closest(
+          if (e.relatedTarget instanceof HTMLElement) {
+            if (e.relatedTarget.closest(
               `.${POPPER_PREFIX}, .${prefix}-reference`
             )) return
           }

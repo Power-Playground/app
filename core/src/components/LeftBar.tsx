@@ -7,6 +7,7 @@ import { useSetAtom } from 'jotai'
 import PP from '../../../resources/PP_P.svg'
 import { ExtensionContext } from '../contextes/Extension'
 
+import { Tooltip } from './base/Tooltip'
 import { useDrawerPanelController } from './drawerPanelCreator'
 import { isVimModeAtom } from './EditorZoneShareAtoms'
 import { NotImplemented } from './NotImplemented'
@@ -36,15 +37,28 @@ export function LeftBar(props: LeftBarProps) {
   const bottomItems = useMemo(() => leftbarItems.filter(item => (
     item.placement === 'bottom'
   )), [leftbarItems])
-  const buildElements = (items: typeof leftbarItems) => items.map(({ id, icon }) => <button
-    key={id}
-    className={classnames({ active: activePanel?.id === id })}
-    onClick={() => togglePanel(id)}
-    >
-    {typeof icon === 'string'
-      ? <span className={`cldr codicon codicon-${icon}`}></span>
-      : icon}
-  </button>)
+  const buildElements = (items: typeof leftbarItems) => items.map(({ id, tooltip, placeholder, icon }) => {
+    const btn = <button
+      key={id}
+      className={classnames({ active: activePanel?.id === id })}
+      onClick={() => togglePanel(id)}
+      >
+      {typeof icon === 'string'
+        ? <span className={`cldr codicon codicon-${icon}`}></span>
+        : icon}
+    </button>
+    const tooltipProps = typeof tooltip === 'string' && placeholder
+      ? { contentText: tooltip, contentPlaceholder: placeholder }
+      : { content: tooltip }
+    return tooltip && placeholder
+      ? <Tooltip key={id}
+                 placement='right'
+                 offset={[0, 8]}
+                 {...tooltipProps}>
+        {btn}
+      </Tooltip>
+      : btn
+  })
   const toggleVimMode = useSetAtom(isVimModeAtom)
 
   return <div className={classnames(prefix, props.className)}
