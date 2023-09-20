@@ -18,31 +18,38 @@ jobs:
       contents: write
 
     steps:
-      - name: Find Comment
-        uses: peter-evans/find-comment@v2
-        id: fc
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'NWYLZW'
-          body-includes: Test
-
-      - name: Create comment
-        if: steps.fc.outputs.comment-id == ''
+      - name: Add reaction
         uses: peter-evans/create-or-update-comment@v3
         with:
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            This comment was written by a bot!
-          reactions: rocket
+          comment-id: ${{ github.event.comment.id }}
+          reactions: eyes
 
-      - name: Update comment
-        if: steps.fc.outputs.comment-id != ''
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          comment-id: ${{ steps.fc.outputs.comment-id }}
-          body: |
-            This comment has been updated!
-          reactions: hooray
+#      - name: Find Comment
+#        uses: peter-evans/find-comment@v2
+#        id: fc
+#        with:
+#          issue-number: ${{ github.event.pull_request.number }}
+#          comment-author: 'NWYLZW'
+#          body-includes: Test
+#
+#      - name: Create comment
+#        if: steps.fc.outputs.comment-id == ''
+#        uses: peter-evans/create-or-update-comment@v3
+#        with:
+#          issue-number: ${{ github.event.pull_request.number }}
+#          body: |
+#            This comment was written by a bot!
+#          reactions: rocket
+#
+#      - name: Update comment
+#        if: steps.fc.outputs.comment-id != ''
+#        uses: peter-evans/create-or-update-comment@v3
+#        with:
+#          comment-id: ${{ steps.fc.outputs.comment-id }}
+#          body: |
+#            This comment has been updated!
+#          reactions: hooray
+
 #      - uses: actions/checkout@v4
 #        with:
 #          fetch-depth: 0
