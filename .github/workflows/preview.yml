@@ -92,8 +92,12 @@ jobs:
         run: |
           mv dist app
           vercel --token=${{ secrets.VERCEL_TOKEN }} > deployment-url.txt
-          export PREVIEW_URL=$(cat deployment-url.txt)
-          echo PREVIEW_URL:$PREVIEW_URL
+          echo "PREVIEW_URL=$(cat deployment-url.txt)" >> $GITHUB_ENV
+
+      - name: Test
+        run: |
+          echo "\$PREVIEW_URL":$PREVIEW_URL
+          echo "\${{ env.PREVIEW_URL }}":${{ env.PREVIEW_URL }}
 
       - name: Comment is successful
         uses: peter-evans/create-or-update-comment@v3
