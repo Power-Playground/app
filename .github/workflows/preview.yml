@@ -12,7 +12,7 @@ on:
     types: [created]
 
 jobs:
-  build-dist:
+  watch-contain-target-issue:
     runs-on: ubuntu-latest
     permissions:
       contents: write
