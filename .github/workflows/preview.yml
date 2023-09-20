@@ -39,8 +39,10 @@ jobs:
           comment-id: ${{ github.event.comment.id }}
           issue-number: ${{ github.event.issue.number }}
           body: |
-              **Deploy Preview**
+              **Deploy preview**
               - [Preview](https://baidu.com)
+          edit-mode: replace
+          reactions: hooray
 #      - uses: actions/checkout@v4
 #        with:
 #          fetch-depth: 0
