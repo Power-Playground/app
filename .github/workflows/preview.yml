@@ -89,8 +89,9 @@ jobs:
           BASE: None
         run: |
           mv dist app
-          vercel --token=${{ secrets.VERCEL_TOKEN }} | awk -F 'Preview: ' '{print $2}' | awk '{print $1}' | grep -v '^$' > preview_url
-          PREVIEW_URL=$(cat preview_url)
+          vercel --token=${{ secrets.VERCEL_TOKEN }} | awk -F 'Preview: ' '{print $2}' | awk '{print $1}' | grep -v '^$'
+          PREVIEW_URL=https://baidu.com
+
       - name: Comment is successful
         uses: peter-evans/create-or-update-comment@v3
         with:
@@ -112,6 +113,6 @@ jobs:
           body: |
             **Deploy preview**
             - Failed to deploy preview
-            - [action detail page](https://github.com/Power-Playground/app/actions/runs/${{ github.run_id }})
+            - [Action detail page](https://github.com/Power-Playground/app/actions/runs/${{ github.run_id }})
           edit-mode: replace
           reactions: confused
