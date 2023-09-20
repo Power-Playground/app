@@ -89,6 +89,7 @@ jobs:
           BASE: None
         run: |
           mv dist app
+          ls -all
           vercel --token=${{ secrets.VERCEL_TOKEN }} | awk -F 'Preview: ' '{print $2}' | awk '{print $1}' | grep -v '^$'
           PREVIEW_URL=https://baidu.com
 
