@@ -12,6 +12,7 @@ on:
 
 jobs:
   watch-contain-target-issue:
+    if: ${{ github.event.comment.body == 'Deploy preview' && github.event.issue.pull_request != null }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,12 +20,27 @@ jobs:
     steps:
       - name: Receive comment
         uses: peter-evans/create-or-update-comment@v3
-        if: ${{ github.event.comment.body == 'Deploy Preview' }}
         with:
           token: ${{ secrets.PAT }}
           comment-id: ${{ github.event.comment.id }}
           reactions: rocket
 
+  deploy-if-watched:
+    needs: watch-contain-target-issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo hello
+        run: echo hello
+      - name: Comment is successful
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.PAT }}
+          comment-id: ${{ github.event.comment.id }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+              **Deploy Preview**
+              - [Preview](https://baidu.com)
 #      - uses: actions/checkout@v4
 #        with:
 #          fetch-depth: 0
