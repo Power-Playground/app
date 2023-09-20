@@ -258,6 +258,7 @@ export async function resolveModules(
     Object.keys(delDeps).length === 0
     && Object.keys(addDeps).length === 0
   ) return
+  // TODO abstract special vfs register
   monaco.languages.typescript.typescriptDefaults
     .setExtraLibs(extraLibs
       .reduce((acc, [filePath, content]) => {
