@@ -73,6 +73,13 @@ Provide a powerful and scalable API to simplify the cost of building an excellen
         </a>
     </td>
     <td align="center">
+        <a href="https://github.com/Losses">
+            <img src="https://avatars.githubusercontent.com/u/1384036?v=4" width="100;" alt="Losses"/>
+            <br />
+            <sub><b>Losses Don</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/mengdaoshizhongxinyang">
             <img src="https://avatars.githubusercontent.com/u/37317008?v=4" width="100;" alt="mengdaoshizhongxinyang"/>
             <br />
