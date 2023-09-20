@@ -5,6 +5,8 @@ name: Build Production
 
 on:
   push:
+    paths-ignore:
+      - '!.github/workflows/production.yml'
     branches:
       - 'main'
 
