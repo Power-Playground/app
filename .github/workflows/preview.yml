@@ -1,0 +1,102 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Build Github Pages
+
+on:
+  pull_request_target:
+    branches:
+      - 'main'
+
+jobs:
+  build-dist:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Find Comment
+        uses: peter-evans/find-comment@v2
+        id: fc
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'NWYLZW'
+          body-includes: Test
+
+      - name: Create comment
+        if: steps.fc.outputs.comment-id == ''
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            This comment was written by a bot!
+          reactions: rocket
+
+      - name: Update comment
+        if: steps.fc.outputs.comment-id != ''
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          comment-id: ${{ steps.fc.outputs.comment-id }}
+          body: |
+            This comment has been updated!
+          reactions: hooray
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Install pnpm
+#        run: corepack enable
+#
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: '18'
+#          cache: 'pnpm'
+#
+#      - name: Install dependencies
+#        run:  pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
+#
+#      - name: Build site
+#        env:
+#          BASE_URL: app
+#        run: |
+#          pnpm build
+#          tar -czvf dist.tar.gz dist vercel.json
+#
+#      - name: upload dist and vercel.json
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: dist
+#          path: dist.tar.gz
+#
+#  deploy-to-vercel-for-preview:
+#    needs: build-dist
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#    env:
+#      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+#      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+#
+#    steps:
+#      - name: Download dist
+#        uses: actions/download-artifact@v2
+#        with:
+#          name: dist
+#          path: .
+#
+#      - name: Unzip dist
+#        run: tar -xzvf dist.tar.gz
+#      - name: Setup Node.js
+#        uses: actions/setup-node@v1
+#        with:
+#          node-version: '18'
+#      - name: Install Vercel CLI
+#        run: npm add -g vercel
+#
+#      - name: Deploy to Vercel
+#        env:
+#          BASE: None
+#        run: |
+#          mv dist app
+#          vercel --token=${{ secrets.VERCEL_TOKEN }}
