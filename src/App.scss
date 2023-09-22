@@ -31,7 +31,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    .svg-icon  {
+    .svg-icon {
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -60,8 +60,13 @@
   }
   &.left {
     flex-direction: row-reverse;
+    cursor: e-resize;
   }
   &:not(.eval-logs-visible) {
+    .ppd-resizable-border__right .ppd-resizable-border__btns button {
+      cursor: w-resize;
+    }
+
     .ppd-resizable-border__left .cldr.codicon.codicon-debug-continue-small {
       transform: rotate(0deg) !important;
     }
