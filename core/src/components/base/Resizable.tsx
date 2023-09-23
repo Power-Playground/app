@@ -3,7 +3,7 @@ import './Resizable.scss'
 import type { CSSProperties } from 'react'
 import { useEffect, useRef } from 'react'
 
-import { classnames } from '../utils'
+import { classnames } from '../../utils'
 
 export interface ResizableProps extends Omit<
   React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>,

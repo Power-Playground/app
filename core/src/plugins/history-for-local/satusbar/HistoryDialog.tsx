@@ -8,7 +8,7 @@ import { classnames, messenger, scrollIntoViewIfNeeded } from '@power-playground
 import type { DialogRef } from '../../../components/base/Dialog'
 import { Dialog } from '../../../components/base/Dialog'
 import { Menu } from '../../../components/base/Menu'
-import { Resizable } from '../../../components/Resizable'
+import { Resizable } from '../../../components/base/Resizable.tsx'
 import type { EditState } from '../store'
 import { useLocalEditStateHistory } from '../store'
 

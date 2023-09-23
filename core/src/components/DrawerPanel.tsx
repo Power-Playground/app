@@ -11,7 +11,7 @@ import { useMenu } from '../hooks/useMenu.tsx'
 import { Tooltip } from './base/Tooltip'
 import type { DrawerPanel as IDrawerPanel, DrawerPanelProps, DrawerPanelSlots } from './drawerPanelCreator'
 import { useDrawerPanelController } from './drawerPanelCreator'
-import { Resizable } from './Resizable'
+import { Resizable } from './base/Resizable.tsx'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
 DrawerPanel.delay = 200
