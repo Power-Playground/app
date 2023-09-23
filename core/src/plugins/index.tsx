@@ -3,6 +3,7 @@ import type * as UITypes from '//chii/ui/legacy/legacy.js'
 import type { ReactElement } from 'react'
 import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
+import type { PrimitiveAtom } from 'jotai'
 import type * as MonacoEditor from 'monaco-editor'
 import { equals } from 'ramda'
 
@@ -188,6 +189,7 @@ export type Editor<X extends {
     shareState: ShareState & X['ExtShareState'],
     monaco: typeof MonacoEditor | null
   ) => void
+  atoms?: (PrimitiveAtom<unknown> & { init: unknown })[]
   preload?: (monaco: typeof MonacoEditor) => Dispose | void
   load?: (
     editorInstance: IStandaloneCodeEditor,
