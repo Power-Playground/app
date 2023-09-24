@@ -189,7 +189,6 @@ export type Editor<X extends {
     shareState: ShareState & X['ExtShareState'],
     monaco: typeof MonacoEditor | null
   ) => void
-  atoms?: (PrimitiveAtom<unknown> & { init: unknown })[]
   preload?: (monaco: typeof MonacoEditor) => Dispose | void
   load?: (
     editorInstance: IStandaloneCodeEditor,
