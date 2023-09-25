@@ -6,12 +6,12 @@ import { useDebouncedValue } from 'foxact/use-debounced-value'
 import { useRetimer } from 'foxact/use-retimer'
 
 import { ExtensionContext } from '../contextes/Extension'
-import { useMenu } from '../hooks/useMenu.tsx'
+import { useMenu } from '../hooks/useMenu'
 
+import { Resizable } from './base/Resizable'
 import { Tooltip } from './base/Tooltip'
 import type { DrawerPanel as IDrawerPanel, DrawerPanelProps, DrawerPanelSlots } from './drawerPanelCreator'
 import { useDrawerPanelController } from './drawerPanelCreator'
-import { Resizable } from './base/Resizable.tsx'
 
 DrawerPanel.prefix = 'ppd-drawer-panel'
 DrawerPanel.delay = 200
