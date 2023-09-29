@@ -33,6 +33,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+# TODO unable get pr branch ref
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Install pnpm
