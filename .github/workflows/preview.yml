@@ -34,7 +34,7 @@ jobs:
         with:
           fetch-depth: 0
 # TODO unable get pr branch ref
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.head_ref }}
 
       - name: Install pnpm
         run: corepack enable
