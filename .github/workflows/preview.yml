@@ -30,11 +30,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install pnpm
+        run: |
+          echo head_ref:${{ github.head_ref }}
+          echo repository:${{ github.repository }}
+          echo pr.head.ref:${{ github.event.pull_request.head.ref }}
+          echo pr.head.repository:${{ github.event.pull_request.repository }}
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          repository: ${{ github.repository }}
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.repository }}
 
       - name: Install pnpm
         run: corepack enable
