@@ -39,6 +39,10 @@ jobs:
           echo pr.head.ref:${{ github.event.pull_request.head.ref }}
           echo pr.head.repo:${{ github.event.pull_request.head.repo }}
 
+          echo :${{ github.event.issue_comment.issue.pull_request.html_url }}
+          echo :${{ github.event.issue_comment.issue.pull_request.url }}
+          echo :${{ github.event.issue_comment.issue.repository_url }}
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
