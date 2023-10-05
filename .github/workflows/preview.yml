@@ -43,11 +43,11 @@ jobs:
           echo "ref=`cat head.json | jq -r '.ref'`" >> $GITHUB_OUTPUT
           echo "sha=`cat head.json | jq -r '.sha'`" >> $GITHUB_OUTPUT
 
-      - name: Test echo
-        run: |
-          echo repo:${{ steps.pull_request_info.outputs.repo }}
-          echo ref :${{ steps.pull_request_info.outputs.ref }}
-          echo sha :${{ steps.pull_request_info.outputs.sha }}
+#      - name: Test echo
+#        run: |
+#          echo repo:${{ steps.pull_request_info.outputs.repo }}
+#          echo ref :${{ steps.pull_request_info.outputs.ref }}
+#          echo sha :${{ steps.pull_request_info.outputs.sha }}
 
       - uses: actions/checkout@v4
         with:
