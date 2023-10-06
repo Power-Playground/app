@@ -3,7 +3,6 @@ import type * as UITypes from '//chii/ui/legacy/legacy.js'
 import type { ReactElement } from 'react'
 import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
-import type { PrimitiveAtom } from 'jotai'
 import type * as MonacoEditor from 'monaco-editor'
 import { equals } from 'ramda'
 
@@ -71,7 +70,7 @@ export function useImports<
     }
     load()
     return () => { isMounted = false }
-  }, [get, pathsRef.current])
+  }, [get])
   return modules
 }
 
