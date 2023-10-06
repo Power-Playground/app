@@ -1,3 +1,6 @@
+import type monaco from 'monaco-editor'
+
+import { createSetVFileByStore } from '../../virtual-files'
 import { definePlugin } from '..'
 
 import Project from './drawerPanels/Project'
@@ -19,6 +22,22 @@ export default definePlugin({
       }
     ],
     topbar: [Files],
-    drawerPanels: [Project]
+    drawerPanels: [Project],
+    preload: (monaco, store) => {
+      const setVFileByStore = createSetVFileByStore(store)
+
+      function setVFileByModel(model: monaco.editor.ITextModel) {
+        const uri = model.uri
+        if (uri) {
+          console.log(uri, model.getValue())
+          setVFileByStore({
+            path: uri.path,
+            contents: model.getValue()
+          }, undefined)
+        }
+      }
+      monaco.editor.onDidCreateModel(setVFileByModel)
+      monaco.editor.getModels().forEach(setVFileByModel)
+    }
   }
 })

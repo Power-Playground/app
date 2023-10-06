@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react'
+import type { createStore } from 'jotai'
 import { atom, useAtom, useStore } from 'jotai'
 
 import { pipply } from './kits/pipply'
@@ -55,7 +56,7 @@ export const createVFile = <
 
 const createSetVFile = (
   setVFiles: (arg0: (vFiles: VFile[]) => VFile[]) => void
-) => pipply(createVFile, (rt, index?: number) => {
+) => pipply(createVFile, (rt, index?: number | undefined) => {
   const rtAlias = rt as VFile
   if (index === undefined) {
     setVFiles(vFiles => [...vFiles, rtAlias])
@@ -70,6 +71,18 @@ const createSetVFile = (
   }
   return rt
 })
+
+type CreateSetVFileReturn = ReturnType<typeof createSetVFile>
+
+const setVFileFuncMap = new WeakMap<ReturnType<typeof createStore>, CreateSetVFileReturn>()
+
+export const createSetVFileByStore = (store: ReturnType<typeof createStore>) => {
+  if (!setVFileFuncMap.has(store)) {
+    setVFileFuncMap
+      .set(store, createSetVFile(setVFiles => store.set(vFilesAtom, setVFiles)))
+  }
+  return setVFileFuncMap.get(store)!
+}
 
 export const vFilesAtom = atom<VFile[]>([])
 
