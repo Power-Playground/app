@@ -76,9 +76,9 @@ export default function EditorZone(props: EditorZoneProps) {
   useEffect(() => {
     if (!monaco) return
 
-    const dispose = plugins.map(plugin => plugin?.editor?.preload?.(monaco))
+    const dispose = plugins.map(plugin => plugin?.editor?.preload?.(monaco, editorStore))
     return () => dispose.forEach(func => func?.())
-  }, [monaco, plugins])
+  }, [monaco, plugins, editorStore])
   useEffect(() => {
     if (!monaco || !editor) return
 

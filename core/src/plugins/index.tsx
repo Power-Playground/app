@@ -3,6 +3,7 @@ import type * as UITypes from '//chii/ui/legacy/legacy.js'
 import type { ReactElement } from 'react'
 import React, { createContext, useContext, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
+import type { createStore } from 'jotai'
 import type * as MonacoEditor from 'monaco-editor'
 import { equals } from 'ramda'
 
@@ -11,6 +12,8 @@ import type { DevtoolsWindow } from '../eval-logs/extension-support'
 
 import type { PluginConfigureIds, PluginConfigures } from './configure'
 import { getPluginConfigure, onPluginConfigureUpdate } from './configure'
+
+export type JotaiStore = ReturnType<typeof createStore>
 
 type TraverseNextNode = (stayWithin?: Node) => Node | null
 
@@ -188,7 +191,10 @@ export type Editor<X extends {
     shareState: ShareState & X['ExtShareState'],
     monaco: typeof MonacoEditor | null
   ) => void
-  preload?: (monaco: typeof MonacoEditor) => Dispose | void
+  preload?: (
+    monaco: typeof MonacoEditor,
+    store: JotaiStore
+  ) => Dispose | void
   load?: (
     editorInstance: IStandaloneCodeEditor,
     monaco: typeof MonacoEditor
