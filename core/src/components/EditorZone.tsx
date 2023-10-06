@@ -48,6 +48,7 @@ export default function EditorZone(props: EditorZoneProps) {
     enableMenuSwitch = true
   } = props
   const searchParams = useRef(new URLSearchParams(location.search))
+  const editorStore = useMemo(() => createStore(), [])
   const [editor, setEditor] = useState<monacoEditor.editor.IStandaloneCodeEditor | null>(null)
 
   const plugins = useMemo(() => Object
@@ -157,7 +158,6 @@ export default function EditorZone(props: EditorZoneProps) {
     }
   })
 
-  const editorStore = useMemo(() => createStore(), [])
   return <ExtensionContext.Provider value={{
     searchParams: searchParams.current,
     plugins, shareState
