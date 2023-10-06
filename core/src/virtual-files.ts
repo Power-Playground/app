@@ -64,16 +64,18 @@ export const useVFiles = () => {
   const setVFile = useMemo(() => pipply(createVFile, (rt, index?: number) => {
     const rtAlias = rt as VFile
     if (index === undefined) {
-      setVFiles([...vFiles, rtAlias])
+      setVFiles(vFiles => [...vFiles, rtAlias])
     } else if (index === -1) {
-      setVFiles([rtAlias, ...vFiles])
+      setVFiles(vFiles => [rtAlias, ...vFiles])
     } else {
-      const nt = [...vFiles]
-      nt[index] = rtAlias
-      setVFiles(nt)
+      setVFiles(vFiles => {
+        const nt = [...vFiles]
+        nt[index] = rtAlias
+        return nt
+      })
     }
     return rt
-  }), [vFiles, setVFiles])
+  }), [setVFiles])
   const removeVFile = useCallback((path: string) => {
     setVFiles(vFiles.filter(vFile => vFile.path !== path))
   }, [vFiles, setVFiles])
