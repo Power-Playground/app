@@ -53,6 +53,24 @@ export const createVFile = <
     }
   })
 
+const createSetVFile = (
+  setVFiles: (arg0: (vFiles: VFile[]) => VFile[]) => void
+) => pipply(createVFile, (rt, index?: number) => {
+  const rtAlias = rt as VFile
+  if (index === undefined) {
+    setVFiles(vFiles => [...vFiles, rtAlias])
+  } else if (index === -1) {
+    setVFiles(vFiles => [rtAlias, ...vFiles])
+  } else {
+    setVFiles(vFiles => {
+      const nt = [...vFiles]
+      nt[index] = rtAlias
+      return nt
+    })
+  }
+  return rt
+})
+
 export const vFilesAtom = atom<VFile[]>([])
 
 export type UseVFilesReturn = ReturnType<typeof useVFiles>
@@ -61,21 +79,7 @@ export const useVFiles = () => {
   const [
     vFiles, setVFiles
   ] = useAtom(vFilesAtom, { store: useStore() })
-  const setVFile = useMemo(() => pipply(createVFile, (rt, index?: number) => {
-    const rtAlias = rt as VFile
-    if (index === undefined) {
-      setVFiles(vFiles => [...vFiles, rtAlias])
-    } else if (index === -1) {
-      setVFiles(vFiles => [rtAlias, ...vFiles])
-    } else {
-      setVFiles(vFiles => {
-        const nt = [...vFiles]
-        nt[index] = rtAlias
-        return nt
-      })
-    }
-    return rt
-  }), [setVFiles])
+  const setVFile = useMemo(() => createSetVFile(setVFiles), [setVFiles])
   const removeVFile = useCallback((path: string) => {
     setVFiles(vFiles.filter(vFile => vFile.path !== path))
   }, [vFiles, setVFiles])
