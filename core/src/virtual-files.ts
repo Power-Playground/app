@@ -50,14 +50,14 @@ export const createVFile = <
       return this.basename + this.extname
     },
     get extname() {
-      return path.slice(lastDotIndex === -1 ? undefined : lastDotIndex)
+      return lastDotIndex === -1 ? '' : path.slice(lastDotIndex)
     },
     get dirname() { return path.slice(0, path.lastIndexOf('/')) },
     get isLink() {
       return data?.[VFileLinkPath] != null
     },
     get isDirectory() {
-      return this.path.endsWith('/')
+      return contents === undefined
     },
     get isBuffer() {
       return Buffer.isBuffer(this.contents) as IsBuffer
