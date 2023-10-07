@@ -35,13 +35,23 @@ export interface CreateVFileProps<
 export const createVFile = <
   C extends string | Buffer,
   IsBuffer extends boolean = C extends Buffer ? true : false
->({ path, contents, data }: CreateVFileProps<C>) => ({
+>({ path, contents, data }: CreateVFileProps<C>) => {
+  const lastDotIndex = path.lastIndexOf('.')
+  return {
     path,
     data,
     contents,
-    get basename() { return path.slice(path.lastIndexOf('/') + 1) },
-    get filename() { return this.basename + this.extname },
-    get extname() { return path.slice(path.lastIndexOf('.')) },
+    get basename() {
+      return path
+        .slice(0, lastDotIndex === -1 ? undefined : lastDotIndex)
+        .slice(path.lastIndexOf('/') + 1)
+    },
+    get filename() {
+      return this.basename + this.extname
+    },
+    get extname() {
+      return path.slice(lastDotIndex === -1 ? undefined : lastDotIndex)
+    },
     get dirname() { return path.slice(0, path.lastIndexOf('/')) },
     get isLink() {
       return data?.[VFileLinkPath] != null
@@ -52,7 +62,8 @@ export const createVFile = <
     get isBuffer() {
       return Buffer.isBuffer(this.contents) as IsBuffer
     }
-  })
+  }
+}
 
 const createSetVFile = (
   setVFiles: (arg0: (vFiles: VFile[]) => VFile[]) => void
