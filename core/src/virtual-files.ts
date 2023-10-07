@@ -30,7 +30,7 @@ export const VFileLinkPath = Symbol('VFileLinkPath')
 export interface CreateVFileProps<
   C extends string | Buffer
 > {
-  path: string, contents: C, data?: Record<string | symbol, unknown>
+  path: string, contents?: C, data?: Record<string | symbol, unknown>
 }
 export const createVFile = <
   C extends string | Buffer,
@@ -69,15 +69,36 @@ const createSetVFile = (
   setVFiles: (arg0: (vFiles: VFile[]) => VFile[]) => void
 ) => pipply(createVFile, (rt, index?: number | undefined) => {
   const rtAlias = rt as VFile
+  const parents: Iterable<string> = {
+    [Symbol.iterator]: function* () {
+      let parent = rtAlias.dirname
+      while (parent !== '') {
+        yield parent
+        parent = parent.slice(0, parent.lastIndexOf('/'))
+      }
+    }
+  }
+  function autoCreateParent(vFiles: VFile[]) {
+    const rtVFiles: VFile[] = []
+    for (const parent of parents) {
+      if (vFiles.find(vFile => vFile.path === parent)) continue
+      rtVFiles.push(createVFile({ path: parent }) as VFile)
+    }
+    return rtVFiles
+  }
+
   if (index === undefined) {
-    setVFiles(vFiles => [...vFiles, rtAlias])
+    setVFiles(vFiles => [...vFiles, ...autoCreateParent(vFiles), rtAlias])
   } else if (index === -1) {
-    setVFiles(vFiles => [rtAlias, ...vFiles])
+    setVFiles(vFiles => [...autoCreateParent(vFiles), rtAlias, ...vFiles])
   } else {
     setVFiles(vFiles => {
-      const nt = [...vFiles]
-      nt[index] = rtAlias
-      return nt
+      return [
+        ...vFiles.slice(0, index),
+        ...autoCreateParent(vFiles),
+        rtAlias,
+        ...vFiles.slice(index + 1)
+      ]
     })
   }
   return rt
