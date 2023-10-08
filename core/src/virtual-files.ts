@@ -84,7 +84,7 @@ export const createSetVFile = (
     for (const parent of parents) {
       insertIndex = vFiles.findIndex(vFile => vFile.path === parent)
       if (insertIndex !== -1) break
-      rtVFiles.push(createVFile({ path: parent }) as VFile)
+      rtVFiles.unshift(createVFile({ path: parent }) as VFile)
     }
     return [insertIndex, rtVFiles] as const
   }
