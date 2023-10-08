@@ -82,6 +82,7 @@ export const createSetVFile = (
     const rtVFiles: VFile[] = []
     let insertIndex = -1
     for (const parent of parents) {
+      // TODO map path to index
       insertIndex = vFiles.findIndex(vFile => vFile.path === parent)
       if (insertIndex !== -1) break
       rtVFiles.unshift(createVFile({ path: parent }) as VFile)
@@ -93,11 +94,11 @@ export const createSetVFile = (
     const [insertIndex, autoCreateParents] = autoCreateParent(vFiles)
     const [leftVFiles, rightVFiles] = insertIndex === -1
       ? [vFiles, []]
-      : [vFiles.slice(0, insertIndex), vFiles.slice(insertIndex)]
+      : [vFiles.slice(0, insertIndex + 1), vFiles.slice(insertIndex + 1)]
     if (index === -1) {
       return [...leftVFiles, ...autoCreateParents, rtAlias, ...rightVFiles]
     } else {
-      // TODO insert to the last child of parent
+      // TODO insert to the last child of parent children
       return [
         ...leftVFiles,
         ...rightVFiles.slice(0, autoCreateParents.length),
