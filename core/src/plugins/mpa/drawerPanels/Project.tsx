@@ -1,6 +1,6 @@
 import './Project.scss'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import { messenger } from '@power-playground/core'
 
 import type { ListRef } from '../../../components/base/List'
@@ -8,6 +8,7 @@ import { List } from '../../../components/base/List'
 import type { DrawerPanelProps } from '../../../components/drawerPanelCreator'
 import { NotImplemented } from '../../../components/NotImplemented'
 import { useMenu } from '../../../hooks/useMenu'
+import { useVFiles } from '../../../virtual-files'
 
 const prefix = 'ppd-drawer-panel--project'
 
@@ -70,37 +71,28 @@ export default function Project({ template, setOnKeydown }: DrawerPanelProps) {
       }
     ])
   }, [template])
+
+  const [vFiles] = useVFiles()
+  const filesForListItem = useMemo(() => vFiles.map(f => ({
+    icon: !f.isDirectory ? 'file' : {
+      'node_modules': 'folder-library'
+    }[f.basename] ?? 'folder',
+    id: f.path,
+    indent: f.path.split('/').length - 2,
+    label: f.filename,
+    placeholder: {
+      'node_modules': '[external]'
+    }[f.basename],
+    className: {
+      'node_modules': prefix + '--dir-type__external'
+    }[f.basename]
+  })), [vFiles])
   return <>
     {viewModeSwitcherMenuPopper}
     <List
       ref={listRef}
       selectable
-      items={[
-        {
-          icon: 'file',
-          id: 'index.ts',
-          label: 'index.ts',
-          placeholder: '[entry]'
-        },
-        {
-          icon: 'file',
-          id: 'index.js',
-          label: 'index.js',
-          indent: 1
-        },
-        {
-          icon: 'file',
-          id: 'index.d.ts',
-          label: 'index.d.ts',
-          indent: 1
-        },
-        {
-          icon: 'folder-library',
-          id: 'node_modules',
-          label: 'node_modules',
-          className: prefix + '--dir-type__external'
-        }
-      ]}
+      items={filesForListItem}
     />
   </>
 }
