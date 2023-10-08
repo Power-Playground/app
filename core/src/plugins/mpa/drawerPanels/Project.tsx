@@ -93,6 +93,7 @@ export default function Project({ template, setOnKeydown }: DrawerPanelProps) {
       ref={listRef}
       selectable
       items={filesForListItem}
+      defaultFoldedIds={['/node_modules']}
     />
   </>
 }
