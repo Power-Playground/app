@@ -4,7 +4,7 @@ import { atom, useAtom, useStore } from 'jotai'
 
 import { pipply } from './kits/pipply'
 
-type VFile = {
+export type VFile = {
   path: string
   readonly data?: Record<string, unknown>
   readonly filename: string
@@ -65,9 +65,9 @@ export const createVFile = <
   }
 }
 
-const createSetVFile = (
+export const createSetVFile = (
   setVFiles: (arg0: (vFiles: VFile[]) => VFile[]) => void
-) => pipply(createVFile, (rt, index?: number | undefined) => {
+) => pipply(createVFile, (rt, index?: -1 | undefined) => {
   const rtAlias = rt as VFile
   const parents: Iterable<string> = {
     [Symbol.iterator]: function* () {
@@ -80,27 +80,33 @@ const createSetVFile = (
   }
   function autoCreateParent(vFiles: VFile[]) {
     const rtVFiles: VFile[] = []
+    let insertIndex = -1
     for (const parent of parents) {
-      if (vFiles.find(vFile => vFile.path === parent)) continue
+      insertIndex = vFiles.findIndex(vFile => vFile.path === parent)
+      if (insertIndex !== -1) break
       rtVFiles.push(createVFile({ path: parent }) as VFile)
     }
-    return rtVFiles
+    return [insertIndex, rtVFiles] as const
   }
 
-  if (index === undefined) {
-    setVFiles(vFiles => [...vFiles, ...autoCreateParent(vFiles), rtAlias])
-  } else if (index === -1) {
-    setVFiles(vFiles => [...autoCreateParent(vFiles), rtAlias, ...vFiles])
-  } else {
-    setVFiles(vFiles => {
+  setVFiles(vFiles => {
+    const [insertIndex, autoCreateParents] = autoCreateParent(vFiles)
+    const [leftVFiles, rightVFiles] = insertIndex === -1
+      ? [vFiles, []]
+      : [vFiles.slice(0, insertIndex), vFiles.slice(insertIndex)]
+    if (index === -1) {
+      return [...leftVFiles, ...autoCreateParents, rtAlias, ...rightVFiles]
+    } else {
+      // TODO insert to the last child of parent
       return [
-        ...vFiles.slice(0, index),
-        ...autoCreateParent(vFiles),
+        ...leftVFiles,
+        ...rightVFiles.slice(0, autoCreateParents.length),
+        ...autoCreateParents,
         rtAlias,
-        ...vFiles.slice(index + 1)
+        ...rightVFiles.slice(autoCreateParents.length)
       ]
-    })
-  }
+    }
+  })
   return rt
 })
 
