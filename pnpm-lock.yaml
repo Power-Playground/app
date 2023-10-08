@@ -95,6 +95,9 @@ importers:
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
+      esbuild-register:
+        specifier: ^3.5.0
+        version: 3.5.0(esbuild@0.18.20)
       eslint:
         specifier: ^8.44.0
         version: 8.49.0
@@ -1908,6 +1911,17 @@ packages:
       is-callable: 1.2.7
       is-date-object: 1.0.5
       is-symbol: 1.0.4
+    dev: true
+
+  /esbuild-register@3.5.0(esbuild@0.18.20):
+    resolution: {integrity: sha512-+4G/XmakeBAsvJuDugJvtyF1x+XJT4FMocynNpxrvEBViirpfUn2PgNpCHedfWhF4WokNsO/OvMKrmJOIJsI5A==}
+    peerDependencies:
+      esbuild: '>=0.12 <1'
+    dependencies:
+      debug: 4.3.4(supports-color@8.1.1)
+      esbuild: 0.18.20
+    transitivePeerDependencies:
+      - supports-color
     dev: true
 
   /esbuild@0.18.20:
