@@ -37,6 +37,7 @@ export interface ListProps<T extends ListItem = ListItem> {
 
   items?: T[]
   defaultFocusIndex?: number
+  defaultFoldedIds?: string[]
   defaultSelectedIds?: string[]
   /** @default Infinity */
   max?: number
@@ -93,6 +94,7 @@ const LIST_HELP_TIPS: IHelpTip[] = [
 ]
 
 const EMPTY_LIST_ITEMS: ListItem[] = []
+const EMPTY_DEFAULT_FOLDED_IDS: string[] = []
 
 const _List = forwardRefWithStatic<{
   readonly prefix: 'ppd-list'
@@ -102,6 +104,7 @@ const _List = forwardRefWithStatic<{
     selectable = false,
     hideTip = false,
     defaultFocusIndex = -1,
+    defaultFoldedIds = EMPTY_DEFAULT_FOLDED_IDS,
     defaultSelectedIds = [],
     // TODO support max
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -260,15 +263,15 @@ const _List = forwardRefWithStatic<{
       }
     })
   }, [getChildren])
-  const toggleFoldAll = useCallback((isFolded?: boolean) => {
+  const toggleFoldAll = useCallback((isFolded?: boolean, ids = items.map(({ id }) => id)) => {
     // TODO performance
     if (isFolded) {
       const hidedIds = new Set<string>()
-      const foldedIds = items.reduce((acc, item) => {
-        const children = getChildren(item.id)
+      const foldedIds = ids.reduce((acc, id) => {
+        const children = getChildren(id)
         if (children.length > 0) {
           children.map(({ id }) => hidedIds.add(id))
-          acc.push(item.id)
+          acc.push(id)
         }
         return acc
       }, [] as string[])
@@ -279,6 +282,9 @@ const _List = forwardRefWithStatic<{
       setHidedIds([])
     }
   }, [getChildren, items])
+  useEffect(() => {
+    toggleFoldAll(true, defaultFoldedIds)
+  }, [defaultFoldedIds, toggleFoldAll])
 
   const [enableUpperKeywordsIgnore, setEnableUpperKeywordsIgnore] = useState(true)
   const [enableWordMatch, setEnableWordMatch] = useState(false)
