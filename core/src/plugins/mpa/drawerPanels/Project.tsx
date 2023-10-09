@@ -83,9 +83,9 @@ export default function Project({ template, setOnKeydown }: DrawerPanelProps) {
     placeholder: {
       'node_modules': '[external]'
     }[f.basename],
-    className: {
-      'node_modules': prefix + '--dir-type__external'
-    }[f.basename]
+    className: f.path.includes('/node_modules')
+      ? prefix + '--dir-type__external'
+      : undefined
   })), [vFiles])
   return <>
     {viewModeSwitcherMenuPopper}
