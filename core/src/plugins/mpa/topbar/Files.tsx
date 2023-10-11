@@ -3,6 +3,7 @@ import './Files.scss'
 import type { ReactNode } from 'react'
 import { useState } from 'react'
 
+import { classnames } from '../../../utils'
 import type { BarItemProps } from '../..'
 
 const prefix = 'mpa__topbar__files'
@@ -18,8 +19,12 @@ export const Files: React.ComponentType<BarItemProps> = () => {
     { id: 'index.ts', title: 'index.ts', icon: 'file' },
     { id: 'index.spec.ts', title: 'index.spec.ts', icon: 'beaker' }
   ])
+  const [activeTabId, setActiveTabId] = useState<string | undefined>(tabs[0]?.id)
   return <div className={prefix}>
-    {tabs.map(tab => <div className={`${prefix}-tab`} key={tab.id}>
+    {tabs.map(tab => <div
+      key={tab.id}
+      className={classnames(`${prefix}-tab`, { active: tab.id === activeTabId })}
+    >
       {tab.icon && typeof tab.icon === 'string'
         ? <span className={`cldr codicon codicon-${tab.icon}`} />
         : tab.icon}
