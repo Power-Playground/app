@@ -1,0 +1,6 @@
+{
+  "excludes": [],
+  "plugins": [
+    "https://plugins.dprint.dev/g-plane/malva-v0.1.0.wasm"
+  ]
+}
