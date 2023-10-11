@@ -24,7 +24,7 @@ body {
   --primary-active: #365eb444;
   --primary-active-border: #365eb4cc;
   --primary-active-fc: color-mix(in srgb, var(--fr-cr), var(--primary) 20%);
-  --primary-active-placholder:rgba(255, 255, 255, 0.6);
+  --primary-active-placholder: rgba(255, 255, 255, 0.6);
 
   --border-color: #ddd;
   --shadow-color: #9995;
@@ -49,7 +49,7 @@ body {
 
     --primary-active: #263c6eaa;
     --primary-active-fc: rgba(230, 230, 230, 0.9);
-    --primary-active-placholder:rgba(140, 140, 140, 0.6);
+    --primary-active-placholder: rgba(140, 140, 140, 0.6);
 
     --border-color: #333333;
     --shadow-color: #0008;
@@ -63,8 +63,7 @@ body {
   }
 }
 
-html,
-body {
+html, body {
   height: 100vh;
   margin: 0;
   padding: 0;
@@ -72,7 +71,7 @@ body {
   a {
     --mix-opcity: 20%;
     color: color-mix(in srgb, var(--primary), var(--fr-cr) var(--mix-opcity));
-    transition: .1s;
+    transition: 0.1s;
     &:hover {
       --mix-opcity: 0%;
     }
@@ -86,7 +85,7 @@ body {
   --toastify-color-success: #07bc0c;
   --toastify-color-warning: #f1c40f;
   --toastify-color-error: #e74c3c;
-  --toastify-color-transparent: rgba(255, 255, 255, .7);
+  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
   --toastify-icon-color-info: var(--toastify-color-info);
   --toastify-icon-color-success: var(--toastify-color-success);
   --toastify-icon-color-warning: var(--toastify-color-warning);
@@ -125,7 +124,7 @@ body {
   &__progress-bar {
     height: 3px;
   }
-  &__close-button{
+  &__close-button {
     display: flex;
     align-items: center;
     height: 32px;
