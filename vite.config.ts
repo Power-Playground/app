@@ -2,8 +2,8 @@ import react from '@vitejs/plugin-react'
 import { configDotenv } from 'dotenv'
 import fg from 'fast-glob'
 import path from 'node:path'
-import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig, normalizePath } from 'vite'
+import { analyzer } from 'vite-bundle-analyzer'
 import { cdn } from 'vite-plugin-cdn2'
 import { unpkg } from 'vite-plugin-cdn2/url.js'
 import inspect from 'vite-plugin-inspect'
@@ -82,7 +82,7 @@ const pluginEntries = fg.globSync([
   }, {} as Record<string, string>)
 
 // https://vitejs.dev/config/
-export default defineConfig(async env => ({
+export default defineConfig(async _ => ({
   base: `/${process.env.BASE_URL || 'app'}/`,
   plugins: [
     replacer({
@@ -119,7 +119,7 @@ export default defineConfig(async env => ({
         }
       }
     }),
-    env.mode === 'production' ? visualizer() : undefined,
+    analyzer({ reportFileName:'stats.html' }),
     process.env.ENABLE_INJECT_ANALYTICS === 'true' ? inspect() : undefined
   ],
   publicDir: './core/public',
