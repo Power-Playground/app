@@ -1,26 +1,25 @@
 import './Files.scss'
 
-import { useEffect, useMemo } from 'react'
-import { useAtom, useStore } from 'jotai'
+import { useEffect, useMemo, useRef } from 'react'
 
 import { classnames } from '../../../utils'
 import type { BarItemProps } from '../..'
-import { tabsAtom } from '../atoms'
+import { useTabs } from '../atoms'
 
 const prefix = 'mpa__topbar__files'
 
 export const Files: React.ComponentType<BarItemProps> = () => {
-  const [
-    tabs, setTabs
-  ] = useAtom(tabsAtom, { store: useStore() })
+  const { tabs, addTab } = useTabs()
+  const addOnlyOnce = useRef(false)
   useEffect(() => {
+    if (addOnlyOnce.current) return
+
+    addOnlyOnce.current = true
     if (tabs.length === 0) {
       // TODO only editor mounted?
-      setTabs([
-        { id: 'index.ts', title: 'index.ts', icon: 'file', active: true }
-      ])
+      addTab({ id: 'index.ts', title: 'index.ts', icon: 'file', active: true })
     }
-  }, [setTabs, tabs.length])
+  }, [addTab, tabs.length])
   const activeTabId = useMemo(() => tabs.find(tab => tab.active)?.id, [tabs])
   return <div className={prefix}>
     {tabs.map(tab => <div
