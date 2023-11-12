@@ -9,6 +9,7 @@ import type { DrawerPanelProps } from '../../../components/drawerPanelCreator'
 import { NotImplemented } from '../../../components/NotImplemented'
 import { useMenu } from '../../../hooks/useMenu'
 import { useVFiles } from '../../../virtual-files'
+import { useTabs } from '../atoms'
 
 const prefix = 'ppd-drawer-panel--project'
 
@@ -87,6 +88,8 @@ export default function Project({ template, setOnKeydown }: DrawerPanelProps) {
       ? prefix + '--dir-type__external'
       : undefined
   })), [vFiles])
+
+  const { includeTab, setActiveTab, addTab } = useTabs()
   return <>
     {viewModeSwitcherMenuPopper}
     <List
@@ -94,6 +97,22 @@ export default function Project({ template, setOnKeydown }: DrawerPanelProps) {
       selectable
       items={filesForListItem}
       defaultFoldedIds={['/node_modules']}
+      onClickItem={(e, item, type) => {
+        switch (type) {
+          case 'click':
+            if (includeTab(item.id)) {
+              setActiveTab(item.id)
+            } else {
+              addTab({
+                id: item.id,
+                title: item.label,
+                icon: item.icon,
+                active: true
+              })
+            }
+            break
+        }
+      }}
     />
   </>
 }

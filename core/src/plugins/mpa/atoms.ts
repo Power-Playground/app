@@ -15,6 +15,9 @@ export const useTabs = () => {
   const [tabs, setTabs] = useAtom(tabsAtom, { store: useStore() })
   return {
     tabs,
+    includeTab: useCallback((id: string) => {
+      return tabs.some(tab => tab.id === id)
+    }, [tabs]),
     setActiveTab: useCallback((id: string) => {
       setTabs(tabs => tabs.map(tab => ({ ...tab, active: tab.id === id })))
     }, [setTabs]),
