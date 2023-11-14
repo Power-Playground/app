@@ -48,6 +48,9 @@ export const useTabs = () => {
           ...tabs.slice(index)
         ]
       })
+    }, [setTabs]),
+    removeTabs: useCallback((...ids: string[]) => {
+      setTabs(tabs => tabs.filter(tab => !ids.includes(tab.id)))
     }, [setTabs])
   }
 }
