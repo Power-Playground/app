@@ -17,7 +17,7 @@ export const Files: React.ComponentType<BarItemProps> = () => {
     addOnlyOnce.current = true
     if (tabs.length === 0) {
       // TODO only editor mounted?
-      addTab({ id: 'index.ts', title: 'index.ts', icon: 'file', active: true })
+      addTab({ id: '/index.ts', title: 'index.ts', icon: 'file', active: true })
     }
   }, [addTab, tabs.length])
   const activeTabId = useMemo(() => tabs.find(tab => tab.active)?.id, [tabs])
