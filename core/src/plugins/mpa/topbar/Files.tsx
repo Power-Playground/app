@@ -9,7 +9,7 @@ import { useTabs } from '../atoms'
 const prefix = 'mpa__topbar__files'
 
 export const Files: React.ComponentType<BarItemProps> = () => {
-  const { tabs, addTab, removeTabs } = useTabs()
+  const { tabs, addTab, setActiveTab, removeTabs } = useTabs()
   const addOnlyOnce = useRef(false)
   useEffect(() => {
     if (addOnlyOnce.current) return
@@ -25,6 +25,7 @@ export const Files: React.ComponentType<BarItemProps> = () => {
     {tabs.map(tab => <div
       key={tab.id}
       className={classnames(`${prefix}-tab`, { active: tab.id === activeTabId })}
+      onClick={() => setActiveTab(tab.id)}
     >
       {tab.icon && <span className={`cldr codicon codicon-${tab.icon}`} />}
       {tab.title}
