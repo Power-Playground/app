@@ -1,0 +1,1 @@
+import{d as r}from"../../../index-eb125c8a.js";const l=r({editor:{preload(t){const i=[t.languages.registerInlineCompletionsProvider("typescript",{provideInlineCompletions(e,n){return e.getLineContent(n.lineNumber).trimStart().startsWith("await ")?{items:[{insertText:"100..ms"}]}:{items:[]}},freeInlineCompletions(e){}})];return()=>i.forEach(e=>e.dispose())}}});export{l as _};

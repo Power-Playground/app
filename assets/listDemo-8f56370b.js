@@ -1,0 +1,1 @@
+import{j as e}from"./index-eb125c8a.js";/* empty css                */import{L as t}from"./messenger-provider-f9c945a3.js";function o(){return e.jsx(t,{selectable:!0,items:[{icon:"file",id:"item0",label:"item0",placeholder:"[entry]"},{id:"item1",label:"item1"},{id:"item2",label:"item2"}]})}export{o as default};
