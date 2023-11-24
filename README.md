@@ -66,6 +66,13 @@ Provide a powerful and scalable API to simplify the cost of building an excellen
     </td></tr>
 <tr>
     <td align="center">
+        <a href="https://github.com/RSS1102">
+            <img src="https://avatars.githubusercontent.com/u/81673017?v=4" width="100;" alt="RSS1102"/>
+            <br />
+            <sub><b>阿菜 Cai</b></sub>
+        </a>
+    </td>
+    <td align="center">
         <a href="https://github.com/kainstar">
             <img src="https://avatars.githubusercontent.com/u/15249633?v=4" width="100;" alt="kainstar"/>
             <br />
