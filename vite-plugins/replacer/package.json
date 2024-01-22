@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-replacer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A vite plugin to replace string in files",
   "license": "MIT",
   "author": "YiJie<yijie4188y@gmail.com>",
