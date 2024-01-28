@@ -142,8 +142,15 @@ export const Versions: React.ComponentType<BarItemProps<TypeScriptPluginX['ExtSh
             </>))
         }
         if ('text' in result) {
-          // TODO resolve this case
-          console.log('text', result)
+          const matchVersion = suggestedVersions.filter(({ id }) => id.includes(result.text))
+          matchVersion.length > 0
+            ? onChange?.(matchVersion[0]?.value.toString())
+            : messenger.then(m => m.display('error', <>
+              <h3>Invalid TypeScript Version</h3>
+              <p>Version <code>{matchVersion[0]?.id}</code> is not available.</p>
+              {/* TODO support help jump */}
+              <p>Click <a href='/TODO'>it</a> and find help.</p>
+            </>))
         }
       } catch (e) {
         console.error(e)
