@@ -4,6 +4,8 @@
 name: Build Production
 
 on:
+  schedule:
+    - cron: '0 0 * * 1'
   push:
     paths-ignore:
       - '.github/workflows/preview.yml'
@@ -40,7 +42,7 @@ jobs:
           cache: 'pnpm'
 
       - name: Install dependencies
-        run:  pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
+        run: pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
 
       - name: Build site
         env:
