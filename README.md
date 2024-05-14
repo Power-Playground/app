@@ -44,17 +44,17 @@ Provide a powerful and scalable API to simplify the cost of building an excellen
         </a>
     </td>
     <td align="center">
-        <a href="https://github.com/AfireHong">
-            <img src="https://avatars.githubusercontent.com/u/51915214?v=4" width="100;" alt="AfireHong"/>
-            <br />
-            <sub><b>MattPeng</b></sub>
-        </a>
-    </td>
-    <td align="center">
         <a href="https://github.com/kahosan">
             <img src="https://avatars.githubusercontent.com/u/33192552?v=4" width="100;" alt="kahosan"/>
             <br />
             <sub><b>Kaho</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/AfireHong">
+            <img src="https://avatars.githubusercontent.com/u/51915214?v=4" width="100;" alt="AfireHong"/>
+            <br />
+            <sub><b>MattPeng</b></sub>
         </a>
     </td>
     <td align="center">
@@ -84,6 +84,13 @@ Provide a powerful and scalable API to simplify the cost of building an excellen
             <img src="https://avatars.githubusercontent.com/u/1384036?v=4" width="100;" alt="Losses"/>
             <br />
             <sub><b>Losses Don</b></sub>
+        </a>
+    </td>
+    <td align="center">
+        <a href="https://github.com/YeungKC">
+            <img src="https://avatars.githubusercontent.com/u/11473691?v=4" width="100;" alt="YeungKC"/>
+            <br />
+            <sub><b>YeungKC</b></sub>
         </a>
     </td>
     <td align="center">
