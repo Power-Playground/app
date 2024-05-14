@@ -5,12 +5,12 @@ name: Build Production
 
 on:
   schedule:
-    - cron: "0 0 * * 1"
+    - cron: '0 0 * * 1'
   push:
     paths-ignore:
-      - ".github/workflows/preview.yml"
+      - '.github/workflows/preview.yml'
     branches:
-      - "main"
+      - 'main'
 
 jobs:
   contrib-readme-job:
@@ -38,8 +38,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "18"
-          cache: "pnpm"
+          node-version: '18'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile && node scripts/bootstrap.mjs
@@ -105,7 +105,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "18"
+          node-version: '18'
       - name: Install Vercel CLI
         run: npm add -g vercel
 
