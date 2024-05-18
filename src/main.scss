@@ -24,13 +24,13 @@ body {
   --primary-active: #365eb444;
   --primary-active-border: #365eb4cc;
   --primary-active-fc: color-mix(in srgb, var(--fr-cr), var(--primary) 20%);
-  --primary-active-placholder: rgba(255, 255, 255, 0.6);
+  --primary-active-placeholder: rgba(255, 255, 255, 0.6);
 
   --border-color: #ddd;
   --shadow-color: #9995;
 
   --fr-cr: rgba(0, 0, 0, 0.9);
-  --fr-cr-placholder: rgba(0, 0, 0, 0.26);
+  --fr-cr-placeholder: rgba(0, 0, 0, 0.26);
   // TODO replace to --primary-active-fc
   --pr-fr-cr: #fff;
   --bg-cr: #efefef;
@@ -49,13 +49,13 @@ body {
 
     --primary-active: #263c6eaa;
     --primary-active-fc: rgba(230, 230, 230, 0.9);
-    --primary-active-placholder: rgba(140, 140, 140, 0.6);
+    --primary-active-placeholder: rgba(140, 140, 140, 0.6);
 
     --border-color: #333333;
     --shadow-color: #0008;
 
     --fr-cr: rgba(255, 255, 255, 0.9);
-    --fr-cr-placholder: rgba(255, 255, 255, 0.26);
+    --fr-cr-placeholder: rgba(255, 255, 255, 0.26);
 
     --bg-cr: #242424;
     --bg-cr-o0: #24242488;
