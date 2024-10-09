@@ -124,6 +124,7 @@ export default defineConfig(async _ => ({
   ],
   publicDir: './core/public',
   build: {
+    minify: false,
     rollupOptions: {
       input: {
         main: path.resolve(__dirname, 'index.html'),
