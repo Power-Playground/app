@@ -53,7 +53,7 @@
         cursor: pointer;
         transition: .1s;
         &::before {
-          color: var(--fr-cr-placholder);
+          color: var(--fr-cr-placeholder);
         }
         &:hover::before {
           color: var(--fr-cr);
@@ -132,7 +132,7 @@
         color: var(--primary-active-fc);
       }
       .ppd-list-item__placeholder {
-        color: var(--primary-active-placholder);
+        color: var(--primary-active-placeholder);
       }
     }
     &:focus, &:focus-visible {
@@ -210,7 +210,7 @@
       }
     }
     &__placeholder {
-      color: var(--fr-cr-placholder);
+      color: var(--fr-cr-placeholder);
     }
   }
   &:not(&--contain-icon) {

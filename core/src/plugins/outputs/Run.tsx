@@ -15,7 +15,7 @@ export const Run: React.ComponentType<BarItemProps> = () => {
     </>}
     offset={[0, 6]}
     >
-    <button className='excute'
+    <button className='execute'
             // @ts-ignore
             style={{ '--btn-color': '#4eb03e' }}
             onClick={() => elBridgeP.send('run')}>

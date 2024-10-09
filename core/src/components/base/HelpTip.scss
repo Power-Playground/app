@@ -13,7 +13,7 @@
   padding: 0 50px;
   min-height: 100px;
 
-  color: var(--fr-cr-placholder);
+  color: var(--fr-cr-placeholder);
 
   @include codeAndKBD;
   @keyframes short {
@@ -81,7 +81,7 @@
       border: none;
       border-radius: 2px;
       background-color: transparent;
-      color: var(--fr-cr-placholder);
+      color: var(--fr-cr-placeholder);
 
       cursor: pointer;
       user-select: none;
