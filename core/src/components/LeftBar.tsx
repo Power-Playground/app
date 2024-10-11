@@ -2,12 +2,14 @@ import './LeftBar.scss'
 
 import { useContext, useMemo } from 'react'
 import { classnames, messenger } from '@power-playground/core'
+import { useSetAtom } from 'jotai'
 
 import PP from '../../../resources/PP_P.svg'
 import { ExtensionContext } from '../contextes/Extension'
 
 import { Tooltip } from './base/Tooltip'
 import { useDrawerPanelController } from './drawerPanelCreator'
+import { isVimModeAtom } from './EditorZoneShareAtoms'
 import { NotImplemented } from './NotImplemented'
 
 const prefix = 'ppd-left-bar'
@@ -57,6 +59,7 @@ export function LeftBar(props: LeftBarProps) {
       </Tooltip>
       : btn
   })
+  const toggleVimMode = useSetAtom(isVimModeAtom)
 
   return <div className={classnames(prefix, props.className)}
               style={props.style}>
@@ -80,6 +83,10 @@ export function LeftBar(props: LeftBarProps) {
       </button>
     </div>
     <div className={`${prefix}__bottom`}>
+      {/* TODO: move to settings */}
+      <button onClick={() => toggleVimMode(mode => !mode)}>
+        Vim Mode
+      </button> 
       {buildElements(bottomItems)}
       <button onClick={() => messenger.then(m => m.display('warning', <NotImplemented />))}>
         <span className='cldr codicon codicon-account'></span>
